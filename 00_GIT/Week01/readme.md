@@ -5,7 +5,7 @@
 
 For a comprehensive overview of the project, check out the presentation on Canva:  
 
-[![Presentation](../logo.svg)](https://www.canva.com/design/DAGXc32mz4M/I10MuaBc0Max8JzlldrRjw/view?utm_content=DAGXc32mz4M&utm_campaign=designshare&utm_medium=link2&utm_source=uniquelinks&utlId=h33adac6986)
+[![Presentation](../../logo.svg)](https://www.canva.com/design/DAGXc32mz4M/I10MuaBc0Max8JzlldrRjw/view?utm_content=DAGXc32mz4M&utm_campaign=designshare&utm_medium=link2&utm_source=uniquelinks&utlId=h33adac6986)
 
 
 
