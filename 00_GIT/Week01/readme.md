@@ -1,7 +1,6 @@
-# Git
 
 
-# Presentation Week 1
+### Presentation Week 1
 
 For a comprehensive overview of the project, check out the presentation on Canva:  
 
