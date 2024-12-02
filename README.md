@@ -23,7 +23,6 @@
 | 16       | Mini Project                         | Apply learned concepts to create a small MLOps project involving Git, Docker, and MLflow.          |
 
 
-จาก PLO ที่กำหนดและ **Course Outline** ด้านบน เราสามารถสร้าง **Course Learning Outcome (CLO)** และทำการ Mapping กับ PLO ได้ดังนี้:
 
 ---
 
