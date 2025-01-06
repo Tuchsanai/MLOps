@@ -1,0 +1,44 @@
+stages:
+  prepare_data:
+    cmd: python ./prepare_data.py
+    deps:
+      - ./prepare_data.py
+      - ./archive/imdb-dataset.csv
+    params:
+      - data
+    outs:
+      - ./archive/train.csv
+      - ./archive/test.csv
+  make_features:
+    cmd: python ./make_features.py
+    deps:
+      - ./make_features.py
+      - ./archive/train.csv
+      - ./archive/test.csv
+    params:
+      - features
+    outs:
+      - ./archive/train.joblib
+      - ./archive/test.joblib
+  train:
+    cmd: python ./train.py
+    deps:
+      - ./train.py
+      - ./archive/train.csv
+      - ./archive/train.joblib
+    params:
+      - train
+    outs:
+      - ./archive/model.joblib
+  evaluate:
+    cmd: python ./evaluate.py
+    deps:
+      - ./evaluate.py
+      - ./archive/test.csv
+      - ./archive/test.joblib
+      - ./archive/model.joblib
+    params:
+      - evaluate
+    metrics:
+      - ./archive/results.yaml:
+          cache: false
