@@ -116,6 +116,8 @@ git commit -m "Add edge detection script"
 
 ![img3](info/img_floder.png)  
 
+![img3](info/img_floder15.png)  
+
 
 ```bash
 mkdir img
