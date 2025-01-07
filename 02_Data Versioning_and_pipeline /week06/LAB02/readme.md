@@ -44,7 +44,7 @@ git commit -m "Initialize the repository and add service_account.json"
 
 - Create a new repository on a platform like GitHub, GitLab, or Bitbucket.
 
-![img1](1.png)  ![img2](2.png) 
+![img1](info/1.png)  ![img2](info/2.png) 
 
 
 
@@ -81,7 +81,7 @@ pip install dvc dvc-gs opencv-python
 ```
 
 ### 6. Initialize DVC Repository and Prepare Image Data 
-![img2](3.png) 
+![img2](info/3.png) 
 
 ```bash
 mkdir img
@@ -95,7 +95,7 @@ git commit -m "Initialize DVC and add img folder"
 ### 7. Create edge_detection.py and Commit
 
 ### this is the file that will be used to perform edge detection on the images
-![img0](service_account1.png)
+![img0](info/service_account1.png)
 
 Create a Python script named `edge_detection.py`, commit it to the repository, and run the following command to commit it:
 
@@ -124,11 +124,11 @@ git commit -m "Add edge detection script"
 
  Copy service_account.json file to the root of the repository
 
-
+![bucket0](info/buckets.png)
 
 Create a service account in GCP and download the JSON key file. Specify the credentials:
 
-![bucket0](buckets.png)
+
 
 ```bash
 dvc remote add -d myremote gs://<your-bucket-name>
