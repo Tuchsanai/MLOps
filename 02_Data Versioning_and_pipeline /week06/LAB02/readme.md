@@ -106,7 +106,6 @@ mkdir img
 dvc init
 git add .
 git commit -m "Initialize DVC and add img folder"
-git push -u origin main
 ```
 
 ### 10. Create edge_detection.py and Commit
@@ -134,12 +133,21 @@ for filename in os.listdir(input_folder):
 Commit edge detection script:
 
 ```bash
-git add edge_detection.py
+git add .
 git commit -m "Add edge detection script"
-git push -u origin main
+git push 
 ```
 
-### 11. Set Up GCS as a DVC Remote and Configure GCS Credentials
+
+### 11. Track the Image Folder
+
+```bash
+dvc add ./img
+git add img.dvc .gitignore
+git commit -m "Track img folder with DVC"
+```
+
+### 12. Set Up GCS as a DVC Remote and Configure GCS Credentials
 
 Copy `service_account.json` file to the root of the repository.
 
@@ -151,23 +159,16 @@ Create a service account in GCP and download the JSON key file. Specify the cred
 (ระบบจะ นำ service_account.json ไปใช้ในการเชื่อมต่อกับ GCS bucket ที่สร้างไว้ ซึ่งตามรูปคือ โดยที่ url = gs://dvc_tp)
 
 ```bash
-dvc remote add -d myremote gs://<your-bucket-name>
-dvc remote modify myremote credentialpath /path/to/your/service_account.json
+dvc remote add -d myremote gs://dvc_tp
+dvc remote modify myremote credentialpath service_account.json
 ```
 
-### 12. Track the Image Folder
-
-```bash
-dvc add img
-git add img.dvc .gitignore
-git commit -m "Track img folder with DVC"
-git push -u origin main
-```
 
 ### 13. Push Data to GCS
 
 ```bash
 dvc push
+git push 
 ```
 
 ---
