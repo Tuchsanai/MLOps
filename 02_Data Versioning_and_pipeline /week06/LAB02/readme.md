@@ -143,7 +143,7 @@ Copy `service_account.json` file to the root of the repository.
 ![bucket0](info/buckets.png)
 
 Create a service account in GCP and download the JSON key file. Specify the credentials:
-(ระบบจะ นำ service_account.json ไปใช้ในการเชื่อมต่อกับ GCS โดยที่ url = gs://<your-bucket-name>)
+(ระบบจะ นำ service_account.json ไปใช้ในการเชื่อมต่อกับ GCS bucket ที่สร้างไว้ ซึ่งตามรูปคือ โดยที่ url = gs://dvc_tp)
 
 ```bash
 dvc remote add -d myremote gs://<your-bucket-name>
