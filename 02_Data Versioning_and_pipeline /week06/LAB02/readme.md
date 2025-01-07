@@ -103,8 +103,8 @@ Create a Python script named `edge_detection.py`, commit it to the repository, a
 import cv2
 import os
 
-input_folder = "img"
-output_folder = "processed_img"
+input_folder = "./img"
+output_folder = "./processed_img"
 os.makedirs(output_folder, exist_ok=True)
 
 for filename in os.listdir(input_folder):
