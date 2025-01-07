@@ -164,6 +164,8 @@ dvc remote modify myremote credentialpath service_account.json
 dvc push
 ```
 
+![imggs0](info/gs0.png)  
+
 ### 11. Create a Remote Repository
 
 - Create a new repository on a platform like GitHub, GitLab, or Bitbucket.
