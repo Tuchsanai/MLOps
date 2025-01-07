@@ -58,17 +58,7 @@ cd ..
 dvc init
 git add .
 git commit -m "Initialize DVC and add img folder"
-```
-```bash
-git init
-mkdir img
-cd img
-# Add some images to the img folder
-cd ..
-dvc init
-git add .
-git commit -m "Initialize DVC and add img folder"
-```
+
 
 ### 4. Set Up GCS as a DVC Remote
 ```bash
