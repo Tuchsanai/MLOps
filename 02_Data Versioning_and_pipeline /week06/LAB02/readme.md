@@ -85,7 +85,7 @@ git commit -m "Initialize the repository and add service_account.json"
 
 This is the file that will be used to perform edge detection on the images.
 
-![img00](info/service_account11.png)
+![img00](info/service_account12.png)
 
 Create a Python script named `edge_detection.py`, commit it to the repository, and run the following command to commit it:
 
