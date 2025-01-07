@@ -96,10 +96,18 @@ mkdir img
 
 ```bash
 dvc init
+```
+
+
+```bash
 dvc add ./img
+```
+
+```bash
 git add img.dvc .gitignore
 git commit -m "Track img folder with DVC"
 ```
+
 
 ### 4. Create a Remote Repository
 
