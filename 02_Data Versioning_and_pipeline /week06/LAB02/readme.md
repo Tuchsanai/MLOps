@@ -96,6 +96,9 @@ pip install dvc dvc-gs opencv-python
 
 ![img2](info/3.png)
 
+![img3](info/img_floder.png)
+
+
 ```bash
 mkdir img
 # Manually copy images from ./LAB02/images to ./img
