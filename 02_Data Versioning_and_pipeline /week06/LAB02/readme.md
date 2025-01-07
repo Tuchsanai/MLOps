@@ -72,12 +72,33 @@ fi
 
 ![img0](info/service_account0.png)
 
-### 6. Initialize the repository and add the service_account.json file
+### 6. Initialize the repository  and add the service_account.json file
 
 ```bash
 git init
 git add service_account.json
 git commit -m "Initialize the repository and add service_account.json"
+```
+
+
+### 7. Initialize DVC Repository and Prepare Image Data 
+
+![img2](info/3.png)
+
+![img3](info/img_floder.png)  
+
+
+```bash
+mkdir img
+# Manually copy images from ./LAB02/images to ./img
+```
+
+
+```bash
+dvc init
+dvc add ./img
+git add img.dvc .gitignore
+git commit -m "Track img folder with DVC"
 ```
 
 ### 4. Create a Remote Repository
@@ -95,22 +116,6 @@ git push -u origin main
 ```
 
 
-
-### 9. Initialize DVC Repository and Prepare Image Data 
-
-![img2](info/3.png)
-
-![img3](info/img_floder.png)  ![img3](info/img_floder2.png)
-
-
-```bash
-mkdir img
-# Manually copy images from ./LAB02/images to ./img
-
-dvc init
-git add .
-git commit -m "Initialize DVC and add img folder"
-```
 
 ### 10. Create edge_detection.py and Commit
 
