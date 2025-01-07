@@ -180,6 +180,8 @@ git remote add origin [REMOTE-URL]
 git push -u origin main
 ```
 
+![imggs1](info/git0.png)  
+
 
 
 
