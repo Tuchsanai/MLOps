@@ -90,6 +90,7 @@ mkdir img
 dvc init
 git add .
 git commit -m "Initialize DVC and add img folder"
+git push -u origin main
 ```
 
 ### 7. Create edge_detection.py and Commit
