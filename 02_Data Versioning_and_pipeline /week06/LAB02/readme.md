@@ -28,17 +28,55 @@ Set up a DVC (Data Version Control) workflow where:
 ```bash
 mkdir dvc-repo
 cd dvc-repo
-git init
 ```
 
-### 2. Copy the service_account.json file to the root of the repository
+
+### 2. Create and Activate Python Environment
+
+#### For Windows:
+
+```bash
+python -m venv dvc_env
+.\dvc_env\Scripts\activate
+```
+
+#### For macOS and Linux:
+
+```bash
+python3 -m venv dvc_env
+source dvc_env/bin/activate
+```
+
+
+### 3. Install DVC and GCS Plugin and OpenCV for Image Processing
+
+```bash
+pip install --upgrade pip
+pip install dvc dvc-gs opencv-python
+```
+
+### 4. Add .gitignore entry for dvc_env
+
+After creating the virtual environment, ensure to add the `dvc_env` folder to your `.gitignore` to prevent committing the virtual environment to your repository. This is best practice, as virtual environments are specific to local machines and should not be version controlled.
+
+```bash
+if [ -f .gitignore ]; then
+  echo "dvc_env" >> .gitignore
+else
+  echo "dvc_env" > .gitignore
+fi
+```
+
+
+### 5. Copy the service_account.json file to the root of the repository
 
 ![img0](info/service_account.png)
 
-### 3. Initialize the repository and add the service_account.json file
+### 6. Initialize the repository and add the service_account.json file
 
 ```bash
-git add .
+git init
+git add service_account.json
 git commit -m "Initialize the repository and add service_account.json"
 ```
 
@@ -56,41 +94,7 @@ git remote add origin [REMOTE-URL]
 git push -u origin main
 ```
 
-### 6. Create and Activate Python Environment
 
-#### For Windows:
-
-```bash
-python -m venv dvc_env
-.\dvc_env\Scripts\activate
-pip install --upgrade pip
-```
-
-#### For macOS and Linux:
-
-```bash
-python3 -m venv dvc_env
-source dvc_env/bin/activate
-pip install --upgrade pip
-```
-
-### 7. Add .gitignore entry for dvc_env
-
-After creating the virtual environment, ensure to add the `dvc_env` folder to your `.gitignore` to prevent committing the virtual environment to your repository. This is best practice, as virtual environments are specific to local machines and should not be version controlled.
-
-```bash
-if [ -f .gitignore ]; then
-  echo "dvc_env" >> .gitignore
-else
-  echo "dvc_env" > .gitignore
-fi
-```
-
-### 8. Install DVC and GCS Plugin and OpenCV for Image Processing
-
-```bash
-pip install dvc dvc-gs opencv-python
-```
 
 ### 9. Initialize DVC Repository and Prepare Image Data 
 
