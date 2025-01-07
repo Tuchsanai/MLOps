@@ -30,7 +30,7 @@ git init
 
 ### Copy the service_account.json file to the root of the repository.
 
-![img1](service_account.png)
+![img0](service_account.png)
 
 
 ### Initialize the repository and add the service_account.json file
@@ -93,6 +93,9 @@ git commit -m "Initialize DVC and add img folder"
 ```
 
 ### 7. Create edge_detection.py and Commit
+
+### this is the file that will be used to perform edge detection on the images
+![img0](service_account1.png)
 
 Create a Python script named `edge_detection.py`, commit it to the repository, and run the following command to commit it:
 
