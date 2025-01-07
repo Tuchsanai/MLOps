@@ -74,7 +74,7 @@ source dvc_env/bin/activate
 pip install --upgrade pip
 ```
 
-### 5. Install DVC and GCS Plugin
+### 5. Install DVC and GCS Plugin and OpenCV for image processing
 
 ```bash
 pip install dvc dvc-gs opencv-python
