@@ -18,7 +18,7 @@ Set up a DVC (Data Version Control) workflow where:
 
 ---
 
-## Local Computer Steps (Create New Repository on GitHub and Upload to GCS)
+# Local Computer Steps (Create New Repository on GitHub and Upload to GCS)
 
 ### 1. Create and Initialize the Repository
 
@@ -28,9 +28,25 @@ cd dvc-repo
 git init
 ```
 
+### Copy the service_account.json file to the root of the repository.
+
+![img1](service_account.png)
+
+
+### Initialize the repository and add the service_account.json file
+```bash
+git add .
+git commit -m "Initialize the repository and add service_account.json"
+```
+
+
 ### 2. Create a Remote Repository
 
 - Create a new repository on a platform like GitHub, GitLab, or Bitbucket.
+
+![img1](1.png)  ![img2](2.png) 
+
+
 
 ### 3. Add Remote and Push
 
@@ -64,7 +80,8 @@ pip install --upgrade pip
 pip install dvc dvc-gs opencv-python
 ```
 
-### 6. Initialize DVC Repository and Prepare Image Data
+### 6. Initialize DVC Repository and Prepare Image Data 
+![img2](3.png) 
 
 ```bash
 mkdir img
@@ -75,7 +92,7 @@ git add .
 git commit -m "Initialize DVC and add img folder"
 ```
 
-### 7.
+### 7. Create edge_detection.py and Commit
 
 Create a Python script named `edge_detection.py`, commit it to the repository, and run the following command to commit it:
 
@@ -102,6 +119,10 @@ git commit -m "Add edge detection script"
 
 ### 8. Set Up GCS as a DVC Remote and Configure GCS Credentials
 
+ Copy service_account.json file to the root of the repository
+
+
+
 Create a service account in GCP and download the JSON key file. Specify the credentials:
 
 ```bash
@@ -125,7 +146,7 @@ dvc push
 
 ---
 
-## Remote Ubuntu Steps (Download from GCS and Perform Image Edge Detection)
+# Remote Server Ubuntu Steps (Download from GCS and Perform Image Edge Detection)
 
 ### 1. Install DVC, GCS Plugin, and OpenCV
 
