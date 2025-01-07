@@ -128,6 +128,8 @@ git commit -m "Add edge detection script"
 
 Create a service account in GCP and download the JSON key file. Specify the credentials:
 
+![bucket0](buckets.png)
+
 ```bash
 dvc remote add -d myremote gs://<your-bucket-name>
 dvc remote modify myremote credentialpath /path/to/your/service_account.json
