@@ -96,7 +96,7 @@ pip install dvc dvc-gs opencv-python
 
 ![img2](info/3.png)
 
-![img3](info/img_floder.png)
+![img3](info/img_floder.png)  ![img3](info/img_floder2.png)
 
 
 ```bash
