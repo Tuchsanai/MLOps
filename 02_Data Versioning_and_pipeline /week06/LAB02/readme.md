@@ -33,7 +33,7 @@ git init
 
 ### 2. Copy the service_account.json file to the root of the repository
 
-![img0](service_account.png)
+![img0](info/service_account.png)
 
 ### 3. Initialize the repository and add the service_account.json file
 
