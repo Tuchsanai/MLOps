@@ -1,3 +1,6 @@
+
+
+
 ## DVC Lab: Upload and Download Images using GCS
 
 ### Objective
@@ -5,7 +8,7 @@
 Set up a DVC (Data Version Control) workflow where:
 
 - A **local computer** uploads an image folder to Google Cloud Storage (GCS).
-- A **remote Ubuntu server** downloads the image folder from GCS using DVC and performs image edge detection on all images in the folder `img` and pushes the results back to GCS.
+- A **remote Ubuntu server** downloads the image folder from GCS using DVC and performs image edge detection on all images in the folder `img`, then pushes the results back to GCS.
 - A **local computer** downloads the processed images from GCS.
 
 ---
@@ -28,27 +31,24 @@ cd dvc-repo
 git init
 ```
 
-### Copy the service_account.json file to the root of the repository.
+### 2. Copy the service_account.json file to the root of the repository
 
 ![img0](service_account.png)
 
+### 3. Initialize the repository and add the service_account.json file
 
-### Initialize the repository and add the service_account.json file
 ```bash
 git add .
 git commit -m "Initialize the repository and add service_account.json"
 ```
 
-
-### 2. Create a Remote Repository
+### 4. Create a Remote Repository
 
 - Create a new repository on a platform like GitHub, GitLab, or Bitbucket.
 
 ![img1](info/1.png)  ![img2](info/2.png) 
 
-
-
-### 3. Add Remote and Push
+### 5. Add Remote and Push
 
 ```bash
 git branch -M main
@@ -56,7 +56,7 @@ git remote add origin [REMOTE-URL]
 git push -u origin main
 ```
 
-### 4. Create and Activate Python Environment
+### 6. Create and Activate Python Environment
 
 #### For Windows:
 
@@ -74,14 +74,27 @@ source dvc_env/bin/activate
 pip install --upgrade pip
 ```
 
-### 5. Install DVC and GCS Plugin and OpenCV for image processing
+### 7. Add .gitignore entry for dvc_env
+
+After creating the virtual environment, ensure to add the `dvc_env` folder to your `.gitignore` to prevent committing the virtual environment to your repository. This is best practice, as virtual environments are specific to local machines and should not be version controlled.
+
+```bash
+if [ -f .gitignore ]; then
+  echo "dvc_env" >> .gitignore
+else
+  echo "dvc_env" > .gitignore
+fi
+```
+
+### 8. Install DVC and GCS Plugin and OpenCV for Image Processing
 
 ```bash
 pip install dvc dvc-gs opencv-python
 ```
 
-### 6. Initialize DVC Repository and Prepare Image Data 
-![img2](info/3.png) 
+### 9. Initialize DVC Repository and Prepare Image Data 
+
+![img2](info/3.png)
 
 ```bash
 mkdir img
@@ -93,9 +106,10 @@ git commit -m "Initialize DVC and add img folder"
 git push -u origin main
 ```
 
-### 7. Create edge_detection.py and Commit
+### 10. Create edge_detection.py and Commit
 
-### this is the file that will be used to perform edge detection on the images
+This is the file that will be used to perform edge detection on the images.
+
 ![img0](info/service_account1.png)
 
 Create a Python script named `edge_detection.py`, commit it to the repository, and run the following command to commit it:
@@ -114,29 +128,27 @@ for filename in os.listdir(input_folder):
     cv2.imwrite(os.path.join(output_folder, filename), edges)
 ```
 
-commit edge detection script
+Commit edge detection script:
 
 ```bash
 git add edge_detection.py
 git commit -m "Add edge detection script"
 ```
 
-### 8. Set Up GCS as a DVC Remote and Configure GCS Credentials
+### 11. Set Up GCS as a DVC Remote and Configure GCS Credentials
 
- Copy service_account.json file to the root of the repository
+Copy `service_account.json` file to the root of the repository.
 
 ![bucket0](info/buckets.png)
 
 Create a service account in GCP and download the JSON key file. Specify the credentials:
-
-
 
 ```bash
 dvc remote add -d myremote gs://<your-bucket-name>
 dvc remote modify myremote credentialpath /path/to/your/service_account.json
 ```
 
-### 9. Track the Image Folder
+### 12. Track the Image Folder
 
 ```bash
 dvc add img
@@ -144,7 +156,7 @@ git add img.dvc .gitignore
 git commit -m "Track img folder with DVC"
 ```
 
-### 10. Push Data to GCS
+### 13. Push Data to GCS
 
 ```bash
 dvc push
@@ -236,3 +248,6 @@ Check the `processed_img` folder to ensure all images have been downloaded.
 - Use separate GCP credentials for different projects.
 - Avoid hardcoding sensitive credentials directly in code or repositories.
 
+---
+
+This version should provide a clearer structure with proper topic numbering.
