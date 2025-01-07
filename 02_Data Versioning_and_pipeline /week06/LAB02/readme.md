@@ -133,6 +133,7 @@ Commit edge detection script:
 ```bash
 git add edge_detection.py
 git commit -m "Add edge detection script"
+git push -u origin main
 ```
 
 ### 11. Set Up GCS as a DVC Remote and Configure GCS Credentials
@@ -154,6 +155,7 @@ dvc remote modify myremote credentialpath /path/to/your/service_account.json
 dvc add img
 git add img.dvc .gitignore
 git commit -m "Track img folder with DVC"
+git push -u origin main
 ```
 
 ### 13. Push Data to GCS
