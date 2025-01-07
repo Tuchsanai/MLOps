@@ -81,7 +81,36 @@ git commit -m "Initialize the repository and add service_account.json"
 ```
 
 
-### 7. Initialize DVC Repository and Prepare Image Data 
+### 7.  edge_detection.py and Commit
+
+This is the file that will be used to perform edge detection on the images.
+
+![img0](info/service_account1.png)
+
+Create a Python script named `edge_detection.py`, commit it to the repository, and run the following command to commit it:
+
+```python
+import cv2
+import os
+
+input_folder = "./img"
+output_folder = "./processed_img"
+os.makedirs(output_folder, exist_ok=True)
+
+for filename in os.listdir(input_folder):
+    img = cv2.imread(os.path.join(input_folder, filename), cv2.IMREAD_GRAYSCALE)
+    edges = cv2.Canny(img, 100, 200)
+    cv2.imwrite(os.path.join(output_folder, filename), edges)
+```
+
+Commit edge detection script:
+
+```bash
+git add edge_detection.py
+git commit -m "Add edge detection script"
+```
+
+### 8. Initialize DVC Repository and Prepare Image Data 
 
 ![img2](info/3.png)
 
@@ -109,62 +138,8 @@ git commit -m "Track img folder with DVC"
 ```
 
 
-### 4. Create a Remote Repository
 
-- Create a new repository on a platform like GitHub, GitLab, or Bitbucket.
-
-![img1](info/1.png)  ![img2](info/2.png) 
-
-### 5. Add Remote and Push
-
-```bash
-git branch -M main
-git remote add origin [REMOTE-URL]
-git push -u origin main
-```
-
-
-
-### 10. Create edge_detection.py and Commit
-
-This is the file that will be used to perform edge detection on the images.
-
-![img0](info/service_account1.png)
-
-Create a Python script named `edge_detection.py`, commit it to the repository, and run the following command to commit it:
-
-```python
-import cv2
-import os
-
-input_folder = "./img"
-output_folder = "./processed_img"
-os.makedirs(output_folder, exist_ok=True)
-
-for filename in os.listdir(input_folder):
-    img = cv2.imread(os.path.join(input_folder, filename), cv2.IMREAD_GRAYSCALE)
-    edges = cv2.Canny(img, 100, 200)
-    cv2.imwrite(os.path.join(output_folder, filename), edges)
-```
-
-Commit edge detection script:
-
-```bash
-git add .
-git commit -m "Add edge detection script"
-git push 
-```
-
-
-### 11. Track the Image Folder
-
-```bash
-dvc add ./img
-git add img.dvc .gitignore
-git commit -m "Track img folder with DVC"
-```
-
-### 12. Set Up GCS as a DVC Remote and Configure GCS Credentials
+### 8. Set Up GCS as a DVC Remote and Configure GCS Credentials
 
 Copy `service_account.json` file to the root of the repository.
 
@@ -181,12 +156,28 @@ dvc remote modify myremote credentialpath service_account.json
 ```
 
 
-### 13. Push Data to GCS
+### 10. Push Data to GCS
 
 ```bash
 dvc push
-git push 
 ```
+
+### 11. Create a Remote Repository
+
+- Create a new repository on a platform like GitHub, GitLab, or Bitbucket.
+
+![img1](info/1.png)  ![img2](info/2.png) 
+
+### 12. Add Remote and Push
+
+```bash
+git branch -M main
+git remote add origin [REMOTE-URL]
+git push -u origin main
+```
+
+
+
 
 ---
 
