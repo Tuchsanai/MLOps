@@ -193,20 +193,60 @@ git push -u origin main
 
 # Remote Server Ubuntu Steps (Download from GCS and Perform Image Edge Detection)
 
-### 1. Install DVC, GCS Plugin, and OpenCV
+### 1. Create a New Ubuntu Server
+
+![imggs1](info/ubuntu0.png)  
+
+
+### 2. Install python
 
 ```bash
-sudo apt update
-sudo apt install python3-pip
-pip install dvc dvc-gs 
+# Update the package list and upgrade packages
+sudo apt update && sudo apt upgrade -y
+
+# Install Python and pip if not already installed
+sudo apt install python3 python3-pip -y
+
+# Ensure 'pip' refers to Python 3's pip
+sudo apt install python-is-python3 -y
+
+
+# Upgrade pip to the latest version
+pip install --upgrade pip
+
 ```
 
-### 2. Clone the Repository
+# 3. Create a Virtual Environment: It is recommended to isolate your Python project in a virtual environment. This can resolve dependency conflicts and keep your system clean:
+
+```bash
+sudo apt install python3-venv
+python3 -m venv .venv   # Create a virtual environment named '.venv'
+source .venv/bin/activate # Activate it
+```
+
+### 4. Install DVC and GCS Plugin and opencv-python
+
+```bash
+pip install --upgrade pip
+pip install dvc dvc-gs
+pip install opencv-python
+```
+
+check version and install complete
+
+```bash
+python --version
+git --version
+dvc --version
+```
+
+### 3. Clone the Repository
 
 ```bash
 git clone <your-repo-url>
 cd <repo-folder>
 ```
+
 
 ### 3. Set Up GCS Remote
 
@@ -222,6 +262,14 @@ dvc remote modify myremote credentialpath /path/to/your/service_account.json
 ```bash
 dvc pull
 ```
+
+
+### 3. Run python script
+
+```bash
+python edge_detection.py
+```
+
 
 ### 5. Perform Image Edge Detection
 
