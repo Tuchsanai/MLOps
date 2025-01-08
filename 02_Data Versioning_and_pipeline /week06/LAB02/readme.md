@@ -263,7 +263,10 @@ dvc remote modify myremote credentialpath /path/to/your/service_account.json
 ```bash
 dvc pull
 ```
+ 
+#### ถ้าทำถูกต้อง จะมี floder img และไฟล์  ถูกดาวน์โหลดมา
 
+![uu1](info/ubuntu3.png)  
 
 ### 3. Run python script
 
