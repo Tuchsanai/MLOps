@@ -314,15 +314,28 @@ git push
 git pull origin main
 ```
 
-### 2. Pull Processed Images from GCS
+### 2. check dvc status
+
+```bash
+
+dvc status
+
+```
+![uu100](info/flocal1.png)  
+
+
+### 3. Pull Processed Images from GCS
 
 ```bash
 dvc pull
 ```
 
-### 3. Verify Processed Images
+
+### 4. Verify Processed Images
 
 Check the `processed_img` folder to ensure all images have been downloaded.
+
+![uu11](info/flocal2.png)  
 
 ---
 
