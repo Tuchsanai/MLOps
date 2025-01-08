@@ -180,6 +180,8 @@ git remote add origin [REMOTE-URL]
 git push -u origin main
 ```
 
+หลังจากนั้นไปตรวจสอบที่ GitHub ว่าไฟล์ทั้งหมดถูก push ไปหรือไม่
+
 ![imggs1](info/git0.png)  
 
 
