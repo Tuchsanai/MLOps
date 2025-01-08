@@ -194,7 +194,7 @@ git push -u origin main
 ```bash
 sudo apt update
 sudo apt install python3-pip
-pip install dvc dvc-gs opencv-python
+pip install dvc dvc-gs 
 ```
 
 ### 2. Clone the Repository
