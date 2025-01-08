@@ -229,7 +229,7 @@ source .venv/bin/activate # Activate it
 ```bash
 pip install --upgrade pip
 pip install dvc dvc-gs
-pip install opencv-python
+pip install opencv-python-headless
 ```
 
 check version and install complete
@@ -283,6 +283,10 @@ Run the script:
 ```bash
 python edge_detection.py
 ```
+ตรวจสอบว่าไฟล์ทั้งหมดถูกประมวลผลเสร็จสิ้นหรือไม่
+
+![uu1](info/ubuntu4.png)  
+
 
 ### 6. Track and Push Processed Data to GCS
 
