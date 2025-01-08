@@ -294,7 +294,14 @@ python edge_detection.py
 dvc add processed_img
 git add processed_img.dvc .gitignore
 git commit -m "Add processed images with edge detection"
+```
+
+```bash
 dvc push
+```
+
+```bash
+git push
 ```
 
 ---
