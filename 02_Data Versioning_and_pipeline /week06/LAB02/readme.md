@@ -247,6 +247,7 @@ git clone <your-repo-url>
 cd <repo-folder>
 ```
 
+![uu1](info/ubuntu1.png)  
 
 ### 3. Set Up GCS Remote
 
