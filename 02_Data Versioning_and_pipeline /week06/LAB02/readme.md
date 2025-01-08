@@ -164,6 +164,8 @@ dvc remote modify myremote credentialpath service_account.json
 dvc push
 ```
 
+หลังจากนั้นไปตรวจสอบที่ GCS buckets ว่าไฟล์ทั้งหมดถูก push ไปหรือไม่
+
 ![imggs0](info/gs0.png)  
 
 ### 11. Create a Remote Repository
