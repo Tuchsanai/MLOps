@@ -288,7 +288,7 @@ python edge_detection.py
 ![uu1](info/ubuntu4.png)  
 
 
-### 6. Track and Push Processed Data to GCS
+### 6. Track and Push Processed Data to GCS and git push to remote repository
 
 ```bash
 dvc add processed_img
