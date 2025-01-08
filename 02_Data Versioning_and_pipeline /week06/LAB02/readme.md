@@ -246,6 +246,7 @@ dvc --version
 git clone <your-repo-url>
 cd <repo-folder>
 ```
+ทำการตรวจสอบ ว่าไฟล์ทั้งหมดถูก clone มาหรือไม่
 
 ![uu1](info/ubuntu1.png)  
 
