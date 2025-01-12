@@ -214,6 +214,7 @@ You will use Python within a virtual environment on an Ubuntu system where Pytho
    dvc dag
    ```
    **Example output**:
+   ```bash
     +-------------------+
     | data/iris.csv.dvc |
     +-------------------+
@@ -235,6 +236,7 @@ You will use Python within a virtual environment on an Ubuntu system where Pytho
      +----------+
      | evaluate |
      +----------+
+     ```
 
   
 
