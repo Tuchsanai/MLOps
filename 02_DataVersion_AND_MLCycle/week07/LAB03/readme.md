@@ -61,13 +61,13 @@ This lab will guide you through setting up and running a DVC pipeline for a mach
    **Output:**
 
    ```bash
-Cloning into 'MLOps'...
-remote: Enumerating objects: 1564, done.
-remote: Counting objects: 100% (113/113), done.
-remote: Compressing objects: 100% (86/86), done.
-remote: Total 1564 (delta 41), reused 89 (delta 19), pack-reused 1451 (from 2)
-Receiving objects: 100% (1564/1564), 123.85 MiB | 13.21 MiB/s, done.
-Resolving deltas: 100% (397/397), done.
+      Cloning into 'MLOps'...
+      remote: Enumerating objects: 1564, done.
+      remote: Counting objects: 100% (113/113), done.
+      remote: Compressing objects: 100% (86/86), done.
+      remote: Total 1564 (delta 41), reused 89 (delta 19), pack-reused 1451 (from 2)
+      Receiving objects: 100% (1564/1564), 123.85 MiB | 13.21 MiB/s, done.
+      Resolving deltas: 100% (397/397), done.
    ```
 
 2. Navigate to the project directory:
