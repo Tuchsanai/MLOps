@@ -10,6 +10,7 @@ This lab will guide you through setting up and running a DVC pipeline for a mach
 - `train.py`: Script to train a machine learning model.
 - `eval.py`: Script to evaluate the trained model.
 - `dvc.yaml`: Defines the DVC pipeline stages and dependencies.
+- `requirements.txt`: Python dependencies for the project.
 
 
 
@@ -44,9 +45,11 @@ This lab will guide you through setting up and running a DVC pipeline for a mach
    ```
 
 
-4. Install DVC:
+4. Install the required Python packages:
 
+4
    ```bash
+   pip install pandas scikit-learn omegaconf joblib
    pip install dvc dvc-gs 
    ```
 
