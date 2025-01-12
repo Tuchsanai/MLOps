@@ -1,0 +1,21 @@
+data:
+  path: "./data/"
+  file_name: "iris.csv"
+  target_column: "species"
+
+model:
+  type: "logistic_regression"  # Options: "logistic_regression" or "decision_tree"
+  hyperparameters:
+    # LogisticRegression params
+    max_iter: 200
+    # DecisionTreeClassifier params
+    # max_depth: 3
+
+training:
+  test_size: 0.2
+  random_state: 42
+
+evaluation:
+  metrics:
+    - "accuracy"
+    - "f1"
