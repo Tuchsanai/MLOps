@@ -217,7 +217,7 @@ You will use Python within a virtual environment on an Ubuntu system where Pytho
    
    ```
          
-      +-------------------+  
+         +-------------------+  
          | data/iris.csv.dvc |  
          +-------------------+  
                   *            
