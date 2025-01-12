@@ -45,13 +45,6 @@ This lab will guide you through setting up and running a DVC pipeline for a mach
    ```
 
 
-4. Install the required Python packages:
-
-
-   ```bash
-   pip install pandas scikit-learn omegaconf joblib
-   pip install dvc dvc-gs 
-   ```
 
 ### Step 2: Clone the Project Repository
 
@@ -111,6 +104,13 @@ This lab will guide you through setting up and running a DVC pipeline for a mach
    Successfully installed omegaconf-x.x.x sklearn-x.x.x ...
    ```
 
+3. Install the required Python packages:
+
+
+   ```bash
+   pip install pandas scikit-learn omegaconf joblib
+   pip install dvc dvc-gs 
+   ```
 ### Step 4: Set Up DVC
 
 1. Initialize DVC in the project:
