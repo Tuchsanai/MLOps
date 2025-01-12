@@ -211,25 +211,31 @@ You will use Python within a virtual environment on an Ubuntu system where Pytho
 
 2. **Visualize the pipeline (optional)**:
    ```bash
-   dvc pipeline show --ascii
+   dvc dag
    ```
    **Example output**:
-   ```
-                     +-----------------+
-                     | data/iris.csv  |
-                     +-----------------+
-                            *
-                            *
-                            v
-                +-----------------------+
-                | data/iris_prepared.csv|
-                +-----------------------+
-                            *
-                            *
-                            v
-              +---------------------------+
-              | data/trained_model.pkl   |
-              +---------------------------+
+   ```bash
+    +-------------------+  
+    | data/iris.csv.dvc |  
+    +-------------------+  
+              *            
+              *            
+              *            
+         +---------+       
+         | prepare |       
+         +---------+       
+         **        **      
+       **            *     
+      *               **   
++-------+               *  
+| train |             **   
++-------+            *     
+         **        **      
+           **    **        
+             *  *          
+        +----------+       
+        | evaluate |       
+        +----------+       
    ```
 
 ---
