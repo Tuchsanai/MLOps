@@ -263,7 +263,8 @@ This lab will guide you through setting up and running a DVC pipeline for a mach
 1. Set up a remote storage location (e.g., Google Cloud Storage, S3, etc.):
 
    ```bash
-   dvc remote add -d myremote gcs://mybucket/dvc-storage
+   dvc remote add -d myremote gs://dvc_tp
+   dvc remote modify myremote credentialpath service_account.json
    ```
 
    **Output:**
