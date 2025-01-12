@@ -36,7 +36,7 @@ This lab will guide you through setting up and running a DVC pipeline for a mach
 4. Install DVC:
 
    ```bash
-   pip install dvc
+   pip install dvc dvc-gs 
    ```
 
 ### Step 2: Clone the Project Repository
