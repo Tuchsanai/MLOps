@@ -121,17 +121,7 @@ You will use Python within a virtual environment on an Ubuntu system where Pytho
    ```bash
    dvc add data/iris.csv
    ```
-   **Example output**:
-   ```bash
-     To track the changes with git, run:
-
-        git add data/.gitignore data/iris.csv.dvc
-
-To enable auto staging, run:
-
-        dvc config core.autostage true                            
-     
-   ```
+ 
 
 3. **Commit these changes to Git**:
    ```bash
