@@ -107,20 +107,3 @@ Server Port: 80
 Client URL: http://localhost:80/
 Client Server Port: 80
 ```
-
----
-
-## Cleanup:
-
-```bash
-deactivate
-rm -rf venv
-```
-
----
-
-## Grading Criteria:
-- Correct installation and setup.
-- Proper loading and modification of YAML configurations.
-- Demonstration of interpolation and environment variable usage.
-```
