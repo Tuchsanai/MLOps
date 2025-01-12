@@ -214,29 +214,34 @@ You will use Python within a virtual environment on an Ubuntu system where Pytho
    dvc dag
    ```
    **Example output**:
-   ```bash
-    +-------------------+
-    | data/iris.csv.dvc |
-    +-------------------+
+   
+   ```
+         
+      +-------------------+
+      | data/iris.csv.dvc |
+      +-------------------+
             *
             *
             *
-       +---------+
-       | prepare |
-       +---------+
-       **       **
-     **           *
-    *              **
-+-------+            *
-| train |          **
-+-------+         *
+         +---------+
+         | prepare |
+         +---------+
+         **       **
+      **           *
+      *              **
+      +-------+        *
+      | train |      **
+      +-------+     *
       **       **
-        **   **
-          * *
-     +----------+
-     | evaluate |
-     +----------+
-     ```
+         **   **
+            * *
+      +----------+
+      | evaluate |
+      +----------+
+
+
+
+   ```
 
   
 
