@@ -47,7 +47,7 @@ This lab will guide you through setting up and running a DVC pipeline for a mach
 
 4. Install the required Python packages:
 
-4
+
    ```bash
    pip install pandas scikit-learn omegaconf joblib
    pip install dvc dvc-gs 
@@ -101,11 +101,6 @@ This lab will guide you through setting up and running a DVC pipeline for a mach
    (venv) $
    ```
 
-3. Install the required Python dependencies:
-
-   ```bash
-   pip install -r requirements.txt
-   ```
 
    **Output:**
 
