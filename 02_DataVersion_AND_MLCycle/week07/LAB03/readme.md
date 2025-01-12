@@ -203,8 +203,8 @@ You will use Python within a virtual environment on an Ubuntu system where Pytho
    ...
    Stage 'evaluate' is being run:
    > python eval.py
-   [INFO] Accuracy: 0.9333
-   [INFO] F1 (weighted): 0.9333
+   [INFO] Accuracy: 0.8961
+   [INFO] F1 (weighted): 0.8961
 
    Pipeline completed successfully.
    ```
@@ -233,50 +233,3 @@ You will use Python within a virtual environment on an Ubuntu system where Pytho
    ```
 
 ---
-
-### 7. (Optional) Push Data and Artifacts to Remote Storage
-
-1. **Set up a remote** (e.g., Google Cloud Storage, Amazon S3, etc.):
-   ```bash
-   dvc remote add -d myremote gs://dvc_tp
-   dvc remote modify myremote credentialpath service_account.json
-   ```
-   **Example output**:
-   ```bash
-   Setting 'myremote' as a default remote.
-   ```
-
-2. **Push tracked files to the remote**:
-   ```bash
-   dvc push
-   ```
-   **Example output**:
-   ```bash
-   To track the changes with git, run:
-   	git add .dvc/config
-   ...
-   ```
-
-3. **Commit the remote configuration to Git**:
-   ```bash
-   git add .dvc/config
-   git commit -m "Configure remote storage"
-   ```
-   **Example output**:
-   ```bash
-   [main xxxxxxx] Configure remote storage
-   1 file changed, xx insertions(+)
-   create mode 100644 .dvc/config
-   ```
-
----
-
-## Expected Outputs
-
-- **Cleaned and prepared dataset**: `data/iris_prepared.csv`  
-- **Trained model file**: `data/trained_model.pkl`  
-- **Evaluation metrics** printed to the console  
-
----
-
-**You have successfully set up a DVC pipeline for your ML project!** Feel free to customize the scripts or `dvc.yaml` as needed for your own workflows.
