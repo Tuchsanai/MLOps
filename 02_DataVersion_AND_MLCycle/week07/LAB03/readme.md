@@ -123,9 +123,15 @@ You will use Python within a virtual environment on an Ubuntu system where Pytho
    ```
    **Example output**:
    ```bash
-   Adding 'data/iris.csv'...
-   To track the changes with git, run:
-   	git add data/iris.csv.dvc .gitignore
+   100% Adding...|███████████████████████████████████████████████████████████████████████████████████████████|1/1 [00:00, 21.59file/s]
+                                                                                                                                   
+To track the changes with git, run:
+
+        git add data/.gitignore data/iris.csv.dvc
+
+To enable auto staging, run:
+
+        dvc config core.autostage true
    ```
 
 3. **Commit these changes to Git**:
