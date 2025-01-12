@@ -32,7 +32,8 @@ This lab focuses on working with `OmegaConf` for configuration management using 
 2. **Clone the Git Repository:**
    ```bash
    git clone https://github.com/Tuchsanai/MLOps_Class.git
-   cd MLOps_Class/02_Data\ Versioning_and_pipeline/week07/LAB01
+   cd MLOps_Class/02_Data Versioning_and_pipeline /week07/LAB01
+   
    ```
 
 3. **Create a Python Virtual Environment:**
@@ -85,17 +86,9 @@ print("Client Server Port:", config.client.server_port)
 
 ## Lab Activities:
 
-1. **Load Configuration:**
+**Load Configuration:**
    - Run the `app.py` script and observe how the `config.yaml` values are loaded and displayed.
 
-2. **Modify Configuration:**
-   - Uncomment the code in `app.py` that modifies the server port and rerun the script.
-
-3. **Work with Interpolation:**
-   - Modify `config.yaml` to use dynamic values for the client URL and server port.
-
-4. **Environment Variable Integration:**
-   - Add a resolver for environment variables and test dynamic configuration using the environment variable `SERVER_PORT`.
 
 ---
 
