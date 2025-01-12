@@ -2,278 +2,301 @@
 
 # LAB: MLOps with OmegaConf Configuration
 
-This lab demonstrates how to manage configuration for data preparation, training, and evaluation using [OmegaConf](https://omegaconf.readthedocs.io/en/2.1_branch/) in a Python-based machine learning project. We will:
+Below is an example **MLOps lab** that demonstrates how to use **OmegaConf** for configuration management in a simple ML workflow on the **Iris dataset**. The lab includes:
 
-1. Set up a local Python environment on Ubuntu (which starts out without Python).
-2. Clone the repository containing the scripts and sample data.
-3. Install the necessary dependencies.
-4. Run the data preparation, training, and evaluation scripts with a shared configuration file (`config.yaml`) using OmegaConf.
+- A **config.yaml** file (using [OmegaConf](https://omegaconf.readthedocs.io/en/latest/)) that specifies data paths, target column, model choices, and training hyperparameters.  
+- Three Python scripts:  
+  1. **data_preparation.py**: Loads and prepares data.  
+  2. **train.py**: Trains a specified model.  
+  3. **eval.py**: Evaluates the trained model on hold-out data.  
+
+> **Note**: This example assumes an **Ubuntu** system *without* Python installed. You will install Python, create a virtual environment, install dependencies, and run the scripts inside that environment.
 
 ---
 
-## 1. Prerequisites
+## 1. Repository Structure
 
-- **Ubuntu** (or a similar Linux environment).
-- **git** installed (to clone the repository).  
-  If git is not installed, you can do so by:  
-  ```bash
-  sudo apt-get update && sudo apt-get install -y git
-  ```
-- **Python** is not installed on the system by default. We will install Python 3.8+ (example) using apt-get.
+After you clone or download the repo from:  
+> [https://github.com/Tuchsanai/MLOps/tree/main/03_Automating_MLLearning_Cycle/week07/LAB02](https://github.com/Tuchsanai/MLOps/tree/main/03_Automating_MLLearning_Cycle/week07/LAB02)
 
-### Install Python 3 (If needed)
+Your folder might look like this:
 
-```bash
-sudo apt-get update
-sudo apt-get install -y python3 python3-venv python3-pip
+```
+├── data/
+│   └── iris.csv       <- Your raw dataset
+├── config.yaml         <- OmegaConf configuration file
+├── data_preparation.py
+├── train.py
+├── eval.py
+└── README.md           <- This file with instructions
 ```
 
-## 2. Clone the Repository
+---
 
-Clone the lab code from the provided URL:
+## 2. Installing Python & Setting Up the Environment
 
-```bash
-git clone https://github.com/Tuchsanai/MLOps_Class.git
-```
+Since the Ubuntu system has no Python installed, let’s install Python and set up a **virtual environment**:
 
-You can find the code for this lab in the path:
-```
-MLOps_Class/
-  └── 02_Data Versioning_and_pipeline
-       └── week07
-           └── LAB02
-```
+1. **Update apt** and install Python 3, pip, and venv:
+   ```bash
+   sudo apt-get update
+   sudo apt-get install -y python3 python3-pip python3-venv
+   ```
+2. **Create a virtual environment** (e.g., named `venv`):
+   ```bash
+   python3 -m venv venv
+   ```
+3. **Activate** the virtual environment:
+   ```bash
+   source venv/bin/activate
+   ```
+4. **Install required Python packages** (e.g., scikit-learn, pandas, OmegaConf):
+   ```bash
+   pip install pandas scikit-learn omegaconf
+   ```
 
-Change directory into the lab folder:
-```bash
-cd MLOps_Class/02_Data Versioning_and_pipeline /week07/LAB02
-```
+> **Tip**: You could also maintain a `requirements.txt` file for easier installation.
 
-## 3. Create and Activate a Python Virtual Environment
+---
 
-Inside the `LAB02` folder, create and activate a virtual environment (named, for example, `venv`):
+## 3. Configuration File: `config.yaml`
 
-```bash
-python3 -m venv venv
-source venv/bin/activate
-```
-
-Verify that your environment is active. Your shell prompt should be prefixed with `(venv)`.
-
-## 4. Install Dependencies
-
-Install the required dependencies (including [OmegaConf](https://pypi.org/project/omegaconf/)):
-
-```bash
-pip install -r requirements.txt
-```
-
-*(If there is no `requirements.txt`, create one manually or install packages individually, e.g., `pip install omegaconf pandas scikit-learn` as needed.)*
-
-## 5. Configuration File: `config.yaml`
-
-Within this lab, we use a single YAML configuration file to set parameters for data preparation, model training, and evaluation. Below is an example structure:
+Below is an **example** configuration file using OmegaConf. You can customize it as needed. In this example, we show how you might switch between multiple model types (e.g., Logistic Regression or Decision Tree) and configure hyperparameters.
 
 ```yaml
 data:
-  path: "./data/"       # Path to your data directory
-  file_name: "raw.csv"  # Name of the CSV file within data path
+  path: "./data/"
+  file_name: "iris.csv"
+  target_column: "species"    # The column to predict (classification)
 
 model:
-  type: "LogisticRegression"  # e.g., "LogisticRegression", "RandomForest", etc.
+  type: "logistic_regression"  # Options: "logistic_regression", "decision_tree"
   hyperparameters:
-    C: 1.0
-    max_iter: 100
+    # LogisticRegression params example
+    max_iter: 200
+    # DecisionTreeClassifier params example
+    # max_depth: 3
 
 training:
-  random_state: 42
   test_size: 0.2
+  random_state: 42
 
 evaluation:
-  metrics: ["accuracy", "f1"]  # List of metrics you want to compute
+  metrics:
+    - "accuracy"
+    - "f1"
 ```
 
-Feel free to adjust the fields in `config.yaml` based on your project requirements (e.g., feature columns, additional hyperparameters, or alternative models).
+**Key Points**:  
+- `data.path` & `data.file_name` specify where to find your raw dataset.  
+- `data.target_column` is the name of the column we’ll predict.  
+- `model.type` can be changed to “logistic_regression” or “decision_tree” to select a different model.  
+- `model.hyperparameters` holds model-specific settings (e.g., number of iterations, max depth, etc.).  
+- `training.test_size` is the fraction of the dataset to use for testing.  
+- `training.random_state` ensures reproducibility.  
+- `evaluation.metrics` are the metrics we want to calculate (e.g., accuracy, f1).
 
-## 6. Scripts
+---
 
-We have three scripts that each load `config.yaml` via OmegaConf:
+## 4. Data Preparation: `data_preparation.py`
 
-1. **`data_preparation.py`**  
-   - Loads raw data from `data.path`.
-   - Performs any preprocessing steps (e.g., cleaning, feature engineering).
-   - Saves the processed dataset for training.
-
-2. **`train.py`**  
-   - Reads processed data.
-   - Instantiates the model defined in `model.type` with `model.hyperparameters`.
-   - Trains the model with `training` parameters (e.g., `random_state`, `test_size`).
-   - Saves the trained model artifact.
-
-3. **`eval.py`**  
-   - Loads the trained model and test set.
-   - Computes specified metrics (e.g., `accuracy`, `f1`) from `evaluation.metrics`.
-   - Prints or logs the results.
-
-### Example: `data_preparation.py`
+This script loads the **Iris dataset** from the specified path, does any required cleaning or transformation, and saves the prepared data to a new file (or keeps it in memory for further steps). In many production workflows, you might store the cleaned data in some intermediate format (e.g., CSV, Parquet, or even a database).
 
 ```python
-#!/usr/bin/env python3
-from omegaconf import OmegaConf
-import pandas as pd
+# data_preparation.py
 import os
+import pandas as pd
+from omegaconf import OmegaConf
 
-def main(config):
-    # Example: load data
+def main():
+    # 1. Load config
+    config = OmegaConf.load("config.yaml")
+    
+    # 2. Read the raw data
     data_path = os.path.join(config.data.path, config.data.file_name)
     df = pd.read_csv(data_path)
-
-    # Example: Basic cleaning or transformations
+    
+    # 3. (Optional) Clean or transform data
+    # For example, let's just drop rows with NaN (if any).
+    # The iris dataset might not have missing data, but this is illustrative.
     df.dropna(inplace=True)
-
-    # Example: Save processed data
-    processed_data_path = os.path.join(config.data.path, "processed.csv")
-    df.to_csv(processed_data_path, index=False)
-    print(f"Data preparation complete. Processed data saved to {processed_data_path}")
+    
+    # 4. Save prepared data (optional). For simplicity, we’ll just overwrite or keep in memory.
+    prepared_data_path = os.path.join(config.data.path, "iris_prepared.csv")
+    df.to_csv(prepared_data_path, index=False)
+    print(f"Data prepared and saved to {prepared_data_path}")
 
 if __name__ == "__main__":
-    config = OmegaConf.load("config.yaml")
-    main(config)
+    main()
 ```
 
-### Example: `train.py`
+> **Note**: In a real scenario, you might have a more elaborate data-cleaning process.  
+
+---
+
+## 5. Model Training: `train.py`
+
+This script loads **prepared data**, splits it into training and test sets, instantiates the model from the config, trains it, and saves the trained model to disk.
 
 ```python
-#!/usr/bin/env python3
-from omegaconf import OmegaConf
-import pandas as pd
-from sklearn.linear_model import LogisticRegression
-from sklearn.model_selection import train_test_split
-import joblib
+# train.py
 import os
+import joblib  # for saving/loading model
+import pandas as pd
+from sklearn.model_selection import train_test_split
+from sklearn.linear_model import LogisticRegression
+from sklearn.tree import DecisionTreeClassifier
+from omegaconf import OmegaConf
 
-def main(config):
-    # Load processed data
-    processed_data_path = os.path.join(config.data.path, "processed.csv")
-    df = pd.read_csv(processed_data_path)
+def main():
+    # 1. Load config
+    config = OmegaConf.load("config.yaml")
 
-    # Split data (Example: last column is target)
-    # Adjust this based on config or project requirement
-    X = df.drop(df.columns[-1], axis=1)
-    y = df[df.columns[-1]]
+    # 2. Load prepared data
+    prepared_data_path = os.path.join(config.data.path, "iris_prepared.csv")
+    df = pd.read_csv(prepared_data_path)
 
+    # 3. Separate features and target
+    target_column = config.data.target_column
+    X = df.drop(columns=[target_column])
+    y = df[target_column]
+    
+    # 4. Split data into train & test
     X_train, X_test, y_train, y_test = train_test_split(
-        X, y, 
-        test_size=config.training.test_size, 
+        X, y,
+        test_size=config.training.test_size,
         random_state=config.training.random_state
     )
 
-    # Instantiate model from config
-    if config.model.type == "LogisticRegression":
-        model = LogisticRegression(**config.model.hyperparameters)
+    # 5. Choose model type based on config
+    model_type = config.model.type
+    if model_type == "logistic_regression":
+        model = LogisticRegression(
+            max_iter=config.model.hyperparameters.get("max_iter", 100)
+        )
+    elif model_type == "decision_tree":
+        model = DecisionTreeClassifier(
+            max_depth=config.model.hyperparameters.get("max_depth", None),
+            random_state=config.training.random_state
+        )
     else:
-        raise ValueError("Only LogisticRegression is supported in this example.")
+        raise ValueError(f"Unknown model type: {model_type}")
 
-    # Train model
+    # 6. Train model
     model.fit(X_train, y_train)
-
-    # Save model
+    
+    # 7. Save the trained model
     model_path = os.path.join(config.data.path, "trained_model.pkl")
     joblib.dump(model, model_path)
-    print(f"Model training complete. Trained model saved to {model_path}")
+    print(f"Model trained and saved to {model_path}")
 
 if __name__ == "__main__":
-    config = OmegaConf.load("config.yaml")
-    main(config)
+    main()
 ```
 
-### Example: `eval.py`
+---
+
+## 6. Model Evaluation: `eval.py`
+
+This script loads the **trained model**, loads (or re-splits) the test data, and calculates the requested metrics (e.g., accuracy, F1-score).
 
 ```python
-#!/usr/bin/env python3
-from omegaconf import OmegaConf
-import pandas as pd
-import joblib
+# eval.py
 import os
+import joblib
+import pandas as pd
+from omegaconf import OmegaConf
 from sklearn.metrics import accuracy_score, f1_score
+from sklearn.model_selection import train_test_split
 
-def main(config):
-    # Load processed data
-    processed_data_path = os.path.join(config.data.path, "processed.csv")
-    df = pd.read_csv(processed_data_path)
+def main():
+    # 1. Load config
+    config = OmegaConf.load("config.yaml")
 
-    # Split data similarly
-    X = df.drop(df.columns[-1], axis=1)
-    y = df[df.columns[-1]]
+    # 2. Load prepared data
+    prepared_data_path = os.path.join(config.data.path, "iris_prepared.csv")
+    df = pd.read_csv(prepared_data_path)
 
-    # Load trained model
+    # 3. Separate features and target
+    target_column = config.data.target_column
+    X = df.drop(columns=[target_column])
+    y = df[target_column]
+
+    # 4. Split data (same split as in train.py)
+    X_train, X_test, y_train, y_test = train_test_split(
+        X, y,
+        test_size=config.training.test_size,
+        random_state=config.training.random_state
+    )
+
+    # 5. Load the trained model
     model_path = os.path.join(config.data.path, "trained_model.pkl")
     model = joblib.load(model_path)
 
-    # Predict
-    y_pred = model.predict(X)
+    # 6. Make predictions on test set
+    y_pred = model.predict(X_test)
 
-    # Evaluate
-    metrics = {}
-    if "accuracy" in config.evaluation.metrics:
-        metrics["accuracy"] = accuracy_score(y, y_pred)
-    if "f1" in config.evaluation.metrics:
-        metrics["f1"] = f1_score(y, y_pred, average="weighted")
-
-    print("Evaluation Results:")
-    for m, score in metrics.items():
-        print(f"{m}: {score:.4f}")
+    # 7. Evaluate with specified metrics
+    metrics_list = config.evaluation.metrics
+    for metric in metrics_list:
+        if metric.lower() == "accuracy":
+            acc = accuracy_score(y_test, y_pred)
+            print(f"Accuracy: {acc:.4f}")
+        elif metric.lower() == "f1":
+            # For multi-class: average can be "weighted", "macro", etc.
+            f1 = f1_score(y_test, y_pred, average="weighted")
+            print(f"F1 (weighted): {f1:.4f}")
+        else:
+            print(f"Metric '{metric}' is not implemented.")
 
 if __name__ == "__main__":
-    config = OmegaConf.load("config.yaml")
-    main(config)
+    main()
 ```
 
-## 7. Run the Scripts
+---
 
-After creating or modifying `config.yaml` in the `LAB02` folder, you can run each script as follows:
+## 7. Usage
 
-1. **Data Preparation**  
+Once everything is set up:
+
+1. **Clone** the repo and **cd** into it:
+   ```bash
+   git clone https://github.com/Tuchsanai/MLOps.git
+   cd MLOps/03_Automating_MLLearning_Cycle/week07/LAB02
+   ```
+
+2. **(Optional) Adjust** your `config.yaml` to change the model type or hyperparameters.
+
+3. **Run data preparation**:
    ```bash
    python data_preparation.py
    ```
-2. **Training**  
+
+4. **Train the model**:
    ```bash
    python train.py
    ```
-3. **Evaluation**  
+
+5. **Evaluate the model**:
    ```bash
    python eval.py
    ```
 
-## 8. Lab Flow
+---
 
-1. **Data Preparation**: This step ensures your raw data is cleaned and organized for training. Modify the data path or any other preprocessing steps as desired in `config.yaml`.
-2. **Training**: Use `train.py` to train and save your model. Adjust hyperparameters (`model.hyperparameters`) and data split details (`training.test_size`, etc.) in `config.yaml`.
-3. **Evaluation**: Compute various metrics (accuracy, F1, etc.) specified under `evaluation.metrics` in `config.yaml` and confirm that your model performs as expected.
+## 8. Summary & Next Steps
 
-## 9. Customization
+- You have a basic end-to-end workflow: **data prep** → **train** → **eval**.  
+- All configuration (paths, hyperparameters, etc.) is controlled by **OmegaConf** in `config.yaml`.  
+- You can experiment with **different models** (Logistic Regression vs. Decision Tree) by changing the `model.type`.  
+- You can add **new metrics** (e.g., precision, recall) inside `eval.py`.  
+- In a full production pipeline, you’d incorporate **CI/CD** steps and possibly use containers (Docker) to deploy.
 
-- Change the model type (e.g., `RandomForestClassifier`) and its hyperparameters by editing the `model` section in `config.yaml` and updating `train.py` accordingly.
-- Update the target column, additional preprocessing steps, or evaluation metrics based on your specific data and project goals.
-- Extend the pipeline to include more advanced tasks like hyperparameter tuning or cross-validation.
+Feel free to expand this lab by adding:
+- **Data validation** steps (e.g., using [Great Expectations](https://greatexpectations.io/)).
+- **Logging and monitoring** (e.g., MLflow, Neptune, Weights & Biases).
+- **Orchestration** (e.g., Airflow, Prefect) for scheduled runs and better pipeline management.
 
 ---
 
-## Troubleshooting
-
-1. **OmegaConf import error**: Ensure `OmegaConf` is installed in your current environment. Check by running `pip show omegaconf`.
-2. **File not found**: Verify that your paths in `config.yaml` are correct.
-3. **Model import error**: If you change the model type, ensure the correct scikit-learn class is imported in `train.py`.
-
----
-
-## Conclusion
-
-You now have a fully configurable pipeline for data preparation, training, and evaluation, all controlled by **OmegaConf** through a single `config.yaml`. This structure helps maintain cleaner, more scalable ML projects while making experimentation simpler.
-
-> **Tip**: Extend this lab by adding version control for data (e.g., DVC), containerizing your environment with Docker, or using a CI/CD pipeline to automate testing and deployment.
-
----
-
-**Happy Learning and Experimenting!**
+**Congratulations!** You have a working MLOps lab with **OmegaConf**, allowing you to **configure** and **automate** your ML workflow on **Ubuntu** (or any environment).  
