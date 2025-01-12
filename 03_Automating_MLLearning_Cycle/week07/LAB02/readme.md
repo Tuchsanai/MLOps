@@ -1,39 +1,53 @@
+Below is the **complete MLOps lab** that demonstrates how to use **OmegaConf** for configuration management in a simple ML workflow on the **Iris dataset**. It includes:
 
-
-# LAB: MLOps with OmegaConf Configuration
-
-Below is an example **MLOps lab** that demonstrates how to use **OmegaConf** for configuration management in a simple ML workflow on the **Iris dataset**. The lab includes:
-
-- A **config.yaml** file (using [OmegaConf](https://omegaconf.readthedocs.io/en/latest/)) that specifies data paths, target column, model choices, and training hyperparameters.  
-- Three Python scripts:  
-  1. **data_preparation.py**: Loads and prepares data.  
-  2. **train.py**: Trains a specified model.  
-  3. **eval.py**: Evaluates the trained model on hold-out data.  
-
-> **Note**: This example assumes an **Ubuntu** system *without* Python installed. You will install Python, create a virtual environment, install dependencies, and run the scripts inside that environment.
+1. A **config.yaml** file for all configuration.  
+2. Three **Python scripts** for the pipeline:  
+   - **data_preparation.py**: Loads and prepares/cleans the data.  
+   - **train.py**: Trains the model.  
+   - **eval.py**: Evaluates the model.  
+3. **Ubuntu** setup instructions for installing Python and dependencies.  
+4. Instructions for **cloning** the repository from GitHub.
 
 ---
 
 ## 1. Repository Structure
 
-After you clone or download the repo from:  
+Once you **clone** the repository from:
+
 > [https://github.com/Tuchsanai/MLOps/tree/main/03_Automating_MLLearning_Cycle/week07/LAB02](https://github.com/Tuchsanai/MLOps/tree/main/03_Automating_MLLearning_Cycle/week07/LAB02)
 
-Your folder might look like this:
+You’ll see something like:
 
 ```
 ├── data/
-│   └── iris.csv       <- Your raw dataset
-├── config.yaml         <- OmegaConf configuration file
-├── data_preparation.py
-├── train.py
-├── eval.py
-└── README.md           <- This file with instructions
+│   └── iris.csv             <- Your raw dataset
+├── config.yaml              <- OmegaConf configuration file
+├── data_preparation.py      <- Script to clean/prepare data
+├── train.py                 <- Script to train model
+├── eval.py                  <- Script to evaluate model
+└── README.md                <- This file with instructions
 ```
 
 ---
 
-## 2. Installing Python & Setting Up the Environment
+## 2. Cloning the Project
+
+**Steps** to clone or download:
+
+1. **Navigate** to a directory on your machine where you want to store the project.
+2. Run the following in your terminal:
+   ```bash
+   git clone https://github.com/Tuchsanai/MLOps.git
+   ```
+3. Then **navigate** to the lab folder:
+   ```bash
+   cd MLOps/03_Automating_MLLearning_Cycle/week07/LAB02
+   ```
+4. You should now see the files listed above (e.g., `config.yaml`, `data_preparation.py`, etc.).
+
+---
+
+## 3. Ubuntu Setup: Python & Virtual Environment
 
 Since the Ubuntu system has no Python installed, let’s install Python and set up a **virtual environment**:
 
@@ -50,31 +64,31 @@ Since the Ubuntu system has no Python installed, let’s install Python and set 
    ```bash
    source venv/bin/activate
    ```
-4. **Install required Python packages** (e.g., scikit-learn, pandas, OmegaConf):
+4. **Install required Python packages** (e.g., `pandas`, `scikit-learn`, `OmegaConf`):
    ```bash
-   pip install pandas scikit-learn omegaconf
+   pip install pandas scikit-learn omegaconf joblib
    ```
 
-> **Tip**: You could also maintain a `requirements.txt` file for easier installation.
+> **Tip**: In a production setting, you might store your package requirements in a `requirements.txt`.
 
 ---
 
-## 3. Configuration File: `config.yaml`
+## 4. Configuration File: `config.yaml`
 
-Below is an **example** configuration file using OmegaConf. You can customize it as needed. In this example, we show how you might switch between multiple model types (e.g., Logistic Regression or Decision Tree) and configure hyperparameters.
+Below is an **example** configuration file using **OmegaConf**. You can customize it as needed.
 
 ```yaml
 data:
   path: "./data/"
   file_name: "iris.csv"
-  target_column: "species"    # The column to predict (classification)
+  target_column: "species"
 
 model:
-  type: "logistic_regression"  # Options: "logistic_regression", "decision_tree"
+  type: "logistic_regression"  # Options: "logistic_regression" or "decision_tree"
   hyperparameters:
-    # LogisticRegression params example
+    # LogisticRegression params
     max_iter: 200
-    # DecisionTreeClassifier params example
+    # DecisionTreeClassifier params
     # max_depth: 3
 
 training:
@@ -87,26 +101,48 @@ evaluation:
     - "f1"
 ```
 
-**Key Points**:  
-- `data.path` & `data.file_name` specify where to find your raw dataset.  
-- `data.target_column` is the name of the column we’ll predict.  
-- `model.type` can be changed to “logistic_regression” or “decision_tree” to select a different model.  
-- `model.hyperparameters` holds model-specific settings (e.g., number of iterations, max depth, etc.).  
-- `training.test_size` is the fraction of the dataset to use for testing.  
-- `training.random_state` ensures reproducibility.  
-- `evaluation.metrics` are the metrics we want to calculate (e.g., accuracy, f1).
+**Key Points**  
+- `data.path` & `data.file_name`: Specifies where to load the raw data.  
+- `data.target_column`: The name of the column to predict.  
+- `model.type`: A switch to pick between logistic regression or a decision tree.  
+- `model.hyperparameters`: Key/value pairs for model-specific settings.  
+- `training.test_size`: The fraction of the dataset used for testing.  
+- `training.random_state`: Random seed for reproducibility.  
+- `evaluation.metrics`: The metrics to compute (e.g., accuracy, F1-score).
 
 ---
 
-## 4. Data Preparation: `data_preparation.py`
+## 5. Data Preparation: `data_preparation.py`
 
-This script loads the **Iris dataset** from the specified path, does any required cleaning or transformation, and saves the prepared data to a new file (or keeps it in memory for further steps). In many production workflows, you might store the cleaned data in some intermediate format (e.g., CSV, Parquet, or even a database).
+Below is a more **extensive** data preparation script that includes common cleaning tasks: removing duplicates, dropping NaNs, handling outliers via IQR, and optional label encoding for the target column.
 
 ```python
 # data_preparation.py
+
 import os
 import pandas as pd
+import numpy as np
 from omegaconf import OmegaConf
+from sklearn.preprocessing import LabelEncoder
+
+def remove_outliers_iqr(df, column, threshold=1.5):
+    """
+    Removes rows from df where the specified column has outliers
+    based on the IQR (Interquartile Range) method.
+    
+    threshold=1.5 is a common default; 3.0 is more conservative.
+    """
+    Q1 = df[column].quantile(0.25)
+    Q3 = df[column].quantile(0.75)
+    IQR = Q3 - Q1
+
+    lower_bound = Q1 - threshold * IQR
+    upper_bound = Q3 + threshold * IQR
+
+    # Filter out rows that are outside [lower_bound, upper_bound]
+    mask = (df[column] >= lower_bound) & (df[column] <= upper_bound)
+    df_cleaned = df[mask]
+    return df_cleaned
 
 def main():
     # 1. Load config
@@ -115,33 +151,60 @@ def main():
     # 2. Read the raw data
     data_path = os.path.join(config.data.path, config.data.file_name)
     df = pd.read_csv(data_path)
-    
-    # 3. (Optional) Clean or transform data
-    # For example, let's just drop rows with NaN (if any).
-    # The iris dataset might not have missing data, but this is illustrative.
+    print("[INFO] Loaded raw data shape:", df.shape)
+
+    # 3a. Remove duplicate rows (if any)
+    initial_count = len(df)
+    df.drop_duplicates(inplace=True)
+    print(f"[INFO] Removed {initial_count - len(df)} duplicate rows.")
+
+    # 3b. Drop rows with NaN values (if any)
+    before_na = len(df)
     df.dropna(inplace=True)
-    
-    # 4. Save prepared data (optional). For simplicity, we’ll just overwrite or keep in memory.
+    print(f"[INFO] Removed {before_na - len(df)} rows containing NaN values.")
+
+    # 3c. Remove outliers using IQR for all numeric columns
+    numeric_cols = df.select_dtypes(include=[np.number]).columns.tolist()
+    for col in numeric_cols:
+        df = remove_outliers_iqr(df, col, threshold=1.5)
+    print("[INFO] Data shape after outlier removal:", df.shape)
+
+    # 3d. Encode the target column if it is categorical
+    target_col = config.data.target_column
+    if df[target_col].dtype == object:
+        le = LabelEncoder()
+        df[target_col] = le.fit_transform(df[target_col])
+        print(f"[INFO] Converted '{target_col}' to numeric labels.")
+
+    # 4. Save prepared data
     prepared_data_path = os.path.join(config.data.path, "iris_prepared.csv")
     df.to_csv(prepared_data_path, index=False)
-    print(f"Data prepared and saved to {prepared_data_path}")
+    print(f"[INFO] Data prepared and saved to {prepared_data_path}")
+    print("[INFO] Final prepared data shape:", df.shape)
 
 if __name__ == "__main__":
     main()
 ```
 
-> **Note**: In a real scenario, you might have a more elaborate data-cleaning process.  
+### What This Script Does
+
+1. **Load Config**: Uses OmegaConf to load `config.yaml`.  
+2. **Load Data**: Reads the raw CSV (`iris.csv`).  
+3. **Remove Duplicates** / **Drop NaNs**: Cleans up the data.  
+4. **Outlier Removal** (IQR): Removes rows considered outliers in numeric columns.  
+5. **Label Encoding** (Optional): Converts the target column to numeric if it’s object-type.  
+6. **Save** the cleaned data into `iris_prepared.csv`.
 
 ---
 
-## 5. Model Training: `train.py`
+## 6. Training: `train.py`
 
-This script loads **prepared data**, splits it into training and test sets, instantiates the model from the config, trains it, and saves the trained model to disk.
+This script loads **prepared data**, splits it into training and test sets, and trains either a logistic regression or a decision tree classifier.
 
 ```python
 # train.py
 import os
-import joblib  # for saving/loading model
+import joblib
 import pandas as pd
 from sklearn.model_selection import train_test_split
 from sklearn.linear_model import LogisticRegression
@@ -188,7 +251,7 @@ def main():
     # 7. Save the trained model
     model_path = os.path.join(config.data.path, "trained_model.pkl")
     joblib.dump(model, model_path)
-    print(f"Model trained and saved to {model_path}")
+    print(f"[INFO] Model trained and saved to {model_path}")
 
 if __name__ == "__main__":
     main()
@@ -196,9 +259,9 @@ if __name__ == "__main__":
 
 ---
 
-## 6. Model Evaluation: `eval.py`
+## 7. Evaluation: `eval.py`
 
-This script loads the **trained model**, loads (or re-splits) the test data, and calculates the requested metrics (e.g., accuracy, F1-score).
+This script loads the **trained model**, re-splits the data in the same manner, and evaluates performance metrics.
 
 ```python
 # eval.py
@@ -233,21 +296,21 @@ def main():
     model_path = os.path.join(config.data.path, "trained_model.pkl")
     model = joblib.load(model_path)
 
-    # 6. Make predictions on test set
+    # 6. Predict on test set
     y_pred = model.predict(X_test)
 
-    # 7. Evaluate with specified metrics
+    # 7. Evaluate metrics
     metrics_list = config.evaluation.metrics
     for metric in metrics_list:
         if metric.lower() == "accuracy":
             acc = accuracy_score(y_test, y_pred)
-            print(f"Accuracy: {acc:.4f}")
+            print(f"[INFO] Accuracy: {acc:.4f}")
         elif metric.lower() == "f1":
-            # For multi-class: average can be "weighted", "macro", etc.
+            # Weighted average for multi-class
             f1 = f1_score(y_test, y_pred, average="weighted")
-            print(f"F1 (weighted): {f1:.4f}")
+            print(f"[INFO] F1 (weighted): {f1:.4f}")
         else:
-            print(f"Metric '{metric}' is not implemented.")
+            print(f"[WARN] Metric '{metric}' is not implemented.")
 
 if __name__ == "__main__":
     main()
@@ -255,48 +318,30 @@ if __name__ == "__main__":
 
 ---
 
-## 7. Usage
+## 8. Usage
 
-Once everything is set up:
+Once you’ve **cloned** the repo, installed **Python** and **dependencies**, and **activated** your virtual environment:
 
-1. **Clone** the repo and **cd** into it:
-   ```bash
-   git clone https://github.com/Tuchsanai/MLOps.git
-   cd MLOps/03_Automating_MLLearning_Cycle/week07/LAB02
-   ```
+1. **Check your `config.yaml`**  
+   - Verify the paths (`data.path`, `data.file_name`) and the `target_column`.
+   - Switch model type (e.g., `"logistic_regression"` or `"decision_tree"`) if desired.
 
-2. **(Optional) Adjust** your `config.yaml` to change the model type or hyperparameters.
-
-3. **Run data preparation**:
+2. **Run data preparation**:
    ```bash
    python data_preparation.py
    ```
+   - This will clean and transform `iris.csv` → `iris_prepared.csv`.
 
-4. **Train the model**:
+3. **Train the model**:
    ```bash
    python train.py
    ```
+   - This trains your chosen model and saves it to `trained_model.pkl`.
 
-5. **Evaluate the model**:
+4. **Evaluate the model**:
    ```bash
    python eval.py
    ```
+   - This will print out the requested metrics (e.g., accuracy, F1).
 
 ---
-
-## 8. Summary & Next Steps
-
-- You have a basic end-to-end workflow: **data prep** → **train** → **eval**.  
-- All configuration (paths, hyperparameters, etc.) is controlled by **OmegaConf** in `config.yaml`.  
-- You can experiment with **different models** (Logistic Regression vs. Decision Tree) by changing the `model.type`.  
-- You can add **new metrics** (e.g., precision, recall) inside `eval.py`.  
-- In a full production pipeline, you’d incorporate **CI/CD** steps and possibly use containers (Docker) to deploy.
-
-Feel free to expand this lab by adding:
-- **Data validation** steps (e.g., using [Great Expectations](https://greatexpectations.io/)).
-- **Logging and monitoring** (e.g., MLflow, Neptune, Weights & Biases).
-- **Orchestration** (e.g., Airflow, Prefect) for scheduled runs and better pipeline management.
-
----
-
-**Congratulations!** You have a working MLOps lab with **OmegaConf**, allowing you to **configure** and **automate** your ML workflow on **Ubuntu** (or any environment).  
