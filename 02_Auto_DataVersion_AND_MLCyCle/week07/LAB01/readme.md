@@ -31,8 +31,8 @@ This lab focuses on working with `OmegaConf` for configuration management using 
 
 2. **Clone the Git Repository:**
    ```bash
-   git clone https://github.com/Tuchsanai/MLOps_Class.git
-   cd MLOps_Class/02_Data Versioning_and_pipeline /week07/LAB01
+   git clone https://github.com/Tuchsanai/MLOps.git
+   cd MLOps/02_Auto_DataVersion_AND_MLCyCle/week07/LAB01
    
    ```
 

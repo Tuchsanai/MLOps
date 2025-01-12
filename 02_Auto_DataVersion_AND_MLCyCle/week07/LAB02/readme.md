@@ -41,7 +41,7 @@ You’ll see something like:
    ```
 3. Then **navigate** to the lab folder:
    ```bash
-   cd MLOps/03_Automating_MLLearning_Cycle/week07/LAB02
+   cd MLOps/02_Auto_DataVersion_AND_MLCyCle/week07/LAB02
    ```
 4. You should now see the files listed above (e.g., `config.yaml`, `data_preparation.py`, etc.).
 
