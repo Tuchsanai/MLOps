@@ -30,21 +30,21 @@ def main():
     model_path = os.path.join(config.data.path, "trained_model.pkl")
     model = joblib.load(model_path)
 
-    # 6. Make predictions on test set
+    # 6. Predict on test set
     y_pred = model.predict(X_test)
 
-    # 7. Evaluate with specified metrics
+    # 7. Evaluate metrics
     metrics_list = config.evaluation.metrics
     for metric in metrics_list:
         if metric.lower() == "accuracy":
             acc = accuracy_score(y_test, y_pred)
-            print(f"Accuracy: {acc:.4f}")
+            print(f"[INFO] Accuracy: {acc:.4f}")
         elif metric.lower() == "f1":
-            # For multi-class: average can be "weighted", "macro", etc.
+            # Weighted average for multi-class
             f1 = f1_score(y_test, y_pred, average="weighted")
-            print(f"F1 (weighted): {f1:.4f}")
+            print(f"[INFO] F1 (weighted): {f1:.4f}")
         else:
-            print(f"Metric '{metric}' is not implemented.")
+            print(f"[WARN] Metric '{metric}' is not implemented.")
 
 if __name__ == "__main__":
     main()

@@ -1,6 +1,6 @@
 # train.py
 import os
-import joblib  # for saving/loading model
+import joblib
 import pandas as pd
 from sklearn.model_selection import train_test_split
 from sklearn.linear_model import LogisticRegression
@@ -47,7 +47,7 @@ def main():
     # 7. Save the trained model
     model_path = os.path.join(config.data.path, "trained_model.pkl")
     joblib.dump(model, model_path)
-    print(f"Model trained and saved to {model_path}")
+    print(f"[INFO] Model trained and saved to {model_path}")
 
 if __name__ == "__main__":
     main()
