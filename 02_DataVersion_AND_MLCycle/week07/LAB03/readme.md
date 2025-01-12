@@ -123,14 +123,14 @@ You will use Python within a virtual environment on an Ubuntu system where Pytho
    ```
    **Example output**:
    ```bash
-                             
-To track the changes with git, run:
+                                 
+      To track the changes with git, run:
 
-        git add data/.gitignore data/iris.csv.dvc
+            git add data/.gitignore data/iris.csv.dvc
 
-To enable auto staging, run:
+      To enable auto staging, run:
 
-        dvc config core.autostage true
+      dvc config core.autostage true
    ```
 
 3. **Commit these changes to Git**:
