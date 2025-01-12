@@ -55,7 +55,7 @@ This lab will guide you through setting up and running a DVC pipeline for a mach
 1. Clone the project repository:
 
    ```bash
-   git clone https://github.com/Tuchsanai/MLOps_Class/tree/main/02_Data_Versioning_and_pipeline/week07/LAB02
+   git clone https://github.com/Tuchsanai/MLOps.git
    ```
 
    **Output:**
@@ -72,8 +72,10 @@ This lab will guide you through setting up and running a DVC pipeline for a mach
 2. Navigate to the project directory:
 
    ```bash
-   cd LAB02
+   cd ./MLOps/02_DataVersion_AND_MLCycle/week07/LAB03
    ```
+
+   
 
 ### Step 3: Set Up a Python Virtual Environment
 
