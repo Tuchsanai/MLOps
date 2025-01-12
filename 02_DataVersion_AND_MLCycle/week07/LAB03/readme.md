@@ -123,7 +123,7 @@ You will use Python within a virtual environment on an Ubuntu system where Pytho
    ```
    **Example output**:
    ```bash
-   100% Adding...|   | 0/1 [00:00<?, ?files]                                                      
+                             
 To track the changes with git, run:
 
         git add data/.gitignore data/iris.csv.dvc
