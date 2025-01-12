@@ -383,13 +383,19 @@ if __name__ == "__main__":
    Stage 'train' is being run:
    > python train.py
    [INFO] Model trained and saved to data/trained_model.pkl
+
+
    ...
    Stage 'evaluate' is being run:
    > python eval.py
    [INFO] Accuracy: 0.8961
    [INFO] F1 (weighted): 0.8961
 
+   
+
    Pipeline completed successfully.
+
+
    ```
 
 2. **Visualize the pipeline (optional)**:
