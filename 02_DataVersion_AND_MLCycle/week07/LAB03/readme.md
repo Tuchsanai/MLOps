@@ -2,6 +2,17 @@
 
 This lab will guide you through setting up and running a DVC pipeline for a machine learning project. The project involves data preparation, model training, and evaluation using Python in a virtual environment on an Ubuntu system without Python pre-installed.
 
+
+## Files Overview
+
+- `config.yaml`: Configuration file for data paths, target columns, and model parameters.
+- `data_preparation.py`: Script for data cleaning, outlier removal, and preprocessing.
+- `train.py`: Script to train a machine learning model.
+- `eval.py`: Script to evaluate the trained model.
+- `dvc.yaml`: Defines the DVC pipeline stages and dependencies.
+
+
+
 ## Prerequisites
 
 - Ubuntu system
@@ -290,15 +301,6 @@ This lab will guide you through setting up and running a DVC pipeline for a mach
    1 file changed, xx insertions(+)
    create mode 100644 .dvc/config
    ```
-
-## Files Overview
-
-- `config.yaml`: Configuration file for data paths, target columns, and model parameters.
-- `data_preparation.py`: Script for data cleaning, outlier removal, and preprocessing.
-- `train.py`: Script to train a machine learning model.
-- `eval.py`: Script to evaluate the trained model.
-- `dvc.yaml`: Defines the DVC pipeline stages and dependencies.
-
 
 ## Expected Outputs
 
