@@ -27,7 +27,7 @@ This lab focuses on working with `OmegaConf` for configuration management using 
 2. **Clone the Git Repository:**
    ```bash
    git clone https://github.com/Tuchsanai/MLOps.git
-   cd MLOps/02_Auto_DataVersion_AND_MLCyCle/week07/LAB01
+   cd MLOps/02_DataVersion_AND_MLCycle/week07/LAB01
    ```
 
 3. **Create a Python Virtual Environment:**
