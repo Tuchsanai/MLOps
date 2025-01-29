@@ -1,6 +1,7 @@
 *.pptx
 /backup
 **/backup/
+**/.gradio
 backup/
 solution/
 hackathon/
