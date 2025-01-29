@@ -1,7 +1,10 @@
 # Typhoo
 
-https://opentyphoon.ai/
+page : https://opentyphoon.ai/
+
+Document : https://docs.opentyphoon.ai/
 
 
 # Deepseek
-https://www.deepseek.com/
+page : https://www.deepseek.com/
+Document : https://api-docs.deepseek.com/
