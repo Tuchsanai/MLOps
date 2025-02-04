@@ -14,11 +14,11 @@
     
     
    ```
-    git clone -b dev https://github.com/Tuchsanai/DevTools.git
+   git clone  https://github.com/Tuchsanai/MLOps.git
    ```
    
    ```   
-    cd DevTools/02_Docker/Week08/LAB5_node-bulletin-board-master/bulletin-board-app
+    cd MLOps/03_Docker_AND_API/Week09/LAB5_node-bulletin-board-master/bulletin-board-app
    ```
 
 
