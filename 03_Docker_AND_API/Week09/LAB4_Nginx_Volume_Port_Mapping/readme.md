@@ -18,10 +18,10 @@
     
     
    
-    git clone -b dev https://github.com/Tuchsanai/DevTools.git
+    git clone  https://github.com/Tuchsanai/MLOps.git
 
    
-    cd DevTools/02_Docker/Week08/LAB4_Nginx_Volume_Port_Mapping
+    cd MLOps/03_Docker_AND_API/Week09/LAB4_Nginx_Volume_Port_Mapping
 
 
 
