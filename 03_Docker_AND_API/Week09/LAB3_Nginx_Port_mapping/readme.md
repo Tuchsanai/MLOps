@@ -9,11 +9,11 @@
     
     
    ```
-    git clone -b dev https://github.com/Tuchsanai/MLOps.git
+    git clone  https://github.com/Tuchsanai/MLOps.git
    ```
    
    ```   
-    cd DevTools/02_Docker/Week08/LAB3_Nginx_Port_mapping
+    cd MLOps/03_Docker_AND_API/Week09/LAB3_Nginx_Port_mapping
    ```
 
 
