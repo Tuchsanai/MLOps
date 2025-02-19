@@ -1,6 +1,9 @@
 # MLOps_Class
   06026241 MACHINE LEARNING OPERATIONS
 
+Mini project
+
+https://docs.google.com/document/d/1XQm49ECsczmc3aU-2Qn3gPtrT5NbXP0NFXgprznGFj0/edit?usp=sharing
 
 
 | **Week** | **Topic**                           | **Description**                                                                                     |
