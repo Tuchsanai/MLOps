@@ -11,11 +11,11 @@
     
     
    ```
-    git clone -b dev https://github.com/Tuchsanai/DevTools.git
+    git clone https://github.com/Tuchsanai/MLOps.git
    ```
    
    ```   
-    cd DevTools/02_Docker/Week09/Lab2
+    cd MLOps/03_Docker_AND_API/Week10/Lab2
    ```
 
 
