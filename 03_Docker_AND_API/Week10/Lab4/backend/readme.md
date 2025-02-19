@@ -1,19 +1,19 @@
 ## create directory
 
    
-    mkdir LAB4_Week9_Backend
-    cd    LAB4_Week9_Backend
+    mkdir LAB4_Week10_Backend
+    cd    LAB4_Week10_Backend
     
 
 ## git clone branch dev
     
     
    ```
-    git clone -b dev https://github.com/Tuchsanai/DevTools.git
+    git clone https://github.com/Tuchsanai/MLOps.git
    ```
    
    ```   
-    cd DevTools/02_Docker/Week09/Lab4/backend
+    cd MLOps/03_Docker_AND_API/Week10/Lab2
    ```
 
 
