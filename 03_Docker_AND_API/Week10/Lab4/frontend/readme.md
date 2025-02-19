@@ -4,8 +4,8 @@
 ## create directory
 
    
-    mkdir LAB4_Week9_Frontend
-    cd    LAB4_Week9_Frontend
+    mkdir LAB4_Week10_Frontend
+    cd    LAB4_Week10_Frontend
     
 
 ## git clone branch dev
