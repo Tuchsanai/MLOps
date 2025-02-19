@@ -3,8 +3,8 @@
 ## create directory
 
    
-    mkdir LAB2_Week9
-    cd    LAB2_Week9
+    mkdir LAB2_Week10
+    cd    LAB2_Week10
     
 
 ## git clone branch dev
