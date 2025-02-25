@@ -20,7 +20,7 @@
     
     
    ```
-    git clone -b dev https://github.com/Tuchsanai/DevTools.git
+   git clone https://github.com/Tuchsanai/MLOps.git
    ```
    
    ```   

@@ -25,11 +25,13 @@ The goal of this lab is to understand:
     
     
    ```
-    git clone -b dev https://github.com/Tuchsanai/DevTools.git
+    git clone https://github.com/Tuchsanai/MLOps.git
    ```
    
    ```   
-    cd DevTools/02_Docker/Week11/00_LAB_CMD_Entrypoint/
+    cd MLOps/03_Docker_AND_API/Week11/00_LAB_CMD_Entrypoint/
+
+    
    ```
 
 
