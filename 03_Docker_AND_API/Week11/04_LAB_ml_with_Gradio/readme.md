@@ -5,14 +5,16 @@ This project is a containerized Machine Learning lab designed for students. It f
 
 ## Project Overview
 
--   **Backend**: FastAPI serving ML predictions
-    -   Port: 8087
-    -   Models: RandomForestClassifier, GradientBoostingClassifier
-    -   Dataset: Iris flower dataset
--   **Frontend**: Gradio interface for input and visualization
-    -   Port: 8085
-    -   Features: Sliders for measurements, dual model predictions
--   **Containerization**: Docker with separate images for frontend and backend
+- **Backend**: FastAPI serving ML predictions
+    - Port: 8087
+    - Models: RandomForestClassifier, GradientBoostingClassifier
+    - Dataset: Iris flower dataset
+
+- **Frontend**: Gradio interface for input and visualization
+    - Port: 8085
+    - Features: Sliders for measurements, dual model predictions
+
+- **Containerization**: Docker with separate images for frontend and backend
 
 ## Project Structure
 
@@ -21,14 +23,14 @@ student-lab/
 ├── backend/
 │   ├── Dockerfile
 │   ├── requirements.txt
-│   ├── app.py
+│   └── app.py
 ├── frontend/
 │   ├── Dockerfile
 │   ├── requirements.txt
-│   ├── interface.py
+│   └── interface.py
 └── README.md
 ```
-
+```
 ## Prerequisites
 
 -   Docker installed on your system
