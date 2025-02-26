@@ -89,20 +89,3 @@ services:
 ```bash
 docker-compose down
 ```
-
-## Tips
-
-* **Port Issues?** Check if 8085 or 8087 are free.
-* **Something Broken?** Run `docker logs iris-backend` or `docker logs iris-frontend` to debug.
-
-## Tools Used
-
-* Python 3.9
-* FastAPI + Gradio
-* Scikit-learn
-* Docker & Docker Compose
-
-## Notes
-
-This is a learning project—have fun tinkering with it!
-```
