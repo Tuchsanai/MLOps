@@ -1,6 +1,7 @@
 
 # Student Lab - Iris Classification with Machine Learning
 
+![img1](./results.png)
 
 ## Project Overview
 
