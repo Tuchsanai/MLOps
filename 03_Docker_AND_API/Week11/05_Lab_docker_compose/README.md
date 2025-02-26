@@ -36,7 +36,7 @@ A simple distributed application running across multiple Docker containers.
 ### This command is used to start the containers defined in the docker-compose.yml file. If the containers don't exist, they will be created.
 
 ```
-docker compose up
+docker-compose up
 
 ```
 
@@ -55,7 +55,7 @@ docker compose up
 
 
 ```
-docker compose down
+docker-compose down
 
 ```
 
