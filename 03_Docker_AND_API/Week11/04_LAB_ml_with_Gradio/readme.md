@@ -119,7 +119,7 @@ docker run -d --name frontend -p 8085:8085 --link backend iris-frontend
 
  ### Backend: backend/app.py
 
-```
+```bash
 from fastapi import FastAPI
 from pydantic import BaseModel
 import numpy as np
@@ -178,7 +178,7 @@ if __name__ == "__main__":
 
 # Backend: backend/requirements.txt
 
-```
+```bash
 uvicorn
 fastapi
 scikit
@@ -187,7 +187,8 @@ pydantic
 ```
 
  ## Backend: backend/Dockerfile
-```
+
+```bash
 FROM python:3.9-slim
 
 WORKDIR /app
@@ -206,7 +207,7 @@ CMD ["python", "app.py"]
 
  ## Frontend: frontend/interface.py
 
- ```
+ ```bash
  import gradio as gr
 import requests
 
@@ -257,7 +258,7 @@ if __name__ == "__main__":
 
  ## frontend/requirements.txt
 
- ```
+ ```bash
 gradio
 requests
  ```
@@ -265,7 +266,7 @@ requests
 
 ## Frontend: frontend/Dockerfile
 
-```
+```bash
 FROM python:3.9-slim
 
 WORKDIR /app
