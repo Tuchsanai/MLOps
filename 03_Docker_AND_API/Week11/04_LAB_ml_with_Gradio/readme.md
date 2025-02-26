@@ -18,7 +18,7 @@ This project is a containerized Machine Learning lab designed for students. It f
 
 ## Project Structure
 
-```
+
 student-lab/
 ├── backend/
 │   ├── Dockerfile
@@ -29,8 +29,8 @@ student-lab/
 │   ├── requirements.txt
 │   └── interface.py
 └── README.md
-```
-```
+
+
 ## Prerequisites
 
 -   Docker installed on your system
