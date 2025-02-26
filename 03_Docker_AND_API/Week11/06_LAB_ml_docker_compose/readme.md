@@ -71,7 +71,7 @@ services:
 
     ```bash
     git clone git clone https://github.com/Tuchsanai/MLOps.git
-    cd  MLOpsç/03_Docker_AND_API/Week11/06_LAB_ml_docker_compose/
+    cd  MLOps/03_Docker_AND_API/Week11/06_LAB_ml_docker_compose/
 
 2.  **Start Everything:**
 
