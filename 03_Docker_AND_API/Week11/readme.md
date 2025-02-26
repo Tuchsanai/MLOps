@@ -1,7 +1,6 @@
 # Week 11
 
 
-
 # Delete all containers
 
 ```
