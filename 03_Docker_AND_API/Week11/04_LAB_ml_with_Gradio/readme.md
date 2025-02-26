@@ -61,17 +61,10 @@ student-lab/
 
 ### 1. Clone the Repository
 
-## for frontend
+
 ```bash
 git clone git clone https://github.com/Tuchsanai/MLOps.git
-cd  MLOps/03_Docker_AND_API/Week11/04_LAB_ml_with_Gradio/frontend
-```
-
-## for backend
-```bash
-
-git clone git clone https://github.com/Tuchsanai/MLOps.git
-cd  MLOps/03_Docker_AND_API/Week11/04_LAB_ml_with_Gradio/backend
+cd  MLOps/03_Docker_AND_API/Week11/04_LAB_ml_with_Gradio
 ```
 
 
