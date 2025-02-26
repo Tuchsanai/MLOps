@@ -183,7 +183,7 @@ pydantic
  ## Backend: backend/Dockerfile
 
 ```bash
-FROM python:3.9-slim
+FROM python:3.10-slim
 
 WORKDIR /app
 
@@ -261,7 +261,7 @@ requests
 ## Frontend: frontend/Dockerfile
 
 ```bash
-FROM python:3.9-slim
+FROM python:3.10-slim
 
 WORKDIR /app
 
