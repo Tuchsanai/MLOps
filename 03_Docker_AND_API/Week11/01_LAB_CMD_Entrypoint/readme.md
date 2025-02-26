@@ -29,7 +29,7 @@ The goal of this lab is to understand:
    ```
    
    ```   
-    cd MLOps/03_Docker_AND_API/Week11/00_LAB_CMD_Entrypoint/
+    cd MLOps/03_Docker_AND_API/Week11/01_LAB_CMD_Entrypoint/
 
     
    ```
