@@ -1,7 +1,6 @@
 
 # Student Lab - Iris Classification with Machine Learning
 
-This project is a containerized Machine Learning lab designed for students. It features a Gradio frontend for user interaction and a FastAPI backend implementing RandomForestClassifier and GradientBoostingClassifier models using the Iris dataset.
 
 ## Project Overview
 
@@ -15,6 +14,32 @@ This project is a containerized Machine Learning lab designed for students. It f
     - Features: Sliders for measurements, dual model predictions
 
 - **Containerization**: Docker with separate images for frontend and backend
+
+##### Visual Representation (Text-Based Diagram)
+
+```
++------------------+                     +------------------+
+|    User          |                     |                  |
+| (Browser)        |<----HTTP:8085----->| Frontend         |
+|                  |                     | (Gradio)         |
+|                  |                     | - Sliders        |
+|                  |                     | - Output Display |
++------------------+                     | Port: 8085       |
+                                         +------------------+
+                                                |
+                                                | HTTP GET /predict
+                                                | Port: 8087
+                                                |
+                                         +------------------+
+                                         | Backend           |
+                                         | (FastAPI)        |
+                                         | - RF Model       |
+                                         | - GB Model       |
+                                         | - Iris Data      |
+                                         | Port: 8087       |
+                                         +------------------+
+
+```
 
 ## Project Structure
 
@@ -31,10 +56,6 @@ student-lab/
 └── README.md
 ```
 
-## Prerequisites
-
--   Docker installed on your system
--   Git (for cloning the repository)
 
 ## Setup and Running Instructions
 
