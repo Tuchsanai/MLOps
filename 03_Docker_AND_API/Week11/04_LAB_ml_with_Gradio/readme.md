@@ -105,76 +105,168 @@ docker run -d --name frontend -p 8085:8085 --link backend iris-frontend
 -   Use the sliders to input flower measurements
 -   View predictions from both models
 
-## Usage
 
-On the Gradio interface:
 
--   Adjust sliders for:
-    -   Sepal Length (4.0-8.0)
-    -   Sepal Width (2.0-4.5)
-    -   Petal Length (1.0-7.0)
-    -   Petal Width (0.1-2.5)
--   View instant predictions for Iris species from both classifiers
+ ### Backend: backend/app.py
 
-The output shows:
+```
+from fastapi import FastAPI
+from pydantic import BaseModel
+import numpy as np
+from sklearn.datasets import load_iris
+from sklearn.ensemble import RandomForestClassifier, GradientBoostingClassifier
 
--   Random Forest prediction
--   Gradient Boosting prediction
+app = FastAPI()
 
-## Features
+# Load and train models at startup
+iris = load_iris()
+X, y = iris.data, iris.target
 
-**Frontend:**
+# Train RandomForestClassifier
+rf_model = RandomForestClassifier(random_state=42)
+rf_model.fit(X, y)
 
--   Intuitive slider inputs
--   Clear display of predictions from both models
--   Responsive design
+# Train GradientBoostingClassifier
+gb_model = GradientBoostingClassifier(random_state=42)
+gb_model.fit(X, y)
 
-**Backend:**
+# Input data model
+class IrisInput(BaseModel):
+    sepal_length: float
+    sepal_width: float
+    petal_length: float
+    petal_width: float
 
--   RESTful API with prediction endpoint
--   Health check endpoint
--   Pre-trained ML models
+@app.get("/health")
+def health_check():
+    return {"status": "healthy"}
 
-**Docker:**
+@app.post("/predict")
+def predict(data: IrisInput):
+    # Convert input to array
+    input_data = np.array([[data.sepal_length, data.sepal_width, 
+                           data.petal_length, data.petal_width]])
+    
+    # Get predictions
+    rf_pred = rf_model.predict(input_data)[0]
+    gb_pred = gb_model.predict(input_data)[0]
+    
+    # Map predictions to Iris species
+    species = {0: "setosa", 1: "versicolor", 2: "virginica"}
+    
+    return {
+        "random_forest": species[rf_pred],
+        "gradient_boosting": species[gb_pred]
+    }
 
--   Isolated environments
--   Easy deployment
--   Consistent execution across systems
+if __name__ == "__main__":
+    import uvicorn
+    uvicorn.run(app, host="0.0.0.0", port=8087)
 
-## Troubleshooting
-
-If the interface doesn't load:
-
--   Check if both containers are running: `docker ps`
--   Verify port mapping: 8085 (frontend), 8087 (backend)
--   Ensure containers can communicate (`--link backend`)
--   Restart containers if needed:
-
-```bash
-docker stop frontend backend
-docker rm frontend backend
 ```
 
-Then rerun the `docker run` commands.
 
-## Learning Objectives
+# Backend: backend/requirements.txt
 
--   Understand Random Forest and Gradient Boosting algorithms
--   Explore containerization with Docker
--   Interact with ML models through a web interface
--   Experience API-driven application architecture
+```
+uvicorn
+fastapi
+scikit
+numpy
+pydantic
+```
 
-## Contributing
+ ## Backend: backend/Dockerfile
+```
+FROM python:3.9-slim
 
-Feel free to fork this repository and submit pull requests with improvements!
+WORKDIR /app
 
-This README provides:
+COPY requirements.txt .
+RUN pip install --no-cache-dir -r requirements.txt
 
--   Clear setup instructions
--   Project overview and structure
--   Usage guidelines
--   Troubleshooting tips
--   Educational context
+COPY app.py .
 
-Students can easily follow these steps to get the lab running on their systems and start experimenting with the ML models through the Gradio interface.
+EXPOSE 8087
+
+CMD ["python", "app.py"]
+```
+
+
+
+ ## Frontend: frontend/interface.py
+
+ ```
+ import gradio as gr
+import requests
+
+# Backend URL (adjusted for Docker linking)
+BACKEND_URL = "http://backend:8087/predict"
+
+def predict_iris(sepal_length, sepal_width, petal_length, petal_width):
+    # Prepare data for API call
+    data = {
+        "sepal_length": sepal_length,
+        "sepal_width": sepal_width,
+        "petal_length": petal_length,
+        "petal_width": petal_width
+    }
+    
+    # Make request to backend
+    try:
+        response = requests.post(BACKEND_URL, json=data)
+        response.raise_for_status()
+        predictions = response.json()
+        return (
+            f"Random Forest: {predictions['random_forest']}",
+            f"Gradient Boosting: {predictions['gradient_boosting']}"
+        )
+    except Exception as e:
+        return f"Error: {str(e)}", f"Error: {str(e)}"
+
+# Gradio interface
+interface = gr.Interface(
+    fn=predict_iris,
+    inputs=[
+        gr.Slider(4.0, 8.0, step=0.1, label="Sepal Length (cm)"),
+        gr.Slider(2.0, 4.5, step=0.1, label="Sepal Width (cm)"),
+        gr.Slider(1.0, 7.0, step=0.1, label="Petal Length (cm)"),
+        gr.Slider(0.1, 2.5, step=0.1, label="Petal Width (cm)")
+    ],
+    outputs=[
+        gr.Textbox(label="Random Forest Prediction"),
+        gr.Textbox(label="Gradient Boosting Prediction")
+    ],
+    title="Iris Species Classifier",
+    description="Adjust the sliders to input flower measurements and see predictions from two ML models."
+)
+
+if __name__ == "__main__":
+    interface.launch(server_name="0.0.0.0", server_port=8085)
+ ```
+
+ ## frontend/requirements.txt
+
+ ```
+gradio
+requests
+ ```
+
+
+## Frontend: frontend/Dockerfile
+
+```
+FROM python:3.9-slim
+
+WORKDIR /app
+
+COPY requirements.txt .
+RUN pip install --no-cache-dir -r requirements.txt
+
+COPY interface.py .
+
+EXPOSE 8085
+
+CMD ["python", "interface.py"]
+
 ```
