@@ -57,14 +57,24 @@ student-lab/
 ```
 
 
-## Setup and Running Instructions
+## Setup and Running Instructions (Think by your self)
 
 ### 1. Clone the Repository
 
+## for frontend
 ```bash
-git clone <repository-url>
-cd student-lab
+git clone git clone https://github.com/Tuchsanai/MLOps.git
+cd  MLOps/03_Docker_AND_API/Week11/04_LAB_ml_with_Gradio/frontend
 ```
+
+## for backend
+```bash
+
+git clone git clone https://github.com/Tuchsanai/MLOps.git
+cd  MLOps/03_Docker_AND_API/Week11/04_LAB_ml_with_Gradio/backend
+```
+
+
 
 ### 2. Build the Docker Images
 
