@@ -7,6 +7,9 @@ solution/
 hackathon/
 *.env
 
+tp_start.sh
+
+
 # Created by https://www.toptal.com/developers/gitignore/api/jupyternotebooks,python,macos
 # Edit at https://www.toptal.com/developers/gitignore?templates=jupyternotebooks,python,macos
 
