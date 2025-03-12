@@ -13,6 +13,7 @@ def predict_iris(sepal_length, sepal_width, petal_length, petal_width):
        "petal_width": petal_width
    }
    
+ 
    # Make request to backend
    try:
        response = requests.post(BACKEND_URL, json=data)
@@ -43,4 +44,4 @@ interface = gr.Interface(
 )
 
 if __name__ == "__main__":
-   interface.launch(server_name="0.0.0.0", server_port=8085)
+   interface.launch(server_name="0.0.0.0", server_port=8085)-
