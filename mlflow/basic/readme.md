@@ -1,8 +1,3 @@
-Here’s a Markdown rendering of the MLflow documentation page you linked, **"Starting the MLflow Tracking Server"**:
-
----
-
-````markdown
 # Starting the MLflow Tracking Server
 
 Before diving into MLflow's rich features, let's set up the foundational components: the MLflow Tracking Server and the MLflow UI. This guide will walk you through the steps to get both up and running.
@@ -17,11 +12,11 @@ MLflow is conveniently available on PyPI. Installing it is as simple as running 
 
 ```bash
 pip install mlflow
-````
+```
 
 ### Step 2 (Optional): Launch the MLflow Tracking Server
 
-If you would like to use a simpler solution by leveraging a managed instance of the MLflow Tracking Server, please [see the details about options here](#) (reference to the original options page).
+If you would like to use a simpler solution by leveraging a managed instance of the MLflow Tracking Server, please [see the details about options here](https://mlflow.org/docs/latest/ml/getting-started/running-notebooks/).
 
 To begin, you'll need to initiate the MLflow Tracking Server. Remember to keep the command prompt running during the tutorial, as closing it will shut down the server.
 
@@ -43,15 +38,4 @@ INFO:     Uvicorn running on http://127.0.0.1:8080 (Press CTRL+C to quit)
 
 Congratulations! Your MLflow environment is now set up and ready to go. As you progress, you'll explore the myriad of functionalities MLflow has to offer, streamlining and enhancing your machine learning workflows.
 
-You can now [continue to the next section (Using the MLflow Client API)](#) of the tutorial, or [return to the tutorial listing (#)](#).
-
-```
-
----
-
-### Notes on the Markdown rendering
-- I've preserved the headings, code blocks, command outputs, and the inline note block.
-- The internal links (e.g., to other sections or pages) are rendered as placeholders (`[#]`) since I can't resolve dynamic URLs directly—feel free to replace them with actual URLs if needed.
-- Let me know if you'd like a Markdown version of the rest of the tutorial or other sections!
-::contentReference[oaicite:0]{index=0}
-```
+You can now [continue to the next section (Using the MLflow Client API)](https://mlflow.org/docs/latest/ml/getting-started/logging-first-model/step2-mlflow-client/) of the tutorial, or [return to the tutorial listing](https://mlflow.org/docs/latest/ml/getting-started/logging-first-model/).
