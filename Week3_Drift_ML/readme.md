@@ -181,16 +181,16 @@ $$
 
 * เดิมใน fraud detection:
 
-  $$
+  $
   P(fraud \mid high\_amount) \approx 0.8
-  $$
+  $
 
 
 * ต่อมา เมื่อ fraudsters เปลี่ยนวิธีโกง (เช่น จากบัตรปลอม → phishing):
 
-  $$
+  $
   P(fraud \mid high\_amount) \approx 0.2
-  $$
+  $
 
 
 แต่ไปเพิ่มโอกาสใน feature อื่น เช่น $P(fraud \mid unusual\_ip)$ แทน → ความสัมพันธ์ input–output เปลี่ยนทันที
