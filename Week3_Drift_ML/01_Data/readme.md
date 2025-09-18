@@ -51,6 +51,7 @@ print("Chi-Square p-value:", p_value)
 
   * **ใกล้ 0** → distribution คล้ายกัน
   * **ใกล้ 1** → distribution แตกต่างมาก
+  * **ใช้เกณฑ์แนะนำ** > 0.10 ถือว่ามี drift เชิงปฏิบัติ
 
 ```python
 from scipy.spatial.distance import jensenshannon
