@@ -1,7 +1,0 @@
-column,type,test,statistic,p_value,alpha,drift_detected_p<alpha,psi,psi_bucket
-country,categorical,Chi-Square,129.7457928593316,6.135573543074954e-28,0.05,True,0.26838250589511825,Large (>0.25)
-clicks,numeric,KS,0.204,1.2857747777661932e-18,0.05,True,0.2595602210111347,Large (>0.25)
-age,numeric,KS,0.19184202178280638,3.890785166693404e-16,0.05,True,0.20896684180962383,Moderate (0.10–0.25)
-income,numeric,KS,0.139,7.709567304002036e-09,0.05,True,0.09975726789196429,No shift (<0.10)
-device,categorical,Chi-Square,34.19031986371138,3.7641452569687524e-08,0.05,True,0.06984022091481888,No shift (<0.10)
-signup_channel,categorical,Chi-Square,29.32334166489657,4.2905924279977053e-07,0.05,True,0.05903982047269083,No shift (<0.10)
