@@ -187,7 +187,7 @@ $$
 
 **ตัวอย่างง่าย:**
 
-* เดิมในงาน **fraud detection**:
+*  **fraud detection**
 
 $$
 P_(\text{fraud} \mid \text{high\_amount}) \approx 0.8
