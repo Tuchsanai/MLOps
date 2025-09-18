@@ -199,7 +199,7 @@ $$
 * และโอกาสย้ายไปที่ฟีเจอร์อื่น เช่น:
 
 $$
-P(\text{fraud} \mid \text{unusual\_ip}) \uparrow
+P(\text{fraud} \mid \text{unusual ip}) \uparrow
 $$
 
 ---
