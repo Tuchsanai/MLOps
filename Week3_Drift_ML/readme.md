@@ -170,7 +170,7 @@ $$
 * Concept Drift เกิดขึ้นเมื่อ:
 
 $$
-P_{\text{train}}(Y \mid X) \neq P_{\text{prod}}(Y \mid X)
+P{\text{train}}(Y \mid X) \neq P{\text{prod}}(Y \mid X)
 $$
 
 แม้ว่า $P(X)$ อาจไม่เปลี่ยนเลย
