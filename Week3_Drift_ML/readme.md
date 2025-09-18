@@ -125,7 +125,6 @@ Concept Drift คือการเปลี่ยนแปลงในควา
 | **Model Drift**   | ประสิทธิภาพโมเดลลดลงจากตัวโมเดลหรือ external factors                | - พยากรณ์หุ้นในวิกฤติ (จากตลาดปกติเป็น chaotic)<br>- แชทบอทกับ slang ใหม่<br>- ตรวจ defect เมื่อเครื่องจักรเสื่อม<br>- แนะนำหนังเมื่อพฤติกรรมเปลี่ยน | - Metrics (accuracy, F1-score, AUC)<br>- A/B testing<br>- Error analysis (confusion matrix)<br>- MLflow, TensorBoard, Kubeflow | - Retrain/Fine-tune พารามิเตอร์<br>- Ensemble<br>- AutoML อัตโนมัติ<br>- Version control (Git/DVC) |
 | **Concept Drift** | ความสัมพันธ์ input–output เปลี่ยน แม้ input distribution ไม่เปลี่ยน | - Fraud: บัตรปลอม → phishing<br>- Climate change เปลี่ยน pattern ฝน<br>- Social media shift (Facebook → TikTok)<br>- จราจรหลัง WFH | - Page-Hinkley, ADWIN, DDM/EDDM<br>- Label vs prediction comparison<br>- River, Scikit-Multiflow, Apache Kafka | - Online learning (incremental)<br>- Sliding window<br>- Adaptive models (meta-learning)<br>- Human-in-the-loop feedback |
 
-
 # การเปลี่ยนแปลง (Drift) ใน Machine Learning: Data Drift, Concept Drift และ Model Drift
 
 ---
@@ -189,19 +188,19 @@ $$
 *  **fraud detection**
 
 $$
-P(\text{fraud} \mid \text{high\_amount}) \approx 0.8
+P(\text{fraud} \mid \text{high\_{-}amount}) \approx 0.8
 $$
 
 * ต่อมา เมื่อวิธีการโกงเปลี่ยน (เช่น จากบัตรปลอม $\rightarrow$ phishing):
 
 $$
-P(\text{fraud} \mid \text{high\_amount}) \approx 0.2
+P(\text{fraud} \mid \text{high\_{-}amount}) \approx 0.2
 $$
 
 * และโอกาสย้ายไปที่ฟีเจอร์อื่น เช่น:
 
 $$
-P(\text{fraud} \mid \text{unusual\_ip}) \uparrow
+P(\text{fraud} \mid \text{unusual\_{-}ip}) \uparrow
 $$
 
 
@@ -251,6 +250,6 @@ Model Drift เป็นคำที่ใช้เรียกการเส�
 
 📌 วิธีคิดให้ง่าย:
 
-* **Data Drift** = "input เปลี่ยน"  
-* **Concept Drift** = "กฎเกณฑ์เปลี่ยน"  
-* **Model Drift** = "ประสิทธิภาพโมเดลเสื่อม" (มักเกิดจาก data หรือ concept drift)
+* **Data Drift** = “input เปลี่ยน”  
+* **Concept Drift** = “กฎเกณฑ์เปลี่ยน”  
+* **Model Drift** = “ประสิทธิภาพโมเดลเสื่อม” (มักเกิดจาก data หรือ concept drift)
