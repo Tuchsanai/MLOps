@@ -196,11 +196,6 @@ $$
 P(\text{fraud} \mid \text{high-amount}) \approx 0.2
 $$
 
-* และโอกาสย้ายไปที่ฟีเจอร์อื่น เช่น:
-
-$$
-P(\text{fraud} \mid \text{unusual-ip}) \uparrow
-$$
 
 ---
 
