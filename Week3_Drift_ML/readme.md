@@ -161,6 +161,11 @@ P_{\text{prod}}(\text{price}) \sim \mathcal{N}(800, 200^2)
 $$
 
 ---
+
+# การเปลี่ยนแปลง (Drift) ใน Machine Learning: Data Drift, Concept Drift และ Model Drift
+
+---
+
 ## 2. Concept Drift (การเปลี่ยนแปลงความสัมพันธ์ Input–Output)
 
 **มุมมองทางคณิตศาสตร์:**
@@ -187,19 +192,21 @@ $$
 
 **ตัวอย่างง่าย:**
 
-*  **fraud detection**
+* **Fraud Detection**
+
+ก่อนเกิด drift:
 
 $$
-P_(\text{fraud} \mid \text{high\_amount}) \approx 0.8)
+P(\text{fraud} \mid \text{high\_amount}) \approx 0.8
 $$
 
-* ต่อมา เมื่อวิธีการโกงเปลี่ยน (เช่น จากบัตรปลอม $\rightarrow$ phishing):
+ต่อมา เมื่อวิธีการโกงเปลี่ยน (เช่น จากบัตรปลอม $\rightarrow$ phishing):
 
 $$
 P(\text{fraud} \mid \text{high\_amount}) \approx 0.2
 $$
 
-* และโอกาสย้ายไปที่ฟีเจอร์อื่น เช่น:
+และโอกาสย้ายไปที่ฟีเจอร์อื่น เช่น:
 
 $$
 P(\text{fraud} \mid \text{unusual\_ip}) \uparrow
