@@ -165,54 +165,49 @@ $$
 # การเปลี่ยนแปลง (Drift) ใน Machine Learning: Data Drift, Concept Drift และ Model Drift
 
 ---
+Of course. Here is the corrected version of the mathematical notation in the "Concept Drift" section.
+
+The error `'_' allowed only in math mode` occurs because the underscore character `_` is a special command in LaTeX used for creating subscripts. When you use it inside a `\text{...}` command, which switches to text mode, it must be "escaped" with a backslash (`\`) to be displayed as a literal underscore.
+
+I've also made the notation consistent with the formal definitions by adding subscripts (`train` and `prod`) to the probability distribution `P` to clarify the "before" and "after" states.
+
+---
 
 ## 2. Concept Drift (การเปลี่ยนแปลงความสัมพันธ์ Input–Output)
 
 **มุมมองทางคณิตศาสตร์:**
 
-* ให้ความสัมพันธ์ระหว่างอินพุต–เอาต์พุตคือ  
-
-$$
-P(Y \mid X)
-$$
-
+* ให้ความสัมพันธ์ระหว่างอินพุต–เอาต์พุตคือ
+    $$
+    P(Y \mid X)
+    $$
 * **Concept Drift เกิดขึ้นเมื่อ**
-
-$$
-P_{\text{train}}(Y \mid X) \neq P_{\text{prod}}(Y \mid X)
-$$
-
-แม้ว่า  
-
-$$
-P_{\text{train}}(X) \approx P_{\text{prod}}(X)
-$$
+    $$
+    P_{\text{train}}(Y \mid X) \neq P_{\text{prod}}(Y \mid X)
+    $$
+    แม้ว่า
+    $$
+    P_{\text{train}}(X) \approx P_{\text{prod}}(X)
+    $$
 
 ---
 
 **ตัวอย่างง่าย:**
 
-* **Fraud Detection**
+* **fraud detection** (ตอนฝึกโมเดล): ในช่วงแรก การใช้จ่ายยอดสูงมีความสัมพันธ์สูงกับการฉ้อโกง
+    $$
+    P_{\text{train}}(\text{fraud} \mid \text{high\_amount}) \approx 0.8
+    $$
+* ต่อมา เมื่อวิธีการโกงเปลี่ยน (เช่น จากบัตรปลอม → phishing) ความสัมพันธ์เดิมก็เปลี่ยนไป:
+    $$
+    P_{\text{prod}}(\text{fraud} \mid \text{high\_amount}) \approx 0.2
+    $$
+* และโอกาสการฉ้อโกงอาจย้ายไปสัมพันธ์กับฟีเจอร์อื่นแทน เช่น การล็อกอินจาก IP ที่ผิดปกติ:
+    $$
+    P_{\text{prod}}(\text{fraud} \mid \text{unusual\_ip}) \uparrow
+    $$
 
-ก่อนเกิด drift:
-
-$$
-P(\text{fraud} \mid \text{high\_{amount}}) \approx 0.8
-$$
-
-ต่อมา เมื่อวิธีการโกงเปลี่ยน (เช่น จากบัตรปลอม $\rightarrow$ phishing):
-
-$$
-P(\text{fraud} \mid \text{high\_amount}) \approx 0.2
-$$
-
-และโอกาสย้ายไปที่ฟีเจอร์อื่น เช่น:
-
-$$
-P(\text{fraud} \mid \text{unusual\_ip}) \uparrow
-$$
-
-
+---
 ---
 
 ## 3. Model Drift (การเสื่อมประสิทธิภาพโมเดล)
