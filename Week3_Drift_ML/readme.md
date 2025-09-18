@@ -190,7 +190,7 @@ $$
 * เดิมในงาน **fraud detection**:
 
 $$
-P(\text{fraud} \mid \text{high\_amount}) \approx 0.8
+P_(\text{fraud} \mid \text{high\_amount}) \approx 0.8
 $$
 
 * ต่อมา เมื่อวิธีการโกงเปลี่ยน (เช่น จากบัตรปลอม $\rightarrow$ phishing):
