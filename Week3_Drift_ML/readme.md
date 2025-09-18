@@ -161,42 +161,42 @@ P_{\text{prod}}(\text{price}) \sim \mathcal{N}(800, 200^2)
 $$
 
 ---
-
 ## 2. Concept Drift (การเปลี่ยนแปลงความสัมพันธ์ Input–Output)
 
 **มุมมองทางคณิตศาสตร์:**
 
-* ให้ความสัมพันธ์ระหว่างอินพุต–เอาต์พุตคือ $P(Y \mid X)$
+* ให้ความสัมพันธ์ระหว่างอินพุต–เอาต์พุตคือ $P(Y \mid X)$  
 * **Concept Drift เกิดขึ้นเมื่อ**
 
-  $$
-  P_{\text{train}}(Y \mid X) \neq P_{\text{prod}}(Y \mid X)
-  $$
+$$
+P_{\text{train}}(Y \mid X) \neq P_{\text{prod}}(Y \mid X)
+$$
 
-  แม้ว่า
+แม้ว่า  
 
-  $$
-  P_{\text{train}}(X) \approx P_{\text{prod}}(X).
-  $$
+$$
+P_{\text{train}}(X) \approx P_{\text{prod}}(X).
+$$
 
 **ตัวอย่างง่าย:**
 
 * เดิมในงาน **fraud detection**:
 
-  $$
-  P(\text{fraud} \mid \text{high\_amount}) \approx 0.8
-  $$
+$$
+P(\text{fraud} \mid \text{high\_amount}) \approx 0.8
+$$
+
 * ต่อมา เมื่อวิธีการโกงเปลี่ยน (เช่น จากบัตรปลอม $\rightarrow$ phishing):
 
-  $$
-  P(\text{fraud} \mid \text{high\_amount}) \approx 0.2
-  $$
+$$
+P(\text{fraud} \mid \text{high\_amount}) \approx 0.2
+$$
 
-  และโอกาสย้ายไปที่ฟีเจอร์อื่น เช่น:
+* และโอกาสย้ายไปที่ฟีเจอร์อื่น เช่น:
 
-  $$
-  P(\text{fraud} \mid \text{unusual\_ip}) \uparrow
-  $$
+$$
+P(\text{fraud} \mid \text{unusual\_ip}) \uparrow
+$$
 
 
 ---
