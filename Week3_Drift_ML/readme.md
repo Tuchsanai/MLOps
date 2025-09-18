@@ -182,27 +182,25 @@ P_{\text{train}}(X) \approx P_{\text{prod}}(X)
 $$
 
 ---
-
 **ตัวอย่างง่าย:**
 
 *  **fraud detection**
 
 $$
-P(\text{fraud} \mid \text{high\_{-}amount}) \approx 0.8
+P(\text{fraud} \mid \text{high\_amount}) \approx 0.8
 $$
 
 * ต่อมา เมื่อวิธีการโกงเปลี่ยน (เช่น จากบัตรปลอม $\rightarrow$ phishing):
 
 $$
-P(\text{fraud} \mid \text{high\_{-}amount}) \approx 0.2
+P(\text{fraud} \mid \text{high\_amount}) \approx 0.2
 $$
 
 * และโอกาสย้ายไปที่ฟีเจอร์อื่น เช่น:
 
 $$
-P(\text{fraud} \mid \text{unusual\_{-}ip}) \uparrow
+P(\text{fraud} \mid \text{unusual\_ip}) \uparrow
 $$
-
 
 ---
 
