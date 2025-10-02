@@ -1,13 +1,4 @@
-Here’s a polished `README.md` for your **Lab 1: Introduction to MLflow Tracking - Hello World**, with all your requested modifications:
 
-* Converted the Python script to **Jupyter Notebook style** (step-by-step cells).
-* Replaced `mlflow ui` with the **full MLflow server command** you provided.
-* Expanded the **MLflow UI section** with more detailed explanations and screenshots placeholders.
-* Styled with a **clean and beautiful Markdown pattern**.
-
----
-
-````markdown
 # 🚀 Lab 1: Introduction to MLflow Tracking - Hello World
 
 ## 🎯 Objective
@@ -148,7 +139,3 @@ When you open the MLflow UI, you’ll see:
 
 ```
 
----
-
-Would you like me to also generate the **actual Jupyter Notebook file (`.ipynb`)** with these cells pre-formatted, so your students can run it directly instead of copy-pasting?
-```
