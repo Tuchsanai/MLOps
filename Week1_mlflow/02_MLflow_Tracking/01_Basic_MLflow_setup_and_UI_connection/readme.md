@@ -100,37 +100,14 @@ Open your browser and go to:
 
 When you open the MLflow UI, you’ll see:
 
-1. **Experiment List**
+**Experiment List**
 
    * Shows available experiments, e.g., `Lab1_Hello_MLflow`.
 
-2. **Runs Table**
+![Alt text](./img/1.png)
+![Alt text](./img/2.png)
+![Alt text](./img/3.png)
 
-   * Displays each run with its parameters, metrics, and run ID.
-   * Example:
 
-     | Run ID | learning_rate | batch_size | accuracy | loss |
-     | ------ | ------------- | ---------- | -------- | ---- |
-     | 123abc | 0.01          | 32         | 0.85     | 0.15 |
 
-3. **Run Details Page**
 
-   * **Parameters Tab** → Hyperparameters like `learning_rate`, `batch_size`.
-   * **Metrics Tab** → Time-series tracking of metrics (`accuracy`, `loss`).
-   * **Artifacts Tab** → Uploaded files, e.g., `hello.txt`.
-   * **Source Tab** → Code version info (if Git is enabled).
-
-4. **Visualization**
-
-   * Compare multiple runs visually (metrics across runs, parallel coordinates, scatter plots).
-
-📷 *[Insert Screenshot Placeholder: Experiments Overview]*
-📷 *[Insert Screenshot Placeholder: Run Details Page]*
-
----
-
-## ✅ Expected Outcome
-
-* One experiment named **Lab1_Hello_MLflow**.
-* One completed run with parameters, metrics, and artifacts logged.
-* The text file `hello.txt` is accessible from the **Artifacts tab** in MLflow UI.
