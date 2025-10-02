@@ -62,9 +62,19 @@ with mlflow.start_run():
 
 ## ⚙️ Step 3: Launch MLflow Tracking Server
 
+Run method 1 :
+
+```bash
+mlflow server --host 127.0.0.1 --port 8080
+```
+
+Run method 2 :
+
+
 Instead of using the simple `mlflow ui`, run the **MLflow Tracking Server** with SQLite backend and local artifact storage:
 
 ```bash
+mkdir -p mlruns_db mlartifacts
 mlflow server \
   --host 127.0.0.1 --port 8080 \
   --backend-store-uri sqlite:///mlruns_db/mlflow.db \
