@@ -6,7 +6,7 @@ Learn the basics of **MLflow Tracking** and connect to the **MLflow UI** to expl
 
 ---
 
-## 📦 Step 1: Setup Environment
+## 📦 Step 0: Setup Environment
 
 Make sure MLflow is installed:
 
@@ -15,6 +15,43 @@ pip install mlflow scikit-learn pandas numpy
 ````
 
 ---
+
+## ⚙️ Step 1: Launch MLflow Tracking Server
+
+Run method 1 :
+
+```bash
+mlflow server --host 127.0.0.1 --port 8080
+```
+
+Run method 2 :
+
+
+Instead of using the simple `mlflow ui`, run the **MLflow Tracking Server** with SQLite backend and local artifact storage:
+
+```bash
+mkdir -p mlruns_db mlartifacts
+mlflow server \
+  --host 127.0.0.1 --port 8080 \
+  --backend-store-uri sqlite:///mlruns_db/mlflow.db \
+  --artifacts-destination ./mlartifacts \
+  --serve-artifacts
+```
+
+* **Backend Store URI** → Saves experiment metadata (experiments, runs, params, metrics).
+* **Artifacts Destination** → Stores logged files (artifacts).
+* **Serve Artifacts** → Makes artifacts browsable from MLflow UI.
+
+---
+
+## 🌐 Connect to MLflow UI
+
+Open your browser and go to:
+
+👉 [http://127.0.0.1:8080](http://127.0.0.1:8080)
+
+---
+
 
 ## 📝 Step 2: Create Your First MLflow Experiment (Jupyter Notebook Version)
 
@@ -65,41 +102,7 @@ with mlflow.start_run():
 
 ---
 
-## ⚙️ Step 3: Launch MLflow Tracking Server
 
-Run method 1 :
-
-```bash
-mlflow server --host 127.0.0.1 --port 8080
-```
-
-Run method 2 :
-
-
-Instead of using the simple `mlflow ui`, run the **MLflow Tracking Server** with SQLite backend and local artifact storage:
-
-```bash
-mkdir -p mlruns_db mlartifacts
-mlflow server \
-  --host 127.0.0.1 --port 8080 \
-  --backend-store-uri sqlite:///mlruns_db/mlflow.db \
-  --artifacts-destination ./mlartifacts \
-  --serve-artifacts
-```
-
-* **Backend Store URI** → Saves experiment metadata (experiments, runs, params, metrics).
-* **Artifacts Destination** → Stores logged files (artifacts).
-* **Serve Artifacts** → Makes artifacts browsable from MLflow UI.
-
----
-
-## 🌐 Step 4: Connect to MLflow UI
-
-Open your browser and go to:
-
-👉 [http://127.0.0.1:8080](http://127.0.0.1:8080)
-
----
 
 ## 🖥️ MLflow UI Walkthrough
 
