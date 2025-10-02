@@ -103,6 +103,43 @@ with mlflow.start_run():
 ---
 
 
+---
+
+### 🔹 Cell 4: Start MLflow Run and Log Parameters/Metrics
+
+```python
+
+import mlflow, os, time
+mlflow.set_experiment("Lab1_Hello_MLflow")
+
+with mlflow.start_run(run_name="hello-run"):
+    # Params
+    mlflow.log_param("learning_rate", 0.05)
+    mlflow.log_param("batch_size", 64)
+
+    # Metrics (simulate improvement over time)
+    for step, acc in enumerate([0.78, 0.81, 0.84]):
+        mlflow.log_metric("accuracy", acc, step=step)
+        time.sleep(0.2)
+
+    # Artifact (a small text file)
+    os.makedirs("artifacts", exist_ok=True)
+    with open("artifacts/readme.txt", "w") as f:
+        f.write("Hello MLflow! This file is tracked as an artifact.")
+    mlflow.log_artifact("artifacts/readme.txt")
+
+print("✅ Lab 1 complete. Check the MLflow UI → Experiments → Lab1_Hello_MLflow.")
+
+```
+
+![Alt text](./img/4.png)
+![Alt text](./img/5.png)
+![Alt text](./img/6.png)
+
+
+---
+
+
 
 ## 🖥️ MLflow UI Walkthrough
 
