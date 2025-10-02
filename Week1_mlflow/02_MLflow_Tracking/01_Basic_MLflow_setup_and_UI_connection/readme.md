@@ -124,18 +124,3 @@ When you open the MLflow UI, you’ll see:
 * One experiment named **Lab1_Hello_MLflow**.
 * One completed run with parameters, metrics, and artifacts logged.
 * The text file `hello.txt` is accessible from the **Artifacts tab** in MLflow UI.
-
----
-
-## 🔮 Next Steps
-
-* Try changing hyperparameters (`learning_rate`, `batch_size`) and re-run.
-* Compare multiple runs inside MLflow UI.
-* Explore **automatic logging** with `mlflow.autolog()`.
-
----
-
-✨ **Congratulations!** You’ve completed your first MLflow Tracking experiment.
-
-```
-
