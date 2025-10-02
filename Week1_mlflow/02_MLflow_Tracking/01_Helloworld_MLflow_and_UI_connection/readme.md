@@ -58,6 +58,11 @@ with mlflow.start_run():
     print("✅ Run completed! Check MLflow UI")
 ```
 
+![Alt text](./img/1.png)
+![Alt text](./img/2.png)
+![Alt text](./img/3.png)
+
+
 ---
 
 ## ⚙️ Step 3: Launch MLflow Tracking Server
@@ -104,9 +109,6 @@ When you open the MLflow UI, you’ll see:
 
    * Shows available experiments, e.g., `Lab1_Hello_MLflow`.
 
-![Alt text](./img/1.png)
-![Alt text](./img/2.png)
-![Alt text](./img/3.png)
 
 
 
