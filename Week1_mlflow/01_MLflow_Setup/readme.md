@@ -95,3 +95,5 @@ Verify connectivity:
 python -c "import mlflow; print('Tracking URI:', mlflow.get_tracking_uri())"
 ```
 
+
+![Alt text](./img/1.png)
