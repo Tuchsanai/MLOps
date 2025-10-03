@@ -27,23 +27,32 @@ pip install evidently
 Evidently สามารถสร้างรายงานคุณภาพข้อมูล เช่น missing values, outliers, distribution ฯลฯ
 
 ```python
-import pandas as pd
-from evidently.report import Report
-from evidently.metrics import DataQualityPreset
 
-# โหลด dataset ตัวอย่าง
-df = pd.read_csv("https://raw.githubusercontent.com/evidentlyai/evidently/main/examples/data/data.csv")
+import pandas as pd
+from sklearn.datasets import load_iris
+
+from evidently import Report
+from evidently.metrics import *
+from evidently.presets import *
+
+
+# โหลด dataset จาก sklearn ได้ DataFrame โดยตรง
+df = load_iris(as_frame=True).frame
 
 # สร้างรายงาน Data Quality
-report = Report(metrics=[DataQualityPreset()])
-report.run(reference_data=None, current_data=df)
+report = Report([ DataSummaryPreset()])
+eval = report.run(df,None)
 
-# แสดงผลใน Notebook
-report.show()
+eval.save_html("data_quality_report.html")
 
-# บันทึกเป็น HTML
-report.save_html("data_quality_report.html")
+
 ```
+
+![Alt text](./img/1a.png)
+![Alt text](./img/1b.png)
+![Alt text](./img/1c.png)
+
+
 
 📌 รายงานนี้ช่วยให้นักศึกษารู้ว่าข้อมูลที่ใช้ train/test มี **คุณภาพเพียงพอ** หรือไม่ เช่น missing values เยอะเกินไป หรือ feature distribution ผิดปกติ
 

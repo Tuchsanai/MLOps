@@ -1,0 +1,422 @@
+# ⚡ Realtime OpenCV + Chatbot Web Dashboard (FastAPI + WebSockets)
+
+A minimal, production‑ready template for a realtime dashboard that streams webcam frames to a Python backend (OpenCV processing) and shows results live in the browser, **plus** a chatbot panel powered by OpenAI (optional) — all over a simple **realtime stack**: **FastAPI + WebSockets** on the backend and vanilla **HTML/JS** on the frontend.
+
+> ✅ Works locally without GPUs. Add your own CV logic (YOLO/Segmentation) inside the processing hook. Chatbot gracefully degrades to a local echo if no `OPENAI_API_KEY` is present.
+
+---
+
+## 🧩 Project Structure
+
+```
+realtime-dashboard/
+├── backend/
+│   ├── main.py               # FastAPI app: video WebSocket + chat endpoint
+│   ├── requirements.txt
+│   └── .env.example          # OPENAI_API_KEY=...
+├── frontend/
+│   └── index.html            # Web UI: video stream + processed preview + chat panel
+├── run.sh                    # one-liner to run backend and serve frontend
+└── README.md                 # quickstart & notes
+```
+
+---
+
+## ▶️ Quickstart
+
+1. **Create and activate a virtualenv (optional)**
+
+```bash
+python -m venv .venv
+source .venv/bin/activate  # Windows: .\.venv\Scripts\Activate.ps1
+```
+
+2. **Install backend deps**
+
+```bash
+pip install -r backend/requirements.txt
+```
+
+3. **(Optional) Set OpenAI key for chatbot**
+
+Copy `backend/.env.example` → `backend/.env` and add your key.
+
+4. **Run**
+
+```bash
+bash run.sh
+```
+
+Then open [http://127.0.0.1:8000](http://127.0.0.1:8000) in your browser.
+
+---
+
+## 🖥️ Frontend (HTML + Vanilla JS)
+
+**`frontend/index.html`**
+
+```html
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Realtime OpenCV + Chatbot Dashboard</title>
+  <style>
+    body{font-family:system-ui,-apple-system,Segoe UI,Roboto,Ubuntu,Arial,sans-serif;margin:0;padding:24px;background:#0b1020;color:#eef1f6}
+    h1{margin:0 0 12px 0}
+    .grid{display:grid;grid-template-columns:1.2fr 1fr;gap:16px}
+    .card{background:#111831;border:1px solid #1e2a4a;border-radius:16px;padding:16px;box-shadow:0 10px 30px rgba(0,0,0,.2)}
+    video,canvas{width:100%;border-radius:12px;background:#000}
+    .row{display:flex;gap:12px;align-items:center}
+    .muted{opacity:.8;font-size:12px}
+    .stat{display:inline-block;background:#0f1a37;border:1px solid #23325d;padding:6px 10px;border-radius:10px;margin-right:8px}
+    .chat-log{height:380px;overflow:auto;background:#0d142a;border:1px solid #1e2a4a;border-radius:12px;padding:12px}
+    .chat-input{display:flex;gap:10px;margin-top:10px}
+    input,button{border-radius:10px;border:1px solid #2a3a6a;padding:10px;background:#0f1a37;color:#eef1f6}
+    button{cursor:pointer}
+    .msg.user{color:#9fe7a4}
+    .msg.bot{color:#a7c5ff}
+  </style>
+</head>
+<body>
+  <h1>⚡ Realtime OpenCV + Chatbot Dashboard</h1>
+  <p class="muted">Webcam frames → WebSocket → FastAPI (OpenCV) → back to browser. Plus: Chatbot with OpenAI or local echo.</p>
+
+  <div class="grid">
+    <div class="card">
+      <h3>🎥 Video Stream</h3>
+      <div class="row">
+        <button id="startBtn">Start</button>
+        <button id="stopBtn">Stop</button>
+        <span class="stat">FPS: <span id="fps">0</span></span>
+        <span class="stat">Latency: <span id="lat">0</span> ms</span>
+        <span class="stat">Processed: <span id="proc">0</span></span>
+      </div>
+      <div class="row" style="margin-top:12px">
+        <video id="cam" autoplay muted playsinline></video>
+        <canvas id="preview" style="display:none"></canvas>
+      </div>
+      <div class="row" style="margin-top:12px">
+        <canvas id="processed"></canvas>
+      </div>
+    </div>
+
+    <div class="card">
+      <h3>💬 Chatbot</h3>
+      <div id="chat" class="chat-log"></div>
+      <div class="chat-input">
+        <input id="chatText" placeholder="Ask anything..." />
+        <button id="sendBtn">Send</button>
+      </div>
+      <p class="muted">Tip: Set <code>OPENAI_API_KEY</code> in <code>backend/.env</code> to enable LLM. Otherwise, bot will echo.</p>
+    </div>
+  </div>
+
+<script>
+const WS_URL = (location.protocol === 'https:' ? 'wss://' : 'ws://') + location.host + '/ws/video';
+let ws, stream, rafId, lastFrameTs = performance.now(), frames=0, processedCount=0;
+const cam = document.getElementById('cam');
+const preview = document.getElementById('preview');
+const processed = document.getElementById('processed');
+const fpsEl = document.getElementById('fps');
+const latEl = document.getElementById('lat');
+const procEl = document.getElementById('proc');
+
+async function start() {
+  stream = await navigator.mediaDevices.getUserMedia({video:true,audio:false});
+  cam.srcObject = stream;
+  await cam.play();
+  const [w,h] = [cam.videoWidth || 640, cam.videoHeight || 480];
+  preview.width=w; preview.height=h; processed.width=w; processed.height=h;
+  ws = new WebSocket(WS_URL);
+  ws.binaryType = 'arraybuffer';
+  ws.onopen = () => pump();
+  ws.onmessage = (ev) => {
+    const tRecv = performance.now();
+    try {
+      const obj = JSON.parse(new TextDecoder().decode(ev.data));
+      const {frame_b64, t_sent} = obj;
+      const img = new Image();
+      img.onload = () => {
+        const ctx = processed.getContext('2d');
+        ctx.drawImage(img,0,0,processed.width,processed.height);
+        processedCount++; procEl.textContent = processedCount;
+        const latency = Math.max(0, tRecv - t_sent);
+        latEl.textContent = latency.toFixed(0);
+      };
+      img.src = frame_b64;
+    } catch(e){ console.error(e); }
+  };
+}
+
+function pump(){
+  const ctx = preview.getContext('2d');
+  const loop = () => {
+    if(!ws || ws.readyState !== 1) return;
+    ctx.drawImage(cam,0,0,preview.width,preview.height);
+    preview.toBlob(blob => {
+      if(!blob) return;
+      const reader = new FileReader();
+      reader.onload = () => {
+        const frame_b64 = reader.result; // data:image/png;base64,...
+        const payload = JSON.stringify({ frame_b64, t_sent: performance.now() });
+        ws.send(new TextEncoder().encode(payload));
+      };
+      reader.readAsDataURL(blob);
+    }, 'image/jpeg', 0.6);
+
+    frames++;
+    const now = performance.now();
+    if(now - lastFrameTs >= 1000){ fpsEl.textContent = frames; frames=0; lastFrameTs = now; }
+    rafId = requestAnimationFrame(loop);
+  };
+  loop();
+}
+
+function stop(){
+  if(rafId) cancelAnimationFrame(rafId);
+  if(ws) { ws.close(); ws = null; }
+  if(stream){ stream.getTracks().forEach(t=>t.stop()); stream=null; }
+}
+
+document.getElementById('startBtn').onclick = start;
+document.getElementById('stopBtn').onclick = stop;
+
+// Chatbot logic
+const chatLog = document.getElementById('chat');
+const chatText = document.getElementById('chatText');
+const sendBtn = document.getElementById('sendBtn');
+
+function addMsg(who, text){
+  const div = document.createElement('div');
+  div.className = 'msg ' + who;
+  div.textContent = (who==='user'? 'You: ' : 'Bot: ') + text;
+  chatLog.appendChild(div); chatLog.scrollTop = chatLog.scrollHeight;
+}
+
+async function send(){
+  const msg = chatText.value.trim(); if(!msg) return; chatText.value='';
+  addMsg('user', msg);
+  const res = await fetch('/chat', {method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({message: msg})});
+  const reader = res.body.getReader();
+  let botLine = '';
+  while(true){
+    const {value, done} = await reader.read();
+    if(done) break;
+    botLine += new TextDecoder().decode(value);
+    // display progressively
+    if(botLine.endsWith('\n')){ addMsg('bot', botLine.trim()); botLine=''; }
+  }
+  if(botLine) addMsg('bot', botLine);
+}
+
+sendBtn.onclick = send;
+chatText.addEventListener('keydown', (e)=>{ if(e.key==='Enter') send(); });
+</script>
+</body>
+</html>
+```
+
+---
+
+## 🐍 Backend (FastAPI + WebSockets + OpenCV + Optional OpenAI)
+
+**`backend/requirements.txt`**
+
+```
+fastapi==0.115.0
+uvicorn[standard]==0.30.6
+python-dotenv==1.0.1
+opencv-python==4.10.0.84
+numpy==2.1.2
+pydantic==2.9.2
+openai==1.51.2
+```
+
+> If you hit platform issues with `opencv-python`, try `opencv-python-headless`.
+
+**`backend/.env.example`**
+
+```
+# Optional. If unset, chatbot returns a local echo.
+OPENAI_API_KEY=sk-...
+OPENAI_MODEL=gpt-4o-mini
+```
+
+**`backend/main.py`**
+
+```python
+import base64
+import io
+import os
+import time
+from typing import Optional
+
+import cv2
+import numpy as np
+from fastapi import FastAPI, WebSocket, WebSocketDisconnect
+from fastapi.responses import HTMLResponse, StreamingResponse
+from fastapi.staticfiles import StaticFiles
+from pydantic import BaseModel
+from dotenv import load_dotenv
+
+load_dotenv()
+
+# --- OpenAI (optional) ---
+OPENAI_API_KEY = os.getenv("OPENAI_API_KEY")
+OPENAI_MODEL = os.getenv("OPENAI_MODEL", "gpt-4o-mini")
+try:
+    from openai import OpenAI
+    openai_client = OpenAI(api_key=OPENAI_API_KEY) if OPENAI_API_KEY else None
+except Exception:
+    openai_client = None
+
+app = FastAPI()
+
+# Serve frontend statically from ../frontend
+app.mount("/", StaticFiles(directory=os.path.join(os.path.dirname(__file__), "..", "frontend"), html=True), name="static")
+
+# --------- Helpers ---------
+
+def decode_data_url(data_url: str) -> np.ndarray:
+    """Convert data:image/...;base64,XXXX to OpenCV BGR image."""
+    header, b64data = data_url.split(",", 1)
+    raw = base64.b64decode(b64data)
+    img_arr = np.frombuffer(raw, np.uint8)
+    img = cv2.imdecode(img_arr, cv2.IMREAD_COLOR)  # BGR
+    return img
+
+
+def encode_bgr_to_data_url(img_bgr: np.ndarray, quality: int = 80) -> str:
+    """Encode BGR image to data URL (JPEG)."""
+    encode_param = [int(cv2.IMWRITE_JPEG_QUALITY), quality]
+    ok, buf = cv2.imencode('.jpg', img_bgr, encode_param)
+    if not ok:
+        raise RuntimeError("cv2.imencode failed")
+    b64 = base64.b64encode(buf.tobytes()).decode('ascii')
+    return f"data:image/jpeg;base64,{b64}"
+
+
+def process_frame(img_bgr: np.ndarray) -> np.ndarray:
+    """Place your CV pipeline here (YOLO, SAM, etc.). Now: Canny edges + FPS overlay."""
+    gray = cv2.cvtColor(img_bgr, cv2.COLOR_BGR2GRAY)
+    edges = cv2.Canny(gray, 80, 160)
+    edges_bgr = cv2.cvtColor(edges, cv2.COLOR_GRAY2BGR)
+    # Blend original & edges for a nicer preview
+    out = cv2.addWeighted(img_bgr, 0.7, edges_bgr, 0.7, 0)
+    # Add overlay text
+    ts = time.strftime('%H:%M:%S')
+    cv2.putText(out, f"Realtime CV @ {ts}", (12, 28), cv2.FONT_HERSHEY_SIMPLEX, 0.8, (30, 230, 255), 2, cv2.LINE_AA)
+    return out
+
+
+# --------- Video WebSocket ---------
+
+@app.websocket("/ws/video")
+async def ws_video(ws: WebSocket):
+    await ws.accept()
+    try:
+        while True:
+            data = await ws.receive_bytes()
+            # payload is UTF-8 JSON bytes
+            s = data.decode('utf-8')
+            # minimal JSON parsing avoiding extra deps
+            # Expected keys: frame_b64, t_sent
+            # NOTE: since payload is small, we can eval via json
+            import json
+            obj = json.loads(s)
+            frame_b64 = obj.get('frame_b64')
+            t_sent = float(obj.get('t_sent', time.time()*1000.0))
+
+            img = decode_data_url(frame_b64)
+            out = process_frame(img)
+            out_b64 = encode_bgr_to_data_url(out, quality=80)
+
+            resp = {"frame_b64": out_b64, "t_sent": t_sent}
+            payload = json.dumps(resp).encode('utf-8')
+            await ws.send_bytes(payload)
+    except WebSocketDisconnect:
+        pass
+
+
+# --------- Chatbot (SSE-style streaming) ---------
+
+class ChatReq(BaseModel):
+    message: str
+
+@app.post("/chat")
+async def chat(req: ChatReq):
+    user_msg = req.message.strip()
+
+    async def event_stream():
+        # If OpenAI key is present, stream model response; else echo.
+        if openai_client:
+            try:
+                # Using the Responses API with text output as a simple stream
+                # Fallback to Chat Completions if Responses is unavailable in your env.
+                with openai_client.chat.completions.with_streaming_response.create(
+                    model=OPENAI_MODEL,
+                    messages=[{"role": "system", "content": "You are a concise helpful assistant."},
+                              {"role": "user", "content": user_msg}],
+                    temperature=0.6,
+                    stream=True,
+                ) as stream:
+                    for event in stream.iter_lines():
+                        # each line is a chunk of text already; keep it simple
+                        chunk = event.decode('utf-8') if isinstance(event, (bytes, bytearray)) else str(event)
+                        if chunk:
+                            yield chunk
+            except Exception as e:
+                yield f"[LLM error: {e}]\n"
+        else:
+            # Local echo fallback
+            yield f"(echo) You said: {user_msg}\n"
+
+    return StreamingResponse(event_stream(), media_type="text/plain")
+```
+
+---
+
+## 🏃 run.sh (dev convenience)
+
+**`run.sh`**
+
+```bash
+#!/usr/bin/env bash
+set -euo pipefail
+# start FastAPI serving the static frontend
+UVICORN_PORT=${PORT:-8000}
+PYTHONPATH=$(pwd) uvicorn backend.main:app --host 127.0.0.1 --port $UVICORN_PORT --reload
+```
+
+---
+
+## 🧪 Notes & Tips
+
+* **Security**: In production, terminate TLS at a reverse proxy (e.g., Nginx/Caddy) and upgrade `ws://` to `wss://`.
+* **Bandwidth**: The sample sends ~10–20 JPEGs/s depending on your device. You can throttle by:
+
+  * decreasing `requestAnimationFrame` cadence,
+  * lowering `toBlob(..., 'image/jpeg', QUALITY)` (e.g., 0.4),
+  * resizing the canvas before sending.
+* **Latency**: Measured as (server echo time − client send time). For robust metrics, also timestamp on the server and include round‑trip averaging.
+* **Add YOLO / custom models**: Replace `process_frame` with your detector/segmenter. If you require GPU, run the backend in a Docker image with CUDA and install `torch` + your favorite inference libs.
+* **Multiple clients**: Each browser gets its own WebSocket. Scale with Uvicorn workers behind a load balancer; move heavy CV to a worker pool if needed.
+* **Chat model**: Swap to any OpenAI model via `OPENAI_MODEL`. If you prefer the new Responses API end‑to‑end, adjust the call accordingly.
+
+---
+
+## 🧱 Extending to a fuller Realtime Stack
+
+* **WebRTC** for low‑latency media transport if you need audio or >30 FPS video.
+* **Redis** pub/sub for fan‑out of processed frames to many subscribers.
+* **Celery / RQ** for offloading heavy CV jobs.
+* **Next.js/React** UI + charts (e.g., Recharts) for richer dashboards.
+* **Auth** (JWT) and per‑room namespaces for multi‑camera deployments.
+
+---
+
+## 📜 LICENSE
+
+MIT — use freely for teaching and internal demos.
