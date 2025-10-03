@@ -26,6 +26,8 @@ pip install evidently
 
 Evidently สามารถสร้างรายงานคุณภาพข้อมูล เช่น missing values, outliers, distribution ฯลฯ
 
+1. Iris Dataset
+
 ```python
 
 import pandas as pd
@@ -36,14 +38,16 @@ from evidently.metrics import *
 from evidently.presets import *
 
 
+
 # โหลด dataset จาก sklearn ได้ DataFrame โดยตรง
 df = load_iris(as_frame=True).frame
 
+
 # สร้างรายงาน Data Quality
 report = Report([ DataSummaryPreset()])
-eval = report.run(df,None)
+eval = report.run(df_iris,None)
 
-eval.save_html("data_quality_report.html")
+eval.save_html("iris_data_quality_report.html")
 
 
 ```
@@ -51,6 +55,31 @@ eval.save_html("data_quality_report.html")
 ![Alt text](./img/1a.png)
 ![Alt text](./img/1b.png)
 ![Alt text](./img/1c.png)
+
+
+1. Titanic Dataset
+
+```python
+
+import pandas as pd
+from sklearn.datasets import fetch_openml
+
+from evidently import Report
+from evidently.metrics import *
+from evidently.presets import *
+
+# Download Titanic dataset from OpenML
+df_titanic = fetch_openml("titanic", version=1, as_frame=True).frame
+
+# สร้างรายงาน Data Quality
+report = Report([ DataSummaryPreset()])
+eval = report.run(df_titanic,None)
+
+eval.save_html("titanic_data_quality_report.html")
+
+```
+
+![Alt text](./img/2a.png)
 
 
 
