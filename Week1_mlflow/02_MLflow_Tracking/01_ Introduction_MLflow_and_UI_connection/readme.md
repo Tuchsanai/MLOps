@@ -204,6 +204,8 @@ print("Run completed! Check MLflow UI for parameters, metrics, and artifacts.")
 ![Metrics Visualization](./img/4.png)
 ![Run Comparisons](./img/5.png)
 ![Artifacts View](./img/6.png)
+![Artifacts View1](./img/7.png)
+
 
 ---
 
