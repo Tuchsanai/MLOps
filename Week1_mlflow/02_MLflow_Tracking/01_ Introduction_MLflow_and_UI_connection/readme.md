@@ -131,26 +131,73 @@ with mlflow.start_run():
 ### 🔹 Cell 4: Simulating Metrics Over Time
 
 ```python
-import mlflow, os, time
+
+import time
+import random
+import mlflow
+import matplotlib.pyplot as plt
+
 mlflow.set_experiment("Lab1_Hello_MLflow")
 
-with mlflow.start_run(run_name="hello-run"):
-    # Params
-    mlflow.log_param("learning_rate", 0.05)
-    mlflow.log_param("batch_size", 64)
+with mlflow.start_run(run_name="train-epochs"):
+    # -------------------
+    # Log parameters
+    # -------------------
+    mlflow.log_param("model", "logreg")
+    mlflow.log_params({"lr": 1e-3, "optimizer": "adam", "epochs": 20})
 
-    # Metrics (simulate improvement)
-    for step, acc in enumerate([0.78, 0.81, 0.84]):
-        mlflow.log_metric("accuracy", acc, step=step)
-        time.sleep(0.2)
+    # Add tags (useful for filters in MLflow UI)
+    mlflow.set_tag("dataset", "cifar10")
+    mlflow.set_tags({"stage": "dev", "owner": "studentA"})
 
-    # Artifact
-    os.makedirs("artifacts", exist_ok=True)
-    with open("artifacts/readme.txt", "w") as f:
-        f.write("Hello MLflow! This file is tracked as an artifact.")
-    mlflow.log_artifact("artifacts/readme.txt")
+    # -------------------
+    # Training loop
+    # -------------------
+    losses, accuracies = [], []
 
-print("✅ Lab 1 complete. Check MLflow UI → Experiments → Lab1_Hello_MLflow.")
+    for epoch in range(10):
+        train_loss = 1.0 / (epoch + 1) + random.random() * 0.02
+        val_accuracy = 0.7 + 0.03 * epoch
+
+        losses.append(train_loss)
+        accuracies.append(val_accuracy)
+
+        mlflow.log_metric("train_loss", train_loss, step=epoch)
+        mlflow.log_metric("val_accuracy", val_accuracy, step=epoch)
+
+        time.sleep(0.05)  # so UI shows evolving timestamps (optional)
+
+    # Final metrics
+    mlflow.log_metrics({"accuracy": 0.88, "f1": 0.84})
+
+    # -------------------
+    # Log artifacts
+    # -------------------
+
+    # (1) Save a plot as artifact
+    plt.figure()
+    plt.plot(range(10), losses, label="train_loss")
+    plt.plot(range(10), accuracies, label="val_accuracy")
+    plt.xlabel("Epoch")
+    plt.ylabel("Value")
+    plt.title("Training Curve")
+    plt.legend()
+    plt.savefig("training_curve.png")
+    plt.close()
+    mlflow.log_artifact("training_curve.png")
+
+    # (2) Save a text file as artifact
+    with open("summary.txt", "w") as f:
+        f.write("Experiment Summary\n")
+        f.write("=================\n")
+        f.write(f"Final Accuracy: {0.88}\n")
+        f.write(f"Final F1 Score: {0.84}\n")
+        f.write("Notes: Model = logreg, Optimizer = adam, Dataset = cifar10\n")
+
+    mlflow.log_artifact("summary.txt")
+
+print("Run completed! Check MLflow UI for parameters, metrics, and artifacts.")
+
 ```
 
 📊 Example UI view:
