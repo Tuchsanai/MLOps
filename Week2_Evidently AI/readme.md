@@ -80,6 +80,9 @@ eval.save_html("titanic_data_quality_report.html")
 ```
 
 ![Alt text](./img/2a.png)
+![Alt text](./img/2b.png)
+![Alt text](./img/2c.png)
+![Alt text](./img/2d.png)
 
 
 
