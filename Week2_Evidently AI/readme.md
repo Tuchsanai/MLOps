@@ -1,187 +1,76 @@
 
-# 📊 Introduction to Evidently AI
+# 🔎 Evidently AI: เครื่องมือสำหรับตรวจสอบคุณภาพข้อมูลและติดตามการทำงานของโมเดล
 
-## 🎯 Objective
+## 📌 บทนำ
 
-เรียนรู้การใช้ **Evidently AI** เพื่อ
+ในการพัฒนา **Machine Learning (ML)** และ **AI** ปัญหาที่มักเกิดขึ้นหลังจากการนำโมเดลไปใช้งานจริงคือ
 
-* ตรวจสอบคุณภาพของข้อมูล (Data Quality)
-* ตรวจจับการเปลี่ยนแปลงของข้อมูล (Data Drift / Concept Drift)
-* สร้างรายงานวิเคราะห์ข้อมูล (Monitoring Reports)
-* เชื่อมต่อกับ MLOps Workflow (เช่น MLflow, CI/CD, Airflow ฯลฯ)
+* คุณภาพข้อมูลที่เปลี่ยนไป (**Data Quality Issues**)
+* การกระจายตัวของข้อมูลเปลี่ยนจากตอน train (**Data Drift**)
+* สมรรถนะของโมเดลตกลงเมื่อใช้งานกับข้อมูลจริง (**Model Performance Degradation**)
 
----
-
-## 📦 Step 0: Installation
-
-ติดตั้ง Evidently AI ด้วยคำสั่ง:
-
-```bash
-pip install evidently
-```
+**Evidently AI** จึงถูกพัฒนาขึ้นมาเพื่อช่วย **ติดตาม ตรวจสอบ และทำรายงาน** เกี่ยวกับข้อมูลและโมเดลอย่างเป็นระบบ โดยสามารถใช้งานได้ตั้งแต่ใน **Jupyter Notebook**, การ integrate กับ **MLflow**, ไปจนถึงการ deploy ใน production pipeline
 
 ---
 
-## 🔍 Step 1: ตรวจสอบคุณภาพข้อมูล (Data Quality Report)
+## 🛠️ ความสามารถหลักของ Evidently AI
 
-Evidently สามารถสร้างรายงานคุณภาพข้อมูล เช่น missing values, outliers, distribution ฯลฯ
+1. **Data Quality Monitoring**
 
-1. Iris Dataset
+   * ตรวจสอบ missing values, outliers, data type mismatches
+   * ทำ Data Summary และสถิติพื้นฐานแบบอัตโนมัติ
+
+2. **Data Drift Detection**
+
+   * เปรียบเทียบ distribution ระหว่าง **reference dataset (train/valid)** และ **current dataset (production/test)**
+   * รองรับทั้ง feature แบบ **ตัวเลข (numerical)** และ **หมวดหมู่ (categorical)**
+   * ใช้สถิติต่าง ๆ เช่น KS-test, Chi-Square, Jensen–Shannon Divergence
+
+3. **Target Drift & Prediction Drift**
+
+   * ตรวจสอบว่า target (หรือ label) ที่เกิดขึ้นจริงใน production distribution เปลี่ยนไปจากตอน train หรือไม่
+   * ใช้เพื่อเช็กว่าโมเดลยังคงทำนายได้แม่นยำหรือมี drift เกิดขึ้น
+
+4. **Model Performance Monitoring**
+
+   * ประเมิน performance ของโมเดล เช่น Accuracy, Precision, Recall, F1, ROC-AUC
+   * สร้างรายงาน performance ระหว่าง production vs training
+
+5. **Integration & Reports**
+
+   * Export เป็น **HTML Report** หรือ **JSON**
+   * ใช้ร่วมกับ **MLflow, Airflow, Prefect, Kubernetes** หรือ CI/CD pipeline ได้
+   * มี Preset Report ที่พร้อมใช้งาน เช่น `DataDriftPreset()`, `DataQualityPreset()`
+
+---
+
+## 📊 ตัวอย่างการใช้งานเบื้องต้น
 
 ```python
-
 import pandas as pd
 from sklearn.datasets import load_iris
+from evidently.report import Report
+from evidently.metric_preset import DataDriftPreset, DataQualityPreset
 
-from evidently import Report
-from evidently.metrics import *
-from evidently.presets import *
-
-
-
-# โหลด dataset จาก sklearn ได้ DataFrame โดยตรง
+# โหลดข้อมูล Iris
 df = load_iris(as_frame=True).frame
 
+# สร้าง Report ตรวจสอบคุณภาพข้อมูล
+report = Report([DataQualityPreset()])
+report.run(reference_data=df, current_data=df)
 
-# สร้างรายงาน Data Quality
-report = Report([ DataSummaryPreset()])
-eval = report.run(df_iris,None)
+# บันทึกเป็น HTML
+report.save_html("data_quality_report.html")
 
-eval.save_html("iris_data_quality_report.html")
-
-
-```
-
-![Alt text](./img/1a.png)
-![Alt text](./img/1b.png)
-![Alt text](./img/1c.png)
-
-
-1. Titanic Dataset
-
-```python
-
-import pandas as pd
-from sklearn.datasets import fetch_openml
-
-from evidently import Report
-from evidently.metrics import *
-from evidently.presets import *
-
-# Download Titanic dataset from OpenML
-df_titanic = fetch_openml("titanic", version=1, as_frame=True).frame
-
-# สร้างรายงาน Data Quality
-report = Report([ DataSummaryPreset()])
-eval = report.run(df_titanic,None)
-
-eval.save_html("titanic_data_quality_report.html")
-
-```
-
-![Alt text](./img/2a.png)
-![Alt text](./img/2b.png)
-![Alt text](./img/2c.png)
-![Alt text](./img/2d.png)
-
-
-
-📌 รายงานนี้ช่วยให้นักศึกษารู้ว่าข้อมูลที่ใช้ train/test มี **คุณภาพเพียงพอ** หรือไม่ เช่น missing values เยอะเกินไป หรือ feature distribution ผิดปกติ
-
----
-
-## 📈 Step 2: ตรวจจับ Data Drift
-
-เมื่อโมเดลใช้งานจริง ข้อมูลใหม่ (production data) อาจไม่เหมือนกับข้อมูลที่ใช้ train → โมเดลเสี่ยงต่อการ **เสื่อมคุณภาพ (model decay)**
-
-```python
-from evidently.report import Report
-from evidently.metric_preset import DataDriftPreset
-
-# reference = ข้อมูล train
-reference = df.sample(500, random_state=42)
-
-# current = ข้อมูลใหม่ที่เข้าโมเดล
-current = df.sample(500, random_state=99)
-
-# สร้างรายงาน Data Drift
-drift_report = Report(metrics=[DataDriftPreset()])
-drift_report.run(reference_data=reference, current_data=current)
-
-# แสดงผล
-drift_report.show()
+# สร้าง Report ตรวจสอบ Data Drift
+drift_report = Report([DataDriftPreset()])
+drift_report.run(reference_data=df.iloc[:80], current_data=df.iloc[80:])
 drift_report.save_html("data_drift_report.html")
 ```
 
-📌 จะได้รายงานบอกว่า feature ไหน drift, p-value, statistical test, และสรุปว่าข้อมูลเปลี่ยนแปลงไปมากน้อยแค่ไหน
-
 ---
 
-## 🧠 Step 3: ตรวจสอบ Performance ของโมเดล
+## ✅ สรุป
 
-Evidently ยังสามารถใช้วัด performance drift เช่น accuracy, precision, recall, ROC curve ฯลฯ
-
-```python
-from evidently.report import Report
-from evidently.metric_preset import ClassificationPreset
-
-# ข้อมูลตัวอย่าง
-y_true = df['target']
-y_pred = (df['feature_1'] > 0.5).astype(int)
-
-# รวมข้อมูล
-eval_df = pd.DataFrame({"target": y_true, "prediction": y_pred})
-
-# รายงาน Performance
-perf_report = Report(metrics=[ClassificationPreset()])
-perf_report.run(reference_data=eval_df, current_data=eval_df)
-
-perf_report.show()
-perf_report.save_html("classification_report.html")
-```
-
-📌 ใช้เพื่อตรวจสอบว่าโมเดลยังทำงานดีอยู่ใน production หรือไม่
-
----
-
-## 🔗 Step 4: เชื่อมต่อกับ MLOps Workflow
-
-Evidently สามารถ integrate เข้ากับเครื่องมือ MLOps ได้ เช่น
-
-* **MLflow** → log รายงานเป็น artifact
-* **Airflow / Prefect** → รันรายงานอัตโนมัติทุกวัน
-* **Grafana / Prometheus** → สร้าง dashboard monitoring
-
-ตัวอย่างเชื่อมกับ MLflow:
-
-```python
-import mlflow
-
-with mlflow.start_run(run_name="data_quality_check"):
-    report = Report(metrics=[DataQualityPreset()])
-    report.run(current_data=df)
-    report.save_html("dq_report.html")
-    
-    mlflow.log_artifact("dq_report.html")
-```
-
----
-
-## 📚 Use Cases ที่เหมาะสำหรับนักศึกษา
-
-* 🧪 **ก่อน train โมเดล** → ตรวจสอบ dataset ให้แน่ใจว่าคุณภาพดี
-* 🚀 **หลัง deploy โมเดล** → ตรวจสอบ production data drift
-* 📉 **ระหว่างใช้งานจริง** → สร้าง monitoring dashboard
-* 📑 **ทำรายงานวิชาการ** → สร้าง HTML report ที่ export ไปประกอบงานวิจัยได้
-
----
-
-## 🎓 สรุป
-
-**Evidently AI** เป็นเครื่องมือสำคัญสำหรับการทำ **Responsible AI และ MLOps** เพราะช่วยให้นักศึกษาและนักวิจัย
-
-* เข้าใจปัญหาคุณภาพข้อมูล
-* มอนิเตอร์โมเดลเมื่อใช้งานจริง
-* สร้างรายงานเชิงสถิติอย่างสวยงาม
-* ป้องกันโมเดลเสื่อมคุณภาพจาก Data Drift
+Evidently AI เป็นเครื่องมือที่ช่วยให้นักพัฒนาและนักวิจัย **เข้าใจการเปลี่ยนแปลงของข้อมูลและประสิทธิภาพของโมเดล** ได้ชัดเจนขึ้น ช่วยให้การทำ **MLOps** ครบวงจรยิ่งขึ้น โดยสามารถเริ่มต้นใช้งานได้ง่ายใน Jupyter Notebook และสามารถขยายไปสู่ระดับ Production Monitoring ได้อย่างยืดหยุ่น
 
