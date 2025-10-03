@@ -20,77 +20,10 @@
 pip install evidently
 ```
 
----
-
-## 🔍 Step 1: ตรวจสอบคุณภาพข้อมูล (Data Quality Report)
-
-Evidently สามารถสร้างรายงานคุณภาพข้อมูล เช่น missing values, outliers, distribution ฯลฯ
-
-1. Iris Dataset
-
-```python
-
-import pandas as pd
-from sklearn.datasets import load_iris
-
-from evidently import Report
-from evidently.metrics import *
-from evidently.presets import *
-
-
-
-# โหลด dataset จาก sklearn ได้ DataFrame โดยตรง
-df = load_iris(as_frame=True).frame
-
-
-# สร้างรายงาน Data Quality
-report = Report([ DataSummaryPreset()])
-eval = report.run(df_iris,None)
-
-eval.save_html("iris_data_quality_report.html")
-
-
-```
-
-![Alt text](./img/1a.png)
-![Alt text](./img/1b.png)
-![Alt text](./img/1c.png)
-
-
-1. Titanic Dataset
-
-```python
-
-import pandas as pd
-from sklearn.datasets import fetch_openml
-
-from evidently import Report
-from evidently.metrics import *
-from evidently.presets import *
-
-# Download Titanic dataset from OpenML
-df_titanic = fetch_openml("titanic", version=1, as_frame=True).frame
-
-# สร้างรายงาน Data Quality
-report = Report([ DataSummaryPreset()])
-eval = report.run(df_titanic,None)
-
-eval.save_html("titanic_data_quality_report.html")
-
-```
-
-![Alt text](./img/2a.png)
-![Alt text](./img/2b.png)
-![Alt text](./img/2c.png)
-![Alt text](./img/2d.png)
-
-
-
-📌 รายงานนี้ช่วยให้นักศึกษารู้ว่าข้อมูลที่ใช้ train/test มี **คุณภาพเพียงพอ** หรือไม่ เช่น missing values เยอะเกินไป หรือ feature distribution ผิดปกติ
 
 ---
 
-## 📈 Step 2: ตรวจจับ Data Drift
+## 📈 Step : ตรวจจับ Data Drift
 
 เมื่อโมเดลใช้งานจริง ข้อมูลใหม่ (production data) อาจไม่เหมือนกับข้อมูลที่ใช้ train → โมเดลเสี่ยงต่อการ **เสื่อมคุณภาพ (model decay)**
 
