@@ -1,6 +1,7 @@
 *.pptx
 /backup
 **/mlruns/
+**/mlartifacts/
 **/backup/
 **/.gradio
 backup/
