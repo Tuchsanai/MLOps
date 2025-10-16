@@ -1,5 +1,0 @@
-Experiment Summary
-=================
-Final Accuracy: 0.88
-Final F1 Score: 0.84
-Notes: Model = logreg, Optimizer = adam, Dataset = cifar10

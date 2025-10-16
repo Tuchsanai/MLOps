@@ -1,5 +1,6 @@
 *.pptx
 /backup
+**/dert/
 **/mlruns/
 **/mlartifacts/
 **/backup/
