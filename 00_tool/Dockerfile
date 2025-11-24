@@ -1,11 +1,16 @@
 # Base image: Ubuntu 25.04 (Plucky Puffin)
 FROM ubuntu:25.04
 
-# Set environment variables to non-interactive to avoid prompts during build
+# ----------------------------------------------------
+# Configuration & Environment Variables
+# ----------------------------------------------------
 ENV DEBIAN_FRONTEND=noninteractive \
     PYTHONUNBUFFERED=1 \
-    PATH="/home/student/.cargo/bin:/home/student/mlops_venv/bin:$PATH" \
-    VIRTUAL_ENV=/home/student/mlops_venv
+    # FIX 1: Move venv to /home/student/ so the user has permission to write to it
+    VIRTUAL_ENV=/home/mlops_venv
+
+# FIX 2: Define PATH in a separate ENV instruction to ensure $VIRTUAL_ENV is loaded
+ENV PATH="$VIRTUAL_ENV/bin:/home/student/.local/bin:$PATH"
 
 # ----------------------------------------------------
 # 1. System Dependencies & Package Installation
@@ -44,14 +49,16 @@ USER student
 WORKDIR /home/student
 
 # ----------------------------------------------------
-# 4. Install uv & Create Python Virtual Environment
+# 4. Install uv, Create VENV, and Configure Shell
 # ----------------------------------------------------
-# uv installer puts the binary into ~/.cargo/bin (already on PATH)
+# FIX 3: We added --seed to install pip/setuptools
+# This will now succeed because $VIRTUAL_ENV is inside /home/student/
 RUN curl -LsSf https://astral.sh/uv/install.sh | sh && \
-    uv venv "$VIRTUAL_ENV"
+    /home/student/.local/bin/uv venv "$VIRTUAL_ENV" --seed && \
+    echo "source ${VIRTUAL_ENV}/bin/activate" >> /home/student/.bashrc
 
 # ----------------------------------------------------
-# 5. Install Python Packages into the VENV (explicit python)
+# 5. Install Python Packages into the VENV
 # ----------------------------------------------------
 RUN uv pip install --python "$VIRTUAL_ENV/bin/python" \
     jupyterlab \
@@ -61,9 +68,9 @@ RUN uv pip install --python "$VIRTUAL_ENV/bin/python" \
     opencv-python-headless
 
 # ----------------------------------------------------
-# 6. Register Jupyter Kernel from the VENV
+# 6. Register Jupyter Kernel
 # ----------------------------------------------------
-RUN "$VIRTUAL_ENV/bin/python" -m ipykernel install --user \
+RUN python -m ipykernel install --user \
     --name=mlops-env \
     --display-name="Python (MLOps Venv)"
 
@@ -72,4 +79,10 @@ RUN "$VIRTUAL_ENV/bin/python" -m ipykernel install --user \
 # ----------------------------------------------------
 EXPOSE 8888
 
-CMD ["jupyter", "lab", "--ip=0.0.0.0", "--port=8888", "--no-browser"]
+# ----------------------------------------------------
+# 7. JupyterLab startup
+# ----------------------------------------------------
+EXPOSE 8888
+
+# Added --notebook-dir=/home/student
+CMD ["jupyter", "lab", "--ip=0.0.0.0", "--port=8888", "--no-browser", "--IdentityProvider.token='mlops'", "--notebook-dir=/home/student"]
