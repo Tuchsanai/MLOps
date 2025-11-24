@@ -1,71 +1,92 @@
-Here’s a ready-to-use **lab description + step-by-step pipeline** for your MLflow lab using the given Docker command. You can copy this into a README or lab sheet for students.
+Here is the updated Lab Description. I have added the specific **verification command** (`ls -F`) at the end of Step 0 so students can confirm their directory structure matches the diagram.
 
----
+-----
 
 # Lab: Getting Started with MLflow using Docker
 
-## 1. Lab Description
+## 1\. Lab Description
 
 In this lab, students will:
 
-* Set up **MLflow Tracking Server** using **Docker**
-* Create persistent folders for:
+  * Set up **MLflow Tracking Server** using **Docker**
+  * Create persistent folders for:
+      * experiment metadata (`mlruns_db`)
+      * artifacts (models, plots, etc.) (`mlartifacts`)
+  * Run MLflow server in a container and access the **MLflow UI**
+  * Configure a simple **MLflow client** in Python
+  * Run a sample experiment and visualize results in MLflow
 
-  * experiment metadata (`mlruns_db`)
-  * artifacts (models, plots, etc.) (`mlartifacts`)
-* Run MLflow server in a container and access the **MLflow UI**
-* Configure a simple **MLflow client** in Python
-* Run a sample experiment and visualize results in MLflow
+-----
 
----
-
-## 2. Learning Objectives
+## 2\. Learning Objectives
 
 By the end of this lab, you should be able to:
 
-1. Explain the role of **MLflow Tracking Server**
-2. Run MLflow server using **Docker**
-3. Use **SQLite** as the backend store and a local folder as the artifact store
-4. Log parameters, metrics, and artifacts from a Python script to MLflow
-5. View and compare runs in the **MLflow UI**
+1.  Explain the role of **MLflow Tracking Server**
+2.  Run MLflow server using **Docker**
+3.  Use **SQLite** as the backend store and a local folder as the artifact store
+4.  Log parameters, metrics, and artifacts from a Python script to MLflow
+5.  View and compare runs in the **MLflow UI**
 
----
+-----
 
-## 3. Lab Pipeline (Step-by-Step)
+## 3\. Lab Pipeline (Step-by-Step)
 
 ### Step 0 – Prepare Working Directory
 
-1. Create a main lab folder (if it does not exist):
+1.  Create a main lab folder (if it does not exist) and enter it:
+
+<!-- end list -->
 
 ```bash
 mkdir -p mlflow-lab
 cd mlflow-lab
 ```
 
-2. Inside this folder, we will use two subfolders:
+2.  Inside this folder, we need two subfolders (`mlruns_db` and `mlartifacts`). Run the following script to check if they exist, and create them if they are missing:
 
-* `mlruns_db` – for the MLflow **backend store** (SQLite database)
-* `mlartifacts` – for the MLflow **artifact store**
-
-Create them only if they don’t exist:
+<!-- end list -->
 
 ```bash
-[ -d "mlruns_db" ] || mkdir mlruns_db
-[ -d "mlartifacts" ] || mkdir mlartifacts
+# Check for mlruns_db
+if [ ! -d "mlruns_db" ]; then
+    mkdir mlruns_db
+    echo "✅ Created 'mlruns_db' folder."
+else
+    echo "ℹ️  'mlruns_db' folder already exists."
+fi
+
+# Check for mlartifacts
+if [ ! -d "mlartifacts" ]; then
+    mkdir mlartifacts
+    echo "✅ Created 'mlartifacts' folder."
+else
+    echo "ℹ️  'mlartifacts' folder already exists."
+fi
 ```
 
-> ✅ Now your folder structure:
->
-> * `mlflow-lab/`
->
->   * `mlruns_db/`
->   * `mlartifacts/`
+3.  **Verify the folder structure**
+    Run the list command to confirm the folders are created:
 
----
+<!-- end list -->
+
+```bash
+ls -F
+```
+
+> **✅ Expected Output:**
+> You should see the two folders (marked with a `/`):
+>
+> ```text
+> mlartifacts/
+> mlruns_db/
+> ```
+
+-----
 
 ### Step 1 – Start MLflow Server with Docker
 
-Run the following Docker command **inside `mlflow-lab` folder**:
+Run the following Docker command **inside the `mlflow-lab` folder**:
 
 ```bash
 docker run -d \
@@ -83,11 +104,11 @@ docker run -d \
 
 **Explanation for students:**
 
-* `-p 5000:5000` – expose MLflow UI on `http://localhost:5000`
-* `-v "$(pwd)/mlruns_db:/mlflow/db"` – map local folder → container DB folder
-* `-v "$(pwd)/mlartifacts:/mlflow/artifacts"` – map local folder → artifacts
-* `--backend-store-uri sqlite:////mlflow/db/mlflow.db` – use SQLite DB file
-* `--default-artifact-root /mlflow/artifacts` – store artifacts in that folder
+  * `-p 5000:5000` – expose MLflow UI on `http://localhost:5000`
+  * `-v "$(pwd)/mlruns_db:/mlflow/db"` – map local folder → container DB folder
+  * `-v "$(pwd)/mlartifacts:/mlflow/artifacts"` – map local folder → artifacts
+  * `--backend-store-uri ...` – tells MLflow to use the SQLite DB file inside the container
+  * `--default-artifact-root ...` – tells MLflow to store large files (models) in the artifact folder
 
 Check that the container is running:
 
@@ -97,17 +118,16 @@ docker ps
 
 You should see `mlflow-server` in the list.
 
----
+-----
 
 ### Step 2 – Open MLflow UI
 
-1. Open a browser and go to:
+1.  Open a browser and go to:
 
-   **[http://localhost:5000](http://localhost:5000)**
+    **[http://localhost:5000](https://www.google.com/search?q=http://localhost:5000)**
 
-2. You should see the **MLflow UI** (Experiments page).
+2.  You should see the **MLflow UI** (Experiments page).
 
-   * For now, it will be empty (no runs yet).
+      * For now, it will be empty (no runs yet).
 
----
-
+-----
