@@ -29,6 +29,7 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
 # ----------------------------------------------------
 # 2. Install Docker Client
 # ----------------------------------------------------
+# Note: We use 'noble' (24.04) repo as the stable fallback for 25.04 if specific repos aren't ready
 RUN install -m 0755 -d /etc/apt/keyrings && \
     curl -fsSL https://download.docker.com/linux/ubuntu/gpg -o /etc/apt/keyrings/docker.asc && \
     chmod a+r /etc/apt/keyrings/docker.asc && \
@@ -42,13 +43,18 @@ RUN install -m 0755 -d /etc/apt/keyrings && \
 # 3. User Setup
 # ----------------------------------------------------
 RUN useradd -m -s /bin/bash student
-USER student
-WORKDIR /home/student
 
-# --- CHANGE START ---
-# Create the workspace directory so Jupyter has a place to look
+# [CRITICAL] Add student to docker group (Must be done as root before switching users)
+RUN groupadd -f docker && usermod -aG docker student
+
+# Switch to user
+USER student
+
+# Create the workspace directory
 RUN mkdir -p /home/student/workspace
-# --- CHANGE END ---
+
+# Set the default working directory
+WORKDIR /home/student/workspace
 
 # ----------------------------------------------------
 # 4. Install uv & Create VENV
@@ -79,7 +85,5 @@ RUN python -m ipykernel install --user \
 # ----------------------------------------------------
 EXPOSE 8888
 
-# --- CHANGE START ---
-# Updated --notebook-dir to point to the new workspace folder
-CMD ["jupyter", "lab", "--ip=0.0.0.0", "--port=8888", "--no-browser", "--IdentityProvider.token='mlops'", "--notebook-dir=/home/student/workspace"]
-# --- CHANGE END ---
+# Jupyter will launch in the WORKDIR (/home/student/workspace) automatically
+CMD ["jupyter", "lab", "--ip=0.0.0.0", "--port=8888", "--no-browser", "--IdentityProvider.token='mlops'"]
