@@ -1,19 +1,16 @@
-# Base image: Ubuntu 25.04 (Plucky Puffin)
+# Base image: Ubuntu 25.04
 FROM ubuntu:25.04
 
 # ----------------------------------------------------
-# Configuration & Environment Variables
+# 0. Environment Setup
 # ----------------------------------------------------
 ENV DEBIAN_FRONTEND=noninteractive \
     PYTHONUNBUFFERED=1 \
-    # FIX 1: Move venv to /home/student/ so the user has permission to write to it
-    VIRTUAL_ENV=/home/mlops_venv
-
-# FIX 2: Define PATH in a separate ENV instruction to ensure $VIRTUAL_ENV is loaded
-ENV PATH="$VIRTUAL_ENV/bin:/home/student/.local/bin:$PATH"
+    VIRTUAL_ENV=/home/student/mlops_venv \
+    PATH="/home/student/mlops_venv/bin:/home/student/.local/bin:$PATH"
 
 # ----------------------------------------------------
-# 1. System Dependencies & Package Installation
+# 1. System Dependencies
 # ----------------------------------------------------
 RUN apt-get update && apt-get install -y --no-install-recommends \
     ca-certificates \
@@ -30,7 +27,7 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     && rm -rf /var/lib/apt/lists/*
 
 # ----------------------------------------------------
-# 2. Install Docker Client (docker-ce-cli)
+# 2. Install Docker Client
 # ----------------------------------------------------
 RUN install -m 0755 -d /etc/apt/keyrings && \
     curl -fsSL https://download.docker.com/linux/ubuntu/gpg -o /etc/apt/keyrings/docker.asc && \
@@ -48,17 +45,20 @@ RUN useradd -m -s /bin/bash student
 USER student
 WORKDIR /home/student
 
+# --- CHANGE START ---
+# Create the workspace directory so Jupyter has a place to look
+RUN mkdir -p /home/student/workspace
+# --- CHANGE END ---
+
 # ----------------------------------------------------
-# 4. Install uv, Create VENV, and Configure Shell
+# 4. Install uv & Create VENV
 # ----------------------------------------------------
-# FIX 3: We added --seed to install pip/setuptools
-# This will now succeed because $VIRTUAL_ENV is inside /home/student/
 RUN curl -LsSf https://astral.sh/uv/install.sh | sh && \
     /home/student/.local/bin/uv venv "$VIRTUAL_ENV" --seed && \
     echo "source ${VIRTUAL_ENV}/bin/activate" >> /home/student/.bashrc
 
 # ----------------------------------------------------
-# 5. Install Python Packages into the VENV
+# 5. Install Python Packages
 # ----------------------------------------------------
 RUN uv pip install --python "$VIRTUAL_ENV/bin/python" \
     jupyterlab \
@@ -75,14 +75,11 @@ RUN python -m ipykernel install --user \
     --display-name="Python (MLOps Venv)"
 
 # ----------------------------------------------------
-# 7. JupyterLab startup
+# 7. Startup
 # ----------------------------------------------------
 EXPOSE 8888
 
-# ----------------------------------------------------
-# 7. JupyterLab startup
-# ----------------------------------------------------
-EXPOSE 8888
-
-# Added --notebook-dir=/home/student
-CMD ["jupyter", "lab", "--ip=0.0.0.0", "--port=8888", "--no-browser", "--IdentityProvider.token='mlops'", "--notebook-dir=/home/student"]
+# --- CHANGE START ---
+# Updated --notebook-dir to point to the new workspace folder
+CMD ["jupyter", "lab", "--ip=0.0.0.0", "--port=8888", "--no-browser", "--IdentityProvider.token='mlops'", "--notebook-dir=/home/student/workspace"]
+# --- CHANGE END ---
