@@ -30,10 +30,6 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
 # 3. User Setup
 # ----------------------------------------------------
 RUN useradd -m -s /bin/bash student
-
-# [CRITICAL] Add student to docker group (Must be done as root before switching users)
-RUN groupadd -f docker && usermod -aG docker student
-
 # Switch to user
 USER student
 
