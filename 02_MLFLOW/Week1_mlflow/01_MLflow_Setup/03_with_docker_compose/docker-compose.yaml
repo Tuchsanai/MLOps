@@ -1,0 +1,26 @@
+version: '3.8'
+
+services:
+  mlflow-server:
+    # Use the official MLflow image
+    image: ghcr.io/mlflow/mlflow
+    # Name the container
+    container_name: mlflow-server
+    # Expose port 5000 for the UI/API
+    ports:
+      - "5000:5000"
+    # Define persistent storage volumes
+    volumes:
+      # Map local 'mlruns_db' to container's DB directory
+      - ./mlruns_db:/mlflow/db
+      # Map local 'mlartifacts' to container's artifacts directory
+      - ./mlartifacts:/mlflow/artifacts
+    # The command to start the MLflow server
+    command: >
+      mlflow server
+      --host 0.0.0.0
+      --port 5000
+      --backend-store-uri sqlite:////mlflow/db/mlflow.db
+      --default-artifact-root /mlflow/artifacts
+    # Ensure the server restarts if it fails
+    restart: unless-stopped
