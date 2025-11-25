@@ -38,11 +38,11 @@ This ensures your image can be pulled and used on any machine without rebuilding
 
 
 ```bash
-docker run -d -p 8888:8888 --name mlops-container tuchsanai/mlops_2568_2:latest
+docker run -d -p 8081:8888 --name mlops-container tuchsanai/mlops_2568_2:latest
 ```
 
 * `-d`: Run in detached mode (background)
-* `-p 8888:8888`: Map container port 8888 to local port 8888
+* `-p 8081:8888`: Map container port 8888 to local port 8081
 * `--name mlops-container`: Assigns a custom container name
 * Launches **JupyterLab** accessible via [http://localhost:8888](http://localhost:8888)
 
@@ -51,7 +51,7 @@ docker run -d -p 8888:8888 --name mlops-container tuchsanai/mlops_2568_2:latest
 
 Once the container is running, open your browser and visit:
 
-👉 **[http://localhost:8888](http://localhost:8888)**
+👉 **[http://localhost:8081](http://localhost:8081)**
 Use the token or password defined in the image configuration (e.g., `mlops`).
 
 ---
