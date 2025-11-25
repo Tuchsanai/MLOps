@@ -24,12 +24,6 @@ In this lab, you will learn how to use Git commands to track changes in a Machin
 - Model evaluation
 - Model improvement
 
----
-
-[View the HTML demo](./index.html)
-
-### Live Demo (GitHub Pages)
-👉 https://github.com/Tuchsanai/MLOps/blob/main/01_ML_Life_Cycle_and_GIT/Week02/Lab/index.html
 
 ---
 
@@ -1073,25 +1067,3 @@ git log -3
 - [ ] Added model saving (commit 6)
 - [ ] Pushed to GitHub
 - [ ] Pulled changes from remote
-
----
-
-## 🎉 Congratulations!
-
-You have completed the Git for ML Development lab. You now understand how to:
-
-1. **Track ML experiments** using Git commits
-2. **Document your progress** with meaningful commit messages
-3. **Collaborate** using push and pull
-4. **Review history** to understand project evolution
-
-These skills are essential for **MLOps** and professional ML development!
-
----
-
-## 📚 Additional Resources
-
-- [Git Documentation](https://git-scm.com/doc)
-- [GitHub Guides](https://guides.github.com/)
-- [Scikit-learn Documentation](https://scikit-learn.org/)
-- [MLOps Principles](https://ml-ops.org/)
