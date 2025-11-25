@@ -26,19 +26,6 @@ In this lab, you will learn how to use Git commands to track changes in a Machin
 - Model evaluation with metrics
 - Model comparison and selection
 
-# ✅ Lab Completion Checklist
-
-| Step | Task | Git Command | Status |
-|------|------|-------------|--------|
-| 1 | Initialize Git repository | `git init` | ☐ |
-| 2 | Create data loading function | `git add` + `git commit` | ☐ |
-| 3 | Add data preprocessing | `git add` + `git commit` | ☐ |
-| 4 | Implement model training | `git add` + `git commit` | ☐ |
-| 5 | Add model evaluation | `git add` + `git commit` | ☐ |
-| 6 | Compare multiple models | `git add` + `git commit` | ☐ |
-| 7 | Add model saving | `git add` + `git commit` | ☐ |
-| 8 | Push to GitHub | `git push` | ☐ |
-| 9 | Pull changes from remote | `git pull` | ☐ |
 
 
 # ✅ Lab Completion Checklist (รายละเอียดแต่ละขั้นตอน)
