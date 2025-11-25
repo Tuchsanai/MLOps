@@ -47,9 +47,7 @@ In this lab, you will learn how to use Git commands to track changes in a Machin
 │  Step 8: git push                                               │
 │  └── อัปโหลดทุก commits ขึ้น GitHub                              │
 ├─────────────────────────────────────────────────────────────────┤
-│  Step 9: git pull                                               │
-│  └── ดึง commits ใหม่จาก GitHub มายัง local                      │
-└─────────────────────────────────────────────────────────────────┘
+
 ```
 
 ---
@@ -67,7 +65,6 @@ In this lab, you will learn how to use Git commands to track changes in a Machin
 | **6** | **Compare multiple models** | `git add` + `git commit` | **เปรียบเทียบหลาย Models**<br>• เพิ่มฟังก์ชัน `train_random_forest()` ใหม่<br>• ใช้ `RandomForestClassifier` กับ `n_estimators=100`<br>• Train และ evaluate ทั้ง Decision Tree และ Random Forest<br>• เปรียบเทียบ accuracy ของทั้งสอง models<br>• แสดงผลสรุปว่า model ไหนดีกว่า<br>• **Git workflow:** `git add` → `git commit -m "Step 6: Add Random Forest and compare"`<br>• **ผลลัพธ์:** ตารางเปรียบเทียบ accuracy ระหว่าง 2 models | ☐ |
 | **7** | **Add model saving** | `git add` + `git commit` | **บันทึก Model ที่ดีที่สุดลงไฟล์**<br>• สร้างฟังก์ชัน `save_model()` ใช้ `joblib.dump()`<br>• สร้างฟังก์ชัน `load_model()` ใช้ `joblib.load()`<br>• เลือก best model จากการเปรียบเทียบ accuracy<br>• บันทึกเป็นไฟล์ `best_model.joblib`<br>• ทดสอบโหลด model กลับมาและ verify accuracy<br>• สร้างไฟล์ `.gitignore` กำหนด files ที่ไม่ต้อง track<br>• **Git workflow:** `git add train.py .gitignore best_model.joblib` → `git commit`<br>• **ผลลัพธ์:** ไฟล์ model พร้อมใช้งานใน production | ☐ |
 | **8** | **Push to GitHub** | `git push` | **อัปโหลดโค้ดขึ้น Remote Repository**<br>• สร้าง repository ใหม่บน GitHub (ไม่ต้อง initialize)<br>• เชื่อมต่อ local กับ remote: `git remote add origin <URL>`<br>• ตรวจสอบการเชื่อมต่อ: `git remote -v`<br>• Push ขึ้น GitHub: `git push -u origin main`<br>• ใส่ GitHub credentials (username + Personal Access Token)<br>• **ผลลัพธ์:** โค้ดทั้งหมดปรากฏบน GitHub พร้อม commit history ครบทุก step | ☐ |
-| **9** | **Pull changes from remote** | `git pull` | **ดึงการเปลี่ยนแปลงจาก Remote (จำลองการทำงานเป็นทีม)**<br>• แก้ไขไฟล์ `train.py` บน GitHub โดยตรง (เพิ่ม author info)<br>• Commit การเปลี่ยนแปลงบน GitHub<br>• กลับมาที่ local terminal รัน `git pull origin main`<br>• Git จะดึง commits ใหม่และ merge เข้ากับ local<br>• ตรวจสอบ history ด้วย `git log --oneline`<br>• **ผลลัพธ์:** Local repository อัปเดตตรงกับ remote พร้อม commit ใหม่จาก "teammate" | ☐ |
 
 ---
 
@@ -1002,67 +999,6 @@ Branch 'main' set up to track remote branch 'main' from 'origin'.
 
 ---
 
-# Step 9: Simulate Team Collaboration (Pull)
-
-## 9.1 Make Changes on GitHub (Simulate Teammate)
-
-1. Go to your repository on GitHub
-2. Click on `train.py`
-3. Click the **pencil icon** (Edit this file)
-4. Add these lines at the top of the file:
-
-```python
-# train.py
-# Author: Your Name
-# Date: 2024
-# Description: Iris Classification Pipeline for MLOps Lab
-```
-
-5. Scroll down and click **"Commit changes"**
-6. Add commit message: `Add author information`
-
-## 9.2 Pull Changes to Local
-
-```bash
-# Check current status
-git status
-
-# Pull changes from remote
-git pull origin main
-```
-
-**Output:**
-
-```
-remote: Enumerating objects: 5, done.
-remote: Counting objects: 100% (5/5), done.
-remote: Total 3 (delta 1), reused 0 (delta 0)
-Unpacking objects: 100% (3/3), done.
-From https://github.com/YOUR_USERNAME/ml-iris-classifier
-   pqr1234..stu5678  main -> origin/main
-Updating pqr1234..stu5678
-Fast-forward
- train.py | 4 ++++
- 1 file changed, 4 insertions(+)
-```
-
-## 9.3 View Updated History
-
-```bash
-git log --oneline
-```
-
-**Output:**
-
-```
-stu5678 (HEAD -> main, origin/main) Add author information
-pqr1234 Step 7: Add model saving and loading with joblib
-mno7890 Step 6: Add Random Forest and compare with Decision Tree
-jkl3456 Step 5: Add model evaluation with accuracy and classification report
-ghi9012 Step 4: Add Decision Tree model training
-def5678 Step 3: Add data preprocessing and train/test split
-abc1234 Step 2: Add data loading function for Iris dataset
-```
 
 ✅ **Checkpoint:** You successfully pulled changes from remote!
 
@@ -1081,6 +1017,6 @@ abc1234 Step 2: Add data loading function for Iris dataset
 | `git log --oneline` | View compact history | Quick overview |
 | `git remote add` | Connect to GitHub | Setup (once) |
 | `git push` | Upload to GitHub | Share your work |
-| `git pull` | Download from GitHub | Get team updates |
+
 
 ---
