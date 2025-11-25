@@ -44,7 +44,7 @@ docker run -d -p 8081:8888 --name mlops-container tuchsanai/mlops_2568_2:latest
 * `-d`: Run in detached mode (background)
 * `-p 8081:8888`: Map container port 8888 to local port 8081
 * `--name mlops-container`: Assigns a custom container name
-* Launches **JupyterLab** accessible via [http://localhost:8888](http://localhost:8888)
+* Launches **JupyterLab** accessible via [http://localhost:8081](http://localhost:8081)
 
 
 ## 📚 Access JupyterLab
