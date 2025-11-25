@@ -1,6 +1,4 @@
-ผมจะผสานเนื้อหาทั้งหมดเข้าด้วยกันเป็น Mini Project Guidelines ฉบับสมบูรณ์ครับ:
 
----
 
 # 🚀 Mini Project: End-to-End AI Application
 
