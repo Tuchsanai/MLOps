@@ -41,10 +41,7 @@ After building or pulling the image, start the container with **JupyterLab** aut
 ### ✅ For Linux / Ubuntu
 
 ```bash
-docker run -d \
-  -p 8888:8888 \
-  --name mlops-container \
-  tuchsanai/mlops_2568_2:latest
+docker run -d -p 8888:8888 --name mlops-container tuchsanai/mlops_2568_2:latest
 ```
 
 * `-d`: Run in detached mode (background)
@@ -52,20 +49,6 @@ docker run -d \
 * `--name mlops-container`: Assigns a custom container name
 * Launches **JupyterLab** accessible via [http://localhost:8888](http://localhost:8888)
 
----
-
-### 🪟 For Windows (Command Prompt)
-
-If you're running Docker on Windows, use `^` for line continuation:
-
-```cmd
-docker run -d ^
-  -p 8888:8888 ^
-  --name mlops-container ^
-  tuchsanai/mlops_2568_2:latest
-```
-
----
 
 ## 📚 Access JupyterLab
 
