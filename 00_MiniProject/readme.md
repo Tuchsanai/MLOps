@@ -376,36 +376,6 @@ Mini Project นี้ออกแบบให้นักศึกษาได�
 
 ---
 
-## 🛠️ Tech Stack แนะนำ
-
-### Frontend
-
-| ระดับ | เครื่องมือ | เหมาะกับ |
-|:-----:|----------|---------|
-| 🟢 Easy | Streamlit, Gradio | Prototype รวดเร็ว |
-| 🟡 Medium | Dash, Panel | Data Dashboard |
-| 🔴 Advanced | FastAPI + React | Production-grade |
-
-### Backend & MLOps
-
-| Component | แนะนำ |
-|-----------|------|
-| API Framework | FastAPI, Flask |
-| Containerization | Docker, docker-compose |
-| Experiment Tracking | MLflow, W&B |
-| Model Serving | FastAPI, TorchServe |
-| Version Control | Git, GitHub |
-
-### Cloud Deployment (Free Tier)
-
-| Platform | จุดเด่น |
-|----------|--------|
-| 🤗 Hugging Face Spaces | ง่ายมาก, รองรับ Gradio/Streamlit |
-| 🚂 Railway | ใช้งานง่าย, Docker support |
-| 🎨 Render | Free tier ดี, Auto-deploy |
-| ☁️ Google Cloud Run | Scalable, Pay-per-use |
-
----
 
 ## ⚠️ กติกาและข้อควรระวัง
 
