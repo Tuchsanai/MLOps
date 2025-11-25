@@ -26,12 +26,8 @@ In this lab, you will learn how to use Git commands to track changes in a Machin
 
 ---
 
-## 📚 Prerequisites
+[View the HTML demo](./index.html)
 
-- Python 3.8+
-- Basic knowledge of Python, Pandas, Scikit-learn
-- Git installed on your computer
-- GitHub account (for push/pull steps)
 
 ---
 
