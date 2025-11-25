@@ -1,6 +1,5 @@
 # 🧪 Lab: Git for Machine Learning Development
 
-## MLOps Course - Multi-Step ML Development with Git
 
 ---
 
