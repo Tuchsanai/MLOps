@@ -1,6 +1,5 @@
 # 🧪 Lab: Git for Machine Learning Development
 
-
 ---
 
 ## 📋 Lab Overview
@@ -8,85 +7,156 @@
 In this lab, you will learn how to use Git commands to track changes in a Machine Learning project. You will build a complete ML pipeline step-by-step, committing your work at each stage.
 
 **What you will learn:**
-- `git init` - Initialize a repository
-- `git status` - Check current state
-- `git add` - Stage changes
-- `git commit` - Save changes with message
-- `git log` - View commit history
-- `git push` - Upload to remote repository
-- `git pull` - Download from remote repository
+
+| Git Command | Description |
+|-------------|-------------|
+| `git init` | Initialize a new repository |
+| `git status` | Check current state of files |
+| `git add` | Stage changes for commit |
+| `git commit` | Save changes with descriptive message |
+| `git log` | View commit history |
+| `git push` | Upload commits to remote repository |
+| `git pull` | Download commits from remote repository |
 
 **ML Skills Applied:**
+
 - Data loading with Pandas
-- Data preprocessing
+- Data preprocessing and splitting
 - Model training with Scikit-learn
-- Model evaluation
-- Model improvement
+- Model evaluation with metrics
+- Model comparison and selection
+
+---
+
+## 🏗️ System Architecture
 
 ```
-┌─────────────────────────────────────────────────────────────────────────────┐
-│                    GIT FOR ML DEVELOPMENT - SYSTEM ARCHITECTURE             │
-├─────────────────────────────────────────────────────────────────────────────┤
-│                                                                             │
-│   👤 Developer                                                              │
-│      │                                                                      │
-│      ▼                                                                      │
-│   ┌──────────────────────────────────────────────────────────────────┐     │
-│   │                    LOCAL DEVELOPMENT ENVIRONMENT                  │     │
-│   │  ┌─────────────┐    ┌─────────────┐    ┌─────────────────────┐   │     │
-│   │  │  Terminal   │───▶│    Git      │───▶│    train.py         │   │     │
-│   │  │   (Bash)    │    │ Repository  │    │   (ML Pipeline)     │   │     │
-│   │  └─────────────┘    └─────────────┘    └─────────────────────┘   │     │
-│   │                            │                      │               │     │
-│   │        ┌───────────────────┼──────────────────────┘               │     │
-│   │        ▼                   ▼                                      │     │
-│   │  ┌──────────┐    ┌─────────────────────────────────────────┐     │     │
-│   │  │  .git/   │    │            ML PIPELINE STAGES            │     │     │
-│   │  │ (History)│    │  ┌───────┐  ┌───────┐  ┌───────────┐    │     │     │
-│   │  └──────────┘    │  │ Load  │─▶│ Split │─▶│   Train   │    │     │     │
-│   │                  │  │ Data  │  │ Data  │  │   Model   │    │     │     │
-│   │                  │  │(Pandas)│  │(80/20)│  │(DT / RF)  │    │     │     │
-│   │                  │  └───────┘  └───────┘  └───────────┘    │     │     │
-│   │                  │       │                      │           │     │     │
-│   │                  │       ▼                      ▼           │     │     │
-│   │                  │  ┌─────────┐          ┌───────────┐     │     │     │
-│   │                  │  │  Iris   │          │ Evaluate  │     │     │     │
-│   │                  │  │ Dataset │          │ (Metrics) │     │     │     │
-│   │                  │  │ (150x5) │          └───────────┘     │     │     │
-│   │                  │  └─────────┘                │           │     │     │
-│   │                  │                             ▼           │     │     │
-│   │                  │                      ┌───────────┐      │     │     │
-│   │                  │                      │   Save    │      │     │     │
-│   │                  │                      │ (joblib)  │      │     │     │
-│   │                  │                      └───────────┘      │     │     │
-│   │                  └─────────────────────────────────────────┘     │     │
-│   └──────────────────────────────────────────────────────────────────┘     │
-│                                    │                                        │
-│                    git push ▼      │      ▲ git pull                       │
-│                          ┌─────────┴─────────┐                             │
-│                          │                   │                             │
-│   ┌──────────────────────▼───────────────────▼──────────────────────┐     │
-│   │                    ☁️  REMOTE (GitHub)                           │     │
-│   │  ┌────────────────────────────────────────────────────────┐     │     │
-│   │  │              ml-iris-classifier Repository              │     │     │
-│   │  │  ┌──────────┐  ┌──────────┐  ┌──────────────────────┐  │     │     │
-│   │  │  │ train.py │  │.gitignore│  │ best_model.joblib    │  │     │     │
-│   │  │  └──────────┘  └──────────┘  └──────────────────────┘  │     │     │
-│   │  │                                                         │     │     │
-│   │  │  📜 Commit History:                                     │     │     │
-│   │  │  • Step 7: Add model saving/loading                     │     │     │
-│   │  │  • Step 6: Add Random Forest comparison                 │     │     │
-│   │  │  • Step 5: Add model evaluation                         │     │     │
-│   │  │  • Step 4: Add Decision Tree training                   │     │     │
-│   │  │  • Step 3: Add data preprocessing                       │     │     │
-│   │  │  • Step 2: Add data loading function                    │     │     │
-│   │  └────────────────────────────────────────────────────────┘     │     │
-│   └─────────────────────────────────────────────────────────────────┘     │
-│                                                                             │
-│   🔧 Tech Stack: Python │ Scikit-learn │ Pandas │ Joblib │ Git │ GitHub    │
-└─────────────────────────────────────────────────────────────────────────────┘
+┌──────────────────────────────────────────────────────────────────────────────┐
+│                    GIT FOR ML DEVELOPMENT - SYSTEM ARCHITECTURE              │
+├──────────────────────────────────────────────────────────────────────────────┤
+│                                                                              │
+│  👤 DEVELOPER (You)                                                          │
+│      │                                                                       │
+│      │ Write code, run experiments, track changes                            │
+│      ▼                                                                       │
+│  ┌────────────────────────────────────────────────────────────────────────┐  │
+│  │                    💻 LOCAL DEVELOPMENT ENVIRONMENT                     │  │
+│  │                                                                         │  │
+│  │   ┌─────────────┐      ┌─────────────┐      ┌─────────────────────┐    │  │
+│  │   │  Terminal   │ ───▶ │    Git      │ ───▶ │    train.py         │    │  │
+│  │   │   (Bash)    │      │  Commands   │      │   (ML Pipeline)     │    │  │
+│  │   │             │      │             │      │                     │    │  │
+│  │   │ git add     │      │ Tracks all  │      │ Python code for:    │    │  │
+│  │   │ git commit  │      │ changes in  │      │ - Load data         │    │  │
+│  │   │ git push    │      │ your code   │      │ - Train model       │    │  │
+│  │   │ git pull    │      │             │      │ - Evaluate model    │    │  │
+│  │   └─────────────┘      └─────────────┘      └─────────────────────┘    │  │
+│  │          │                    │                       │                │  │
+│  │          │                    ▼                       │                │  │
+│  │          │            ┌─────────────┐                 │                │  │
+│  │          │            │   .git/     │                 │                │  │
+│  │          │            │  (Hidden)   │                 │                │  │
+│  │          │            │             │                 │                │  │
+│  │          │            │ Stores all  │                 │                │  │
+│  │          │            │ commit      │                 │                │  │
+│  │          │            │ history     │                 │                │  │
+│  │          │            └─────────────┘                 │                │  │
+│  │          │                                            │                │  │
+│  │          └────────────────────────────────────────────┘                │  │
+│  │                                                                         │  │
+│  │  ┌───────────────────────────────────────────────────────────────────┐ │  │
+│  │  │                    🔬 ML PIPELINE STAGES                           │ │  │
+│  │  │                                                                    │ │  │
+│  │  │   Step 1          Step 2          Step 3          Step 4          │ │  │
+│  │  │  ┌───────┐      ┌───────┐      ┌───────┐      ┌───────┐          │ │  │
+│  │  │  │ Load  │ ───▶ │ Split │ ───▶ │ Train │ ───▶ │ Eval  │          │ │  │
+│  │  │  │ Data  │      │ Data  │      │ Model │      │ Model │          │ │  │
+│  │  │  └───────┘      └───────┘      └───────┘      └───────┘          │ │  │
+│  │  │      │              │              │              │               │ │  │
+│  │  │      ▼              ▼              ▼              ▼               │ │  │
+│  │  │  ┌───────┐      ┌───────┐      ┌───────┐      ┌───────┐          │ │  │
+│  │  │  │ Iris  │      │ 80%   │      │  DT   │      │Accuracy│          │ │  │
+│  │  │  │Dataset│      │Train  │      │  or   │      │Report │          │ │  │
+│  │  │  │(150   │      │ 20%   │      │  RF   │      │       │          │ │  │
+│  │  │  │samples)│     │Test   │      │       │      │       │          │ │  │
+│  │  │  └───────┘      └───────┘      └───────┘      └───────┘          │ │  │
+│  │  │                                                    │              │ │  │
+│  │  │                                                    ▼              │ │  │
+│  │  │                                              ┌───────────┐        │ │  │
+│  │  │                                              │   Save    │        │ │  │
+│  │  │                                              │  Model    │        │ │  │
+│  │  │                                              │ (joblib)  │        │ │  │
+│  │  │                                              └───────────┘        │ │  │
+│  │  └───────────────────────────────────────────────────────────────────┘ │  │
+│  └────────────────────────────────────────────────────────────────────────┘  │
+│                                    │                                         │
+│                                    │                                         │
+│              git push (Upload)     │     git pull (Download)                 │
+│                          ▼         │         ▲                               │
+│                    ┌───────────────┴─────────┴───────────────┐               │
+│                    │                                         │               │
+│  ┌─────────────────▼─────────────────────────────────────────▼────────────┐  │
+│  │                        ☁️  REMOTE REPOSITORY (GitHub)                   │  │
+│  │                                                                         │  │
+│  │   Repository: ml-iris-classifier                                        │  │
+│  │                                                                         │  │
+│  │   📁 Files:                                                             │  │
+│  │   ├── train.py              (ML pipeline code)                          │  │
+│  │   ├── .gitignore            (files to ignore)                           │  │
+│  │   └── best_model.joblib     (saved model)                               │  │
+│  │                                                                         │  │
+│  │   📜 Commit History (git log):                                          │  │
+│  │   ┌─────────────────────────────────────────────────────────────────┐   │  │
+│  │   │  Step 7: Add model saving/loading                               │   │  │
+│  │   │  Step 6: Add Random Forest comparison                           │   │  │
+│  │   │  Step 5: Add model evaluation                                   │   │  │
+│  │   │  Step 4: Add Decision Tree training                             │   │  │
+│  │   │  Step 3: Add data preprocessing                                 │   │  │
+│  │   │  Step 2: Add data loading function                              │   │  │
+│  │   └─────────────────────────────────────────────────────────────────┘   │  │
+│  │                                                                         │  │
+│  │   🔄 Team members can: clone, pull, push, collaborate                   │  │
+│  └─────────────────────────────────────────────────────────────────────────┘  │
+│                                                                              │
+│  🔧 Tech Stack: Python | Pandas | Scikit-learn | Joblib | Git | GitHub       │
+└──────────────────────────────────────────────────────────────────────────────┘
 ```
 
+### Architecture Explanation
+
+| Component | Description |
+|-----------|-------------|
+| **Developer** | You write Python code for ML and use Git commands to track changes |
+| **Terminal** | Where you type Git commands (`git add`, `git commit`, `git push`) |
+| **Git** | Version control system that tracks all changes to your code |
+| **train.py** | Your ML pipeline code (load → split → train → evaluate → save) |
+| **.git/** | Hidden folder that stores all commit history locally |
+| **ML Pipeline** | Stages of ML development, each stage = one commit |
+| **GitHub** | Remote storage where team members can access your code |
+
+### Git Workflow for ML Development
+
+```
+   Your Computer (Local)                    GitHub (Remote)
+   ═══════════════════                      ═══════════════
+                                            
+   [Write Code]                             [Repository]
+        │                                        ▲
+        ▼                                        │
+   [git add]     ──── Stage changes              │
+        │                                        │
+        ▼                                        │
+   [git commit]  ──── Save to local history      │
+        │                                        │
+        ▼                                        │
+   [git push]    ────────────────────────────────┘
+                      Upload to GitHub
+                      
+   [git pull]    ◀───────────────────────────────┐
+                      Download from GitHub       │
+                                                 │
+                                            [Team Changes]
+```
 
 ---
 
@@ -114,6 +184,7 @@ git init
 ```
 
 **Expected output:**
+
 ```
 Initialized empty Git repository in /path/to/ml-iris-classifier/.git/
 ```
@@ -126,6 +197,7 @@ git status
 ```
 
 **Expected output:**
+
 ```
 On branch main
 No commits yet
@@ -187,6 +259,7 @@ python train.py
 ```
 
 **Expected output:**
+
 ```
 Loading Iris dataset...
 
@@ -207,6 +280,7 @@ git status
 ```
 
 **Output:**
+
 ```
 Untracked files:
   (use "git add <file>..." to include in what will be committed)
@@ -222,6 +296,7 @@ git status
 ```
 
 **Output:**
+
 ```
 Changes to be committed:
   (use "git rm --cached <file>..." to unstage)
@@ -241,6 +316,7 @@ git log --oneline
 ```
 
 **Output:**
+
 ```
 abc1234 (HEAD -> main) Step 2: Add data loading function for Iris dataset
 ```
@@ -312,6 +388,7 @@ python train.py
 ```
 
 **Expected output:**
+
 ```
 Loading Iris dataset...
 Dataset shape: (150, 5)
@@ -329,6 +406,7 @@ git status
 ```
 
 **Output:**
+
 ```
 Changes not staged for commit:
         modified:   train.py
@@ -349,6 +427,7 @@ git log --oneline
 ```
 
 **Output:**
+
 ```
 def5678 (HEAD -> main) Step 3: Add data preprocessing and train/test split
 abc1234 Step 2: Add data loading function for Iris dataset
@@ -435,6 +514,7 @@ python train.py
 ```
 
 **Expected output:**
+
 ```
 Loading Iris dataset...
 Dataset shape: (150, 5)
@@ -463,6 +543,7 @@ git log --oneline
 ```
 
 **Output:**
+
 ```
 ghi9012 (HEAD -> main) Step 4: Add Decision Tree model training
 def5678 Step 3: Add data preprocessing and train/test split
@@ -573,6 +654,7 @@ python train.py
 ```
 
 **Expected output:**
+
 ```
 ==================================================
 IRIS CLASSIFICATION PIPELINE
@@ -619,6 +701,7 @@ git log --oneline
 ```
 
 **Output:**
+
 ```
 jkl3456 (HEAD -> main) Step 5: Add model evaluation with accuracy and classification report
 ghi9012 Step 4: Add Decision Tree model training
@@ -759,6 +842,7 @@ git log --oneline
 ```
 
 **Output:**
+
 ```
 mno7890 (HEAD -> main) Step 6: Add Random Forest and compare with Decision Tree
 jkl3456 Step 5: Add model evaluation with accuracy and classification report
@@ -908,16 +992,16 @@ python train.py
 
 ## 7.3 Create .gitignore
 
-Create `.gitignore` to exclude model files (optional for large models):
+Create `.gitignore` to manage which files Git should track:
 
 ```bash
 # Create .gitignore file
-echo "# Ignore large model files (optional)" > .gitignore
-echo "# *.joblib" >> .gitignore
-echo "" >> .gitignore
-echo "# Python cache" >> .gitignore
+echo "# Python cache files" > .gitignore
 echo "__pycache__/" >> .gitignore
 echo "*.pyc" >> .gitignore
+echo "" >> .gitignore
+echo "# Optional: Ignore large model files" >> .gitignore
+echo "# *.joblib" >> .gitignore
 ```
 
 ## 7.4 Stage and Commit All Files
@@ -939,6 +1023,7 @@ git log --oneline
 ```
 
 **Output:**
+
 ```
 pqr1234 (HEAD -> main) Step 7: Add model saving and loading with joblib
 mno7890 Step 6: Add Random Forest and compare with Decision Tree
@@ -957,23 +1042,24 @@ abc1234 Step 2: Add data loading function for Iris dataset
 ## 8.1 Create Repository on GitHub
 
 1. Go to https://github.com
-2. Click "New repository"
-3. Name: `ml-iris-classifier`
-4. Keep it Public or Private
-5. **Do NOT** initialize with README (we already have code)
-6. Click "Create repository"
+2. Click **"New repository"** (green button)
+3. Repository name: `ml-iris-classifier`
+4. Choose **Public** or **Private**
+5. ⚠️ **Do NOT** check "Initialize this repository with a README"
+6. Click **"Create repository"**
 
 ## 8.2 Connect Local to Remote
 
 ```bash
-# Add remote origin (replace YOUR_USERNAME)
+# Add remote origin (replace YOUR_USERNAME with your GitHub username)
 git remote add origin https://github.com/YOUR_USERNAME/ml-iris-classifier.git
 
-# Verify remote
+# Verify remote connection
 git remote -v
 ```
 
 **Output:**
+
 ```
 origin  https://github.com/YOUR_USERNAME/ml-iris-classifier.git (fetch)
 origin  https://github.com/YOUR_USERNAME/ml-iris-classifier.git (push)
@@ -986,9 +1072,10 @@ origin  https://github.com/YOUR_USERNAME/ml-iris-classifier.git (push)
 git push -u origin main
 ```
 
-You will be asked for your GitHub credentials (or token).
+You will be prompted for GitHub credentials (username and personal access token).
 
 **Output:**
+
 ```
 Enumerating objects: 15, done.
 Counting objects: 100% (15/15), done.
@@ -1005,12 +1092,12 @@ Branch 'main' set up to track remote branch 'main' from 'origin'.
 
 # Step 9: Simulate Team Collaboration (Pull)
 
-## 9.1 Simulate Changes on GitHub
+## 9.1 Make Changes on GitHub (Simulate Teammate)
 
 1. Go to your repository on GitHub
 2. Click on `train.py`
-3. Click the pencil icon (Edit)
-4. Add a comment at the top:
+3. Click the **pencil icon** (Edit this file)
+4. Add these lines at the top of the file:
 
 ```python
 # train.py
@@ -1019,8 +1106,8 @@ Branch 'main' set up to track remote branch 'main' from 'origin'.
 # Description: Iris Classification Pipeline for MLOps Lab
 ```
 
-5. Click "Commit changes"
-6. Add message: "Add author information"
+5. Scroll down and click **"Commit changes"**
+6. Add commit message: `Add author information`
 
 ## 9.2 Pull Changes to Local
 
@@ -1033,6 +1120,7 @@ git pull origin main
 ```
 
 **Output:**
+
 ```
 remote: Enumerating objects: 5, done.
 remote: Counting objects: 100% (5/5), done.
@@ -1053,6 +1141,7 @@ git log --oneline
 ```
 
 **Output:**
+
 ```
 stu5678 (HEAD -> main, origin/main) Add author information
 pqr1234 Step 7: Add model saving and loading with joblib
@@ -1063,70 +1152,125 @@ def5678 Step 3: Add data preprocessing and train/test split
 abc1234 Step 2: Add data loading function for Iris dataset
 ```
 
-✅ **Checkpoint:** You can now collaborate with team members!
+✅ **Checkpoint:** You successfully pulled changes from remote!
 
 ---
 
 # 📊 Git Commands Summary
 
-| Command | Description | Example |
-|---------|-------------|---------|
-| `git init` | Initialize new repository | `git init` |
-| `git status` | Check current state | `git status` |
-| `git add` | Stage files for commit | `git add train.py` |
-| `git add .` | Stage all files | `git add .` |
-| `git commit` | Save changes | `git commit -m "message"` |
-| `git log` | View commit history | `git log --oneline` |
-| `git remote add` | Connect to remote | `git remote add origin URL` |
-| `git push` | Upload to remote | `git push origin main` |
-| `git pull` | Download from remote | `git pull origin main` |
+| Command | Description | When to Use |
+|---------|-------------|-------------|
+| `git init` | Initialize new repository | Start of project (once) |
+| `git status` | Check current state | Before add/commit |
+| `git add <file>` | Stage specific file | After modifying code |
+| `git add .` | Stage all changed files | After modifying multiple files |
+| `git commit -m "msg"` | Save staged changes | After completing a feature |
+| `git log` | View full commit history | Review project history |
+| `git log --oneline` | View compact history | Quick overview |
+| `git remote add` | Connect to GitHub | Setup (once) |
+| `git push` | Upload to GitHub | Share your work |
+| `git pull` | Download from GitHub | Get team updates |
 
 ---
 
 # 🎯 Lab Exercises
 
 ## Exercise 1: Add Cross-Validation
-Add 5-fold cross-validation to your pipeline and commit the changes.
 
-## Exercise 2: Add New Model
-Add a third model (e.g., `SVC` or `KNeighborsClassifier`) and commit.
+Add 5-fold cross-validation to your pipeline and commit:
 
-## Exercise 3: Create requirements.txt
-Create a `requirements.txt` file listing all dependencies and commit.
+```python
+from sklearn.model_selection import cross_val_score
 
+# Add this function
+def cross_validate_model(model, X, y):
+    scores = cross_val_score(model, X, y, cv=5)
+    return scores.mean(), scores.std()
 ```
-pandas
-scikit-learn
-joblib
-```
-
-## Exercise 4: View Detailed History
-Try these git log variations:
 
 ```bash
-# Detailed log
+git add train.py
+git commit -m "Exercise 1: Add 5-fold cross-validation"
+```
+
+## Exercise 2: Add New Model
+
+Add a third model (KNN) and commit:
+
+```python
+from sklearn.neighbors import KNeighborsClassifier
+
+def train_knn(X_train, y_train):
+    model = KNeighborsClassifier(n_neighbors=5)
+    model.fit(X_train, y_train)
+    return model
+```
+
+```bash
+git add train.py
+git commit -m "Exercise 2: Add KNN classifier"
+```
+
+## Exercise 3: Create requirements.txt
+
+Create dependencies file:
+
+```bash
+echo "pandas" > requirements.txt
+echo "scikit-learn" >> requirements.txt
+echo "joblib" >> requirements.txt
+
+git add requirements.txt
+git commit -m "Exercise 3: Add requirements.txt"
+```
+
+## Exercise 4: Explore Git Log
+
+Try different git log options:
+
+```bash
+# Detailed log with full info
 git log
 
-# One line per commit
+# Compact one-line format
 git log --oneline
 
-# Show graph
+# Show graph visualization
 git log --oneline --graph
 
-# Show last 3 commits
-git log -3
+# Show only last 3 commits
+git log -3 --oneline
+
+# Show commits with file changes
+git log --stat
 ```
 
 ---
 
 # ✅ Lab Completion Checklist
 
-- [ ] Initialized Git repository
-- [ ] Created data loading function (commit 1)
-- [ ] Added data preprocessing (commit 2)
-- [ ] Implemented model training (commit 3)
-- [ ] Added model evaluation (commit 4)
-- [ ] Compared multiple models (commit 5)
-- [ ] Added model saving (commit 6)
-- [ ] Pushed to GitHub
-- [ ] Pulled changes from remote
+| Step | Task | Git Command | Status |
+|------|------|-------------|--------|
+| 1 | Initialize Git repository | `git init` | ☐ |
+| 2 | Create data loading function | `git add` + `git commit` | ☐ |
+| 3 | Add data preprocessing | `git add` + `git commit` | ☐ |
+| 4 | Implement model training | `git add` + `git commit` | ☐ |
+| 5 | Add model evaluation | `git add` + `git commit` | ☐ |
+| 6 | Compare multiple models | `git add` + `git commit` | ☐ |
+| 7 | Add model saving | `git add` + `git commit` | ☐ |
+| 8 | Push to GitHub | `git push` | ☐ |
+| 9 | Pull changes from remote | `git pull` | ☐ |
+
+---
+
+# 📚 Key Takeaways
+
+1. **Commit Often**: Make small, focused commits for each feature
+2. **Write Clear Messages**: Describe what changed and why
+3. **Check Status**: Always run `git status` before committing
+4. **Use History**: `git log` shows your development journey
+5. **Collaborate**: `push` shares your work, `pull` gets team updates
+
+---
+
+**🎉 Congratulations! You have completed the Git for ML Development Lab!**
