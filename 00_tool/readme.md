@@ -36,9 +36,6 @@ This ensures your image can be pulled and used on any machine without rebuilding
 
 ## 🖥️ Run the Container
 
-After building or pulling the image, start the container with **JupyterLab** automatically running.
-
-### ✅ For Linux / Ubuntu
 
 ```bash
 docker run -d -p 8888:8888 --name mlops-container tuchsanai/mlops_2568_2:latest
