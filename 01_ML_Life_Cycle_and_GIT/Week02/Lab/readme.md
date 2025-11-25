@@ -28,6 +28,8 @@ In this lab, you will learn how to use Git commands to track changes in a Machin
 
 [View the HTML demo](./index.html)
 
+### Live Demo (GitHub Pages)
+👉 https://github.com/Tuchsanai/MLOps/blob/main/01_ML_Life_Cycle_and_GIT/Week02/Lab/index.html
 
 ---
 
