@@ -27,33 +27,119 @@ In this lab, you will learn how to use Git commands to track changes in a Machin
 - Model comparison and selection
 
 
-## 📝 สรุป Git Workflow ในแต่ละ Step
+## 📝 Git Workflow Summary in Each Step
 
+### **Step 1: Initialize Repository**
 ```
-┌─────────────────────────────────────────────────────────────────┐
-│  Step 1: git init                                               │
-│  └── สร้าง repository เปล่า                                      │
-├─────────────────────────────────────────────────────────────────┤
-│  Step 2-7: วงจรการพัฒนาโค้ด (ทำซ้ำทุก feature)                    │
-│  ┌─────────────────────────────────────────────────────────┐    │
-│  │  1. แก้ไข/เพิ่มโค้ด                                       │    │
-│  │  2. ทดสอบโค้ด (python train.py)                          │    │
-│  │  3. git status   → ดูไฟล์ที่เปลี่ยนแปลง                    │    │
-│  │  4. git add      → เลือกไฟล์ที่จะ commit                  │    │
-│  │  5. git commit   → บันทึกการเปลี่ยนแปลงพร้อม message       │    │
-│  │  6. git log      → ตรวจสอบ history                        │    │
-│  └─────────────────────────────────────────────────────────┘    │
-├─────────────────────────────────────────────────────────────────┤
-│  Step 8: git push                                               │
-│  └── อัปโหลดทุก commits ขึ้น GitHub                              │
-├─────────────────────────────────────────────────────────────────┤
-
+git init
+     ↓
+Create empty .git folder
+     ↓
+Repository ready for tracking
 ```
 
 ---
 
+### **Steps 2-7: Develop & Commit (Repeat for each feature)**
+
+Each step follows the same Git workflow pattern:
+
+```
+┌─────────────────────────────────────────────────────────────────┐
+│  STEP 2: Add Data Loading                                       │
+├─────────────────────────────────────────────────────────────────┤
+│  Code Change:  Create load_data() function                       │
+│  Test:         python train.py ✓                                 │
+│  Git Status:   untracked files (train.py)                        │
+│  Git Add:      git add train.py                                  │
+│  Git Commit:   git commit -m "Step 2: Add data loading..."       │
+│  Result:       ✓ 1st commit saved                                │
+└─────────────────────────────────────────────────────────────────┘
+
+┌─────────────────────────────────────────────────────────────────┐
+│  STEP 3: Add Data Preprocessing                                 │
+├─────────────────────────────────────────────────────────────────┤
+│  Code Change:  Add preprocess_data() + train_test_split          │
+│  Test:         python train.py ✓                                 │
+│  Git Status:   modified (train.py)                               │
+│  Git Add:      git add train.py                                  │
+│  Git Commit:   git commit -m "Step 3: Add preprocessing..."      │
+│  Result:       ✓ 2nd commit saved                                │
+└─────────────────────────────────────────────────────────────────┘
+
+┌─────────────────────────────────────────────────────────────────┐
+│  STEP 4: Add Model Training                                     │
+├─────────────────────────────────────────────────────────────────┤
+│  Code Change:  Add train_model() + DecisionTreeClassifier        │
+│  Test:         python train.py ✓                                 │
+│  Git Status:   modified (train.py)                               │
+│  Git Add:      git add train.py                                  │
+│  Git Commit:   git commit -m "Step 4: Add model training..."     │
+│  Result:       ✓ 3rd commit saved                                │
+└─────────────────────────────────────────────────────────────────┘
+
+┌─────────────────────────────────────────────────────────────────┐
+│  STEP 5: Add Model Evaluation                                   │
+├─────────────────────────────────────────────────────────────────┤
+│  Code Change:  Add evaluate_model() + metrics                    │
+│  Test:         python train.py ✓                                 │
+│  Git Status:   modified (train.py)                               │
+│  Git Add:      git add train.py                                  │
+│  Git Commit:   git commit -m "Step 5: Add model evaluation..."   │
+│  Result:       ✓ 4th commit saved                                │
+└─────────────────────────────────────────────────────────────────┘
+
+┌─────────────────────────────────────────────────────────────────┐
+│  STEP 6: Add Model Comparison                                   │
+├─────────────────────────────────────────────────────────────────┤
+│  Code Change:  Add train_random_forest() + compare models        │
+│  Test:         python train.py ✓                                 │
+│  Git Status:   modified (train.py)                               │
+│  Git Add:      git add train.py                                  │
+│  Git Commit:   git commit -m "Step 6: Compare models..."         │
+│  Result:       ✓ 5th commit saved                                │
+└─────────────────────────────────────────────────────────────────┘
+
+┌─────────────────────────────────────────────────────────────────┐
+│  STEP 7: Add Model Saving & Loading                             │
+├─────────────────────────────────────────────────────────────────┤
+│  Code Change:  Add save_model() + load_model()                   │
+│  New Files:    .gitignore, best_model.joblib                     │
+│  Test:         python train.py ✓                                 │
+│  Git Status:   modified (train.py), untracked (.gitignore, etc.) │
+│  Git Add:      git add train.py .gitignore best_model.joblib     │
+│  Git Commit:   git commit -m "Step 7: Add model saving..."       │
+│  Result:       ✓ 6th commit saved                                │
+└─────────────────────────────────────────────────────────────────┘
+```
+
+---
+
+### **Step 8: Push to Remote (GitHub)**
+```
+git remote add origin https://github.com/YOUR_USERNAME/repo.git
+     ↓
+git push -u origin main
+     ↓
+All commits uploaded to GitHub ✓
+```
 
 
+---
+
+### **Key Files Modified/Created at Each Step**
+
+| Step | Files Changed | git add | git commit |
+|------|---------------|---------|-----------|
+| 2 | train.py (created) | `git add train.py` | "Step 2: Add data loading..." |
+| 3 | train.py (modified) | `git add train.py` | "Step 3: Add preprocessing..." |
+| 4 | train.py (modified) | `git add train.py` | "Step 4: Add training..." |
+| 5 | train.py (modified) | `git add train.py` | "Step 5: Add evaluation..." |
+| 6 | train.py (modified) | `git add train.py` | "Step 6: Add comparison..." |
+| 7 | train.py, .gitignore, best_model.joblib | `git add .` | "Step 7: Add saving..." |
+| 8 | None | N/A | `git push -u origin main` |
+
+---
 
 ## 🚀 Let's Begin!
 
@@ -146,7 +232,22 @@ if __name__ == "__main__":
     print(df.dtypes)
 ```
 
-## 2.2 Test Your Code
+## 2.2 What Changed in train.py?
+
+### 📌 New Additions:
+- **Imports:** Added `pandas` for data manipulation and `load_iris` from scikit-learn
+- **New Function:** `load_data()` - loads the Iris dataset and converts it to a Pandas DataFrame
+  - Fetches the built-in Iris dataset (150 samples, 4 features)
+  - Creates a DataFrame with feature names as column headers
+  - Adds a 'target' column containing the class labels (0, 1, 2)
+- **Main Section:** Loads data and displays basic information (shape, first 5 rows, data types)
+
+### 🎯 Purpose:
+This is the **first building block** of the ML pipeline. We start by loading and exploring the data to understand its structure before proceeding to preprocessing.
+
+---
+
+## 2.3 Test Your Code
 
 ```bash
 # Run the script
@@ -167,7 +268,7 @@ First 5 rows:
 ...
 ```
 
-## 2.3 Stage and Commit Changes
+## 2.4 Stage and Commit Changes
 
 ```bash
 # Check what files are untracked
@@ -203,7 +304,7 @@ Changes to be committed:
 git commit -m "Step 2: Add data loading function for Iris dataset"
 ```
 
-## 2.4 View Commit History
+## 2.5 View Commit History
 
 ```bash
 # View commit log
@@ -276,7 +377,27 @@ if __name__ == "__main__":
     print(f"Test set size: {len(X_test)}")
 ```
 
-## 3.2 Test Your Code
+## 3.2 What Changed in train.py?
+
+### 📌 New Additions:
+- **New Import:** `train_test_split` from scikit-learn
+- **New Function:** `preprocess_data()` - prepares data for model training
+  - Separates the dataset into features (X) and target labels (y)
+  - Splits the data: 80% for training, 20% for testing
+  - Uses `random_state=42` to ensure reproducible results
+- **Updated Main Section:** Now calls both `load_data()` and `preprocess_data()` and displays dataset sizes
+
+### 🎯 Purpose:
+This step **splits the data** into training and test sets. This is essential because we use the training set to teach the model and the test set to evaluate if it can predict on unseen data.
+
+### 📊 Data Breakdown:
+- Original: 150 samples
+- Training set: ~120 samples (80%)
+- Test set: ~30 samples (20%)
+
+---
+
+## 3.3 Test Your Code
 
 ```bash
 python train.py
@@ -293,7 +414,7 @@ Training set size: 120
 Test set size: 30
 ```
 
-## 3.3 Stage and Commit Changes
+## 3.4 Stage and Commit Changes
 
 ```bash
 # Check what changed
@@ -315,7 +436,7 @@ git add train.py
 git commit -m "Step 3: Add data preprocessing and train/test split"
 ```
 
-## 3.4 View Updated History
+## 3.5 View Updated History
 
 ```bash
 git log --oneline
@@ -402,7 +523,26 @@ if __name__ == "__main__":
     print(f"Model type: {type(model).__name__}")
 ```
 
-## 4.2 Test Your Code
+## 4.2 What Changed in train.py?
+
+### 📌 New Additions:
+- **New Import:** `DecisionTreeClassifier` from scikit-learn
+- **New Function:** `train_model()` - creates and trains a Decision Tree classifier
+  - Instantiates a DecisionTreeClassifier with `random_state=42` for reproducibility
+  - Fits (trains) the model using training data
+- **Updated Main Section:** Now includes a training step after data preprocessing
+
+### 🎯 Purpose:
+This step **trains the machine learning model**. The Decision Tree learns patterns from the training data, creating a tree structure that can predict flower species based on measurements.
+
+### 🌳 How it Works:
+The Decision Tree algorithm learns decision rules from the training data:
+- Example: "If sepal length > 5.5, predict class 1"
+- These rules form a tree structure the model uses for predictions
+
+---
+
+## 4.3 Test Your Code
 
 ```bash
 python train.py
@@ -423,7 +563,7 @@ Model training completed!
 Model type: DecisionTreeClassifier
 ```
 
-## 4.3 Stage and Commit
+## 4.4 Stage and Commit
 
 ```bash
 # Check status
@@ -542,7 +682,28 @@ if __name__ == "__main__":
     print(f"\nClassification Report:\n{report}")
 ```
 
-## 5.2 Test Your Code
+## 5.2 What Changed in train.py?
+
+### 📌 New Additions:
+- **New Imports:** `accuracy_score` and `classification_report` from scikit-learn.metrics
+- **New Function:** `evaluate_model()` - assesses how well the trained model performs
+  - Makes predictions on the test set
+  - Calculates accuracy (percentage of correct predictions)
+  - Generates a detailed classification report showing precision, recall, and F1-score for each class
+- **Updated Main Section:** Much better formatting with numbered steps and evaluation results displayed clearly
+
+### 🎯 Purpose:
+This step **measures model performance** using metrics that tell us how good our model is at predicting on unseen data.
+
+### 📈 Key Metrics Explained:
+- **Accuracy:** Overall correctness (out of 100%)
+- **Precision:** Of the flowers we predicted as class X, how many were correct?
+- **Recall:** Of all actual class X flowers, how many did we identify?
+- **F1-Score:** Balanced combination of precision and recall
+
+---
+
+## 5.3 Test Your Code
 
 ```bash
 python train.py
@@ -585,7 +746,7 @@ Classification Report:
 weighted avg       1.00      1.00      1.00        30
 ```
 
-## 5.3 Stage and Commit
+## 5.4 Stage and Commit
 
 ```bash
 git add train.py
@@ -720,13 +881,35 @@ if __name__ == "__main__":
         print("\n✓ Both models perform equally!")
 ```
 
-## 6.2 Test Your Code
+## 6.2 What Changed in train.py?
+
+### 📌 New Additions:
+- **New Import:** `RandomForestClassifier` from scikit-learn.ensemble
+- **New Function:** `train_random_forest()` - trains a Random Forest classifier with 100 trees
+- **Renamed/Separated:** Previous `train_model()` is now specifically `train_decision_tree()`
+- **Updated Main Section:**
+  - Now trains BOTH Decision Tree and Random Forest models
+  - Evaluates each model separately
+  - Compares their accuracies side-by-side
+  - Shows which model performs better
+
+### 🎯 Purpose:
+This step **introduces model comparison**. Instead of using just one algorithm, we train multiple models and compare their performance to choose the best one.
+
+### 🌲 Random Forest vs Decision Tree:
+- **Decision Tree:** One decision tree (simple, fast, can overfit)
+- **Random Forest:** 100 decision trees voting together (more robust, better generalization)
+- Random Forest typically performs better but is slightly slower
+
+---
+
+## 6.3 Test Your Code
 
 ```bash
 python train.py
 ```
 
-## 6.3 Stage and Commit
+## 6.4 Stage and Commit
 
 ```bash
 git add train.py
@@ -879,11 +1062,31 @@ if __name__ == "__main__":
     print("=" * 60)
 ```
 
-## 7.2 Test Your Code
+## 7.2 What Changed in train.py?
 
-```bash
-python train.py
-```
+### 📌 New Additions:
+- **New Import:** `joblib` - used for saving/loading machine learning models as files
+- **New Function:** `save_model()` - saves a trained model to a `.joblib` file for later use
+- **New Function:** `load_model()` - loads a previously saved model from a `.joblib` file
+- **Updated Main Section:**
+  - Trains both models
+  - Evaluates both models
+  - Compares accuracies
+  - Selects the BEST model (highest accuracy)
+  - Saves the best model to `best_model.joblib`
+  - Loads the model back to verify it works correctly
+  - Shows completion message
+
+### 🎯 Purpose:
+This step **makes the model reusable**. Instead of retraining the model every time we need predictions, we save it as a file. Later, we can load this model in different scripts for making predictions on new data.
+
+### 💾 Why Save Models?
+- **Reusability:** Use trained model in production without retraining
+- **Efficiency:** Training takes time; loading a saved model is instant
+- **Consistency:** Same model produces same results across different runs
+- **Sharing:** Send the model file to others for deployment
+
+---
 
 ## 7.3 Create .gitignore
 
@@ -898,6 +1101,14 @@ echo "" >> .gitignore
 echo "# Optional: Ignore large model files" >> .gitignore
 echo "# *.joblib" >> .gitignore
 ```
+
+### 📌 What is .gitignore?
+A `.gitignore` file tells Git which files to ignore (not track). This is important because:
+- We don't want to save large model files (like `best_model.joblib`) to Git
+- We don't want to track Python cache files (`__pycache__/`, `*.pyc`)
+- It keeps the repository clean and reduces storage
+
+---
 
 ## 7.4 Stage and Commit All Files
 
@@ -985,11 +1196,6 @@ Branch 'main' set up to track remote branch 'main' from 'origin'.
 
 ---
 
-
-✅ **Checkpoint:** You successfully pulled changes from remote!
-
----
-
 # 📊 Git Commands Summary
 
 | Command | Description | When to Use |
@@ -1004,5 +1210,23 @@ Branch 'main' set up to track remote branch 'main' from 'origin'.
 | `git remote add` | Connect to GitHub | Setup (once) |
 | `git push` | Upload to GitHub | Share your work |
 
+---
+
+# 📈 Summary of Changes Across All Steps
+
+| Step | Added/Changed | Files Modified | Purpose |
+|------|---------------|----------------|---------|
+| 2 | Data loading function | train.py (created) | Load and explore data |
+| 3 | Data preprocessing function | train.py | Split train/test sets (80/20) |
+| 4 | Model training function | train.py | Train Decision Tree classifier |
+| 5 | Model evaluation function | train.py | Calculate accuracy and metrics |
+| 6 | Random Forest model + comparison | train.py | Compare two algorithms |
+| 7 | Model saving/loading functions | train.py, .gitignore (created) | Save best model to file |
 
 ---
+
+**🎓 Key Takeaways:**
+- Each step builds upon the previous one
+- Git tracks your progress through commits
+- Your train.py grows from simple data loading to a complete ML pipeline
+- By Step 7, you have a reusable, production-ready ML model saved as a file
