@@ -75,18 +75,17 @@ X_train, X_test, y_train, y_test = train_test_split(
 # 2) Train 2 Models (ตัวอย่าง)
 model1 = RandomForestClassifier()
 model2 = LogisticRegression(max_iter=200)
-# ❗ Model ที่ 3 ให้นักศึกษาเลือกเอง เช่น:
-# from sklearn.svm import SVC
-# model3 = SVC()
+# ===== STUDENT MUST ADD MODEL 3 HERE =====
 
 model1.fit(X_train, y_train)
 model2.fit(X_train, y_train)
-# model3.fit(X_train, y_train)   # ← ต้องเพิ่มเอง
+
+# ===== STUDENT MUST FIT MODEL 3 HERE =====
 
 # 3) Predict
 y_pred1 = model1.predict(X_test)
 y_pred2 = model2.predict(X_test)
-# y_pred3 = model3.predict(X_test)  # ← ต้องเพิ่มเอง
+# ===== STUDENT MUST ADD MODEL 3 HERE =====
 
 # 4) Evaluate
 acc1 = accuracy_score(y_test, y_pred1)
@@ -95,8 +94,6 @@ f1_1 = f1_score(y_test, y_pred1, average='macro')
 f1_2 = f1_score(y_test, y_pred2, average='macro')
 
 # ===== STUDENT MUST ADD MODEL 3 HERE =====
-# acc3 = ...
-# f1_3 = ...
 
 # 5) Save models
 joblib.dump(model1, "model_rf.pkl")
