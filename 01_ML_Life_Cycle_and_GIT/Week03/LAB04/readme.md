@@ -133,15 +133,18 @@ which python
 
 ### Step 3: Install Dependencies
 
-```bash
-# Create requirements file
-cat > requirements.txt << 'EOF'
+**Create a file named `requirements.txt`** in the project root directory with the following content:
+
+```
 scikit-learn==1.3.0
 pandas==2.0.3
 numpy==1.24.3
 joblib==1.3.1
-EOF
+```
 
+Then install the dependencies:
+
+```bash
 # Install dependencies
 pip install -r requirements.txt
 
@@ -160,9 +163,11 @@ python -c "import sklearn; print(f'scikit-learn version: {sklearn.__version__}')
 ```bash
 # Create directories
 mkdir -p data models src results
+```
 
-# Create .gitignore file
-cat > .gitignore << 'EOF'
+**Create a file named `.gitignore`** in the project root directory with the following content:
+
+```
 # Virtual environment
 mlops-env/
 venv/
@@ -184,7 +189,6 @@ __pycache__/
 # OS files
 .DS_Store
 Thumbs.db
-EOF
 ```
 
 **Explanation:**
@@ -196,8 +200,9 @@ EOF
 
 ### Step 1.1: Create Sample Dataset
 
-```bash
-cat > src/create_dataset.py << 'EOF'
+**Create a file named `create_dataset.py`** inside the `src/` directory with the following content:
+
+```python
 """
 Create a sample dataset for ML experiments
 """
@@ -231,8 +236,11 @@ if __name__ == "__main__":
     df.to_csv('data/dataset.csv', index=False)
     print(f"Dataset created: {df.shape[0]} samples, {df.shape[1]} columns")
     print(f"Target distribution:\n{df['target'].value_counts()}")
-EOF
+```
 
+Then run the script:
+
+```bash
 # Run the script
 python src/create_dataset.py
 ```
@@ -245,8 +253,9 @@ python src/create_dataset.py
 
 ### Step 1.2: Create Training Script
 
-```bash
-cat > src/train.py << 'EOF'
+**Create a file named `train.py`** inside the `src/` directory with the following content:
+
+```python
 """
 Training script for ML experiments
 """
@@ -332,7 +341,6 @@ def main():
 
 if __name__ == "__main__":
     main()
-EOF
 ```
 
 ---
@@ -383,8 +391,9 @@ echo "Current branch: $(git branch --show-current)"
 
 ### Step 2.2: Modify Training Script for Random Forest
 
-```bash
-cat > src/train.py << 'EOF'
+**Replace the content of `src/train.py`** with the following code:
+
+```python
 """
 Training script for ML experiments - Random Forest Version
 """
@@ -487,7 +496,6 @@ def main():
 
 if __name__ == "__main__":
     main()
-EOF
 ```
 
 ---
@@ -513,15 +521,116 @@ git log --oneline
 
 ### Step 2.4: Tune Hyperparameters (Second Commit)
 
+**Replace the content of `src/train.py`** with the following tuned version (note the changed hyperparameters: `n_estimators=200` and `max_depth=15`):
+
+```python
+"""
+Training script for ML experiments - Random Forest Version (Tuned)
+"""
+import json
+from datetime import datetime
+import pandas as pd
+import numpy as np
+from sklearn.model_selection import train_test_split
+from sklearn.ensemble import RandomForestClassifier
+from sklearn.metrics import accuracy_score, precision_score, recall_score, f1_score
+
+def load_data(filepath='data/dataset.csv'):
+    """Load dataset from CSV"""
+    df = pd.read_csv(filepath)
+    X = df.drop('target', axis=1)
+    y = df['target']
+    return train_test_split(X, y, test_size=0.2, random_state=42)
+
+def train_random_forest(X_train, y_train):
+    """Train Random Forest model"""
+    model = RandomForestClassifier(
+        n_estimators=200,
+        max_depth=15,
+        min_samples_split=5,
+        random_state=42,
+        n_jobs=-1
+    )
+    model.fit(X_train, y_train)
+    return model, {
+        'model_type': 'RandomForestClassifier',
+        'n_estimators': 200,
+        'max_depth': 15,
+        'min_samples_split': 5
+    }
+
+def evaluate_model(model, X_test, y_test):
+    """Evaluate model and return metrics"""
+    y_pred = model.predict(X_test)
+    return {
+        'accuracy': round(accuracy_score(y_test, y_pred), 4),
+        'precision': round(precision_score(y_test, y_pred), 4),
+        'recall': round(recall_score(y_test, y_pred), 4),
+        'f1_score': round(f1_score(y_test, y_pred), 4)
+    }
+
+def save_results(model_info, metrics, filepath='models/model_info.json'):
+    """Save model information and metrics"""
+    results = {
+        'timestamp': datetime.now().isoformat(),
+        'model_info': model_info,
+        'metrics': metrics
+    }
+    with open(filepath, 'w') as f:
+        json.dump(results, f, indent=2)
+    return results
+
+def main():
+    print("=" * 50)
+    print("TRAINING: Random Forest Classifier (Tuned)")
+    print("=" * 50)
+    
+    # Load data
+    X_train, X_test, y_train, y_test = load_data()
+    print(f"Training samples: {len(X_train)}")
+    print(f"Test samples: {len(X_test)}")
+    
+    # Train model
+    model, model_info = train_random_forest(X_train, y_train)
+    
+    # Evaluate
+    metrics = evaluate_model(model, X_test, y_test)
+    
+    # Save results
+    results = save_results(model_info, metrics)
+    
+    # Print results
+    print(f"\nModel: {model_info['model_type']}")
+    print(f"Hyperparameters:")
+    for key, value in model_info.items():
+        if key != 'model_type':
+            print(f"  {key}: {value}")
+    print(f"\nMetrics:")
+    for key, value in metrics.items():
+        print(f"  {key}: {value}")
+    
+    # Save metrics to text file
+    with open('results/metrics.txt', 'w') as f:
+        f.write(f"Experiment: Random Forest Classifier (Tuned)\n")
+        f.write(f"Timestamp: {results['timestamp']}\n")
+        f.write(f"{'='*40}\n")
+        f.write(f"Hyperparameters:\n")
+        for key, value in model_info.items():
+            if key != 'model_type':
+                f.write(f"  {key}: {value}\n")
+        f.write(f"\nMetrics:\n")
+        for key, value in metrics.items():
+            f.write(f"  {key}: {value}\n")
+    
+    print("\nResults saved!")
+
+if __name__ == "__main__":
+    main()
+```
+
+Then run and commit:
+
 ```bash
-# Modify the model parameters in train.py
-sed -i 's/n_estimators=100/n_estimators=200/g' src/train.py
-sed -i 's/max_depth=10/max_depth=15/g' src/train.py
-
-# Update the model_info dictionary
-sed -i "s/'n_estimators': 100/'n_estimators': 200/g" src/train.py
-sed -i "s/'max_depth': 10/'max_depth': 15/g" src/train.py
-
 # Run training again
 python src/train.py
 
@@ -539,6 +648,7 @@ git log --oneline
 **Explanation:**
 - Demonstrates iterative experiment tracking
 - Each hyperparameter change is tracked as a separate commit
+- Changes made: `n_estimators` increased from 100 to 200, `max_depth` increased from 10 to 15
 
 ---
 
@@ -564,8 +674,9 @@ git branch --show-current
 
 ### Step 3.2: Create SVM Training Script
 
-```bash
-cat > src/train.py << 'EOF'
+**Replace the content of `src/train.py`** with the following code:
+
+```python
 """
 Training script for ML experiments - SVM Version
 """
@@ -668,8 +779,11 @@ def main():
 
 if __name__ == "__main__":
     main()
-EOF
+```
 
+Then run and commit:
+
+```bash
 # Run training
 python src/train.py
 
@@ -682,11 +796,116 @@ git commit -m "Experiment: SVM with RBF kernel, C=1.0"
 
 ### Step 3.3: Tune SVM Hyperparameters
 
-```bash
-# Modify C parameter
-sed -i 's/C=1.0/C=10.0/g' src/train.py
-sed -i "s/'C': 1.0/'C': 10.0/g" src/train.py
+**Replace the content of `src/train.py`** with the following tuned version (note the changed hyperparameter: `C=10.0`):
 
+```python
+"""
+Training script for ML experiments - SVM Version (Tuned)
+"""
+import json
+from datetime import datetime
+import pandas as pd
+import numpy as np
+from sklearn.model_selection import train_test_split
+from sklearn.svm import SVC
+from sklearn.preprocessing import StandardScaler
+from sklearn.pipeline import Pipeline
+from sklearn.metrics import accuracy_score, precision_score, recall_score, f1_score
+
+def load_data(filepath='data/dataset.csv'):
+    """Load dataset from CSV"""
+    df = pd.read_csv(filepath)
+    X = df.drop('target', axis=1)
+    y = df['target']
+    return train_test_split(X, y, test_size=0.2, random_state=42)
+
+def train_svm(X_train, y_train):
+    """Train SVM model with preprocessing pipeline"""
+    model = Pipeline([
+        ('scaler', StandardScaler()),
+        ('svm', SVC(kernel='rbf', C=10.0, gamma='scale', random_state=42))
+    ])
+    model.fit(X_train, y_train)
+    return model, {
+        'model_type': 'SVC',
+        'kernel': 'rbf',
+        'C': 10.0,
+        'gamma': 'scale',
+        'preprocessing': 'StandardScaler'
+    }
+
+def evaluate_model(model, X_test, y_test):
+    """Evaluate model and return metrics"""
+    y_pred = model.predict(X_test)
+    return {
+        'accuracy': round(accuracy_score(y_test, y_pred), 4),
+        'precision': round(precision_score(y_test, y_pred), 4),
+        'recall': round(recall_score(y_test, y_pred), 4),
+        'f1_score': round(f1_score(y_test, y_pred), 4)
+    }
+
+def save_results(model_info, metrics, filepath='models/model_info.json'):
+    """Save model information and metrics"""
+    results = {
+        'timestamp': datetime.now().isoformat(),
+        'model_info': model_info,
+        'metrics': metrics
+    }
+    with open(filepath, 'w') as f:
+        json.dump(results, f, indent=2)
+    return results
+
+def main():
+    print("=" * 50)
+    print("TRAINING: Support Vector Machine (SVM) - Tuned")
+    print("=" * 50)
+    
+    # Load data
+    X_train, X_test, y_train, y_test = load_data()
+    print(f"Training samples: {len(X_train)}")
+    print(f"Test samples: {len(X_test)}")
+    
+    # Train model
+    model, model_info = train_svm(X_train, y_train)
+    
+    # Evaluate
+    metrics = evaluate_model(model, X_test, y_test)
+    
+    # Save results
+    results = save_results(model_info, metrics)
+    
+    # Print results
+    print(f"\nModel: {model_info['model_type']}")
+    print(f"Hyperparameters:")
+    for key, value in model_info.items():
+        if key != 'model_type':
+            print(f"  {key}: {value}")
+    print(f"\nMetrics:")
+    for key, value in metrics.items():
+        print(f"  {key}: {value}")
+    
+    # Save metrics to text file
+    with open('results/metrics.txt', 'w') as f:
+        f.write(f"Experiment: SVM Classifier (Tuned)\n")
+        f.write(f"Timestamp: {results['timestamp']}\n")
+        f.write(f"{'='*40}\n")
+        f.write(f"Hyperparameters:\n")
+        for key, value in model_info.items():
+            if key != 'model_type':
+                f.write(f"  {key}: {value}\n")
+        f.write(f"\nMetrics:\n")
+        for key, value in metrics.items():
+            f.write(f"  {key}: {value}\n")
+    
+    print("\nResults saved!")
+
+if __name__ == "__main__":
+    main()
+```
+
+Then run and commit:
+
+```bash
 # Run training
 python src/train.py
 
@@ -697,6 +916,10 @@ git commit -m "Tune: SVM with C=10.0"
 # View branch history
 git log --oneline
 ```
+
+**Explanation:**
+- The regularization parameter `C` was increased from 1.0 to 10.0
+- Higher C values mean less regularization, allowing the model to fit the training data more closely
 
 ---
 
@@ -719,8 +942,9 @@ git branch --show-current
 
 ### Step 4.2: Create Ensemble Model
 
-```bash
-cat > src/train.py << 'EOF'
+**Replace the content of `src/train.py`** with the following code:
+
+```python
 """
 Training script for ML experiments - Ensemble Version
 """
@@ -838,8 +1062,11 @@ def main():
 
 if __name__ == "__main__":
     main()
-EOF
+```
 
+Then run and commit:
+
+```bash
 # Run training
 python src/train.py
 
@@ -860,9 +1087,11 @@ git log --oneline
 ```bash
 # Switch to main branch
 git checkout main
+```
 
-# Create comparison script
-cat > src/compare_experiments.py << 'EOF'
+**Create a file named `compare_experiments.py`** inside the `src/` directory with the following content:
+
+```python
 """
 Compare experiments across different branches
 """
@@ -926,8 +1155,11 @@ def main():
 
 if __name__ == "__main__":
     main()
-EOF
+```
 
+Then commit:
+
+```bash
 git add src/compare_experiments.py
 git commit -m "Add experiment comparison script"
 ```
@@ -1041,8 +1273,9 @@ git branch -D exp/svm-model
 
 ### Step 7.2: Create Final Documentation
 
-```bash
-cat > EXPERIMENT_LOG.md << 'EOF'
+**Create a file named `EXPERIMENT_LOG.md`** in the project root directory with the following content:
+
+```markdown
 # Experiment Log
 
 ## Summary
@@ -1076,8 +1309,11 @@ cat > EXPERIMENT_LOG.md << 'EOF'
 - `git merge <branch>` - Merge successful experiments
 - `git diff <branch1> <branch2>` - Compare experiments
 - `git log --graph --all` - Visualize experiment history
-EOF
+```
 
+Then commit:
+
+```bash
 git add EXPERIMENT_LOG.md
 git commit -m "Add experiment documentation"
 ```
@@ -1097,7 +1333,6 @@ ls -la
 deactivate
 ```
 
-
 ---
 
 ## ✅ Learning Outcomes
@@ -1113,3 +1348,33 @@ After completing this lab, students will understand:
 7. **MLOps Best Practices**: Structuring ML projects for collaboration
 
 ---
+
+## 📋 Quick Reference: File Creation Summary
+
+Throughout this lab, you will create the following files manually:
+
+| File | Location | Task |
+|------|----------|------|
+| `requirements.txt` | Project root | Step 3 |
+| `.gitignore` | Project root | Step 4 |
+| `create_dataset.py` | `src/` | Task 1.1 |
+| `train.py` | `src/` | Task 1.2 |
+| `train.py` (RF version) | `src/` | Task 2.2 |
+| `train.py` (RF tuned) | `src/` | Task 2.4 |
+| `train.py` (SVM version) | `src/` | Task 3.2 |
+| `train.py` (SVM tuned) | `src/` | Task 3.3 |
+| `train.py` (Ensemble) | `src/` | Task 4.2 |
+| `compare_experiments.py` | `src/` | Task 5.1 |
+| `EXPERIMENT_LOG.md` | Project root | Task 7.2 |
+
+---
+
+## 📝 Hyperparameter Changes Summary
+
+| Task | Model | Parameter | Before | After |
+|------|-------|-----------|--------|-------|
+| 2.4 | Random Forest | n_estimators | 100 | 200 |
+| 2.4 | Random Forest | max_depth | 10 | 15 |
+| 3.3 | SVM | C | 1.0 | 10.0 |
+
+**Tip:** Use any text editor you're comfortable with (VS Code, nano, vim, etc.) to create and edit these files.
