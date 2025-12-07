@@ -1,95 +1,141 @@
-Creating a lab scenario that involves using `git add`, `git commit`, and `git status` to monitor changes over three steps with three files.
+# Lab 01: Git Fundamentals
 
+In this lab, you will practice the fundamental Git workflow: creating a repository, staging files, checking status, examining differences, and committing changes. We will also cover how to ignore specific files using `.gitignore`.
 
-### Step 1: Initial Setup and First Commit
+**Prerequisites**: Git must be installed on your machine.
 
-1. **Create Lab Directory and Initialize Git Repository**
-   - Create a new directory for the lab and navigate into it:
-     ```bash
-     mkdir git-lab
-     cd git-lab
-     ```
-   - Initialize a new Git repository:
-     ```bash
-     git init
-     ```
+---
 
-2. **Create Three Files and Check Status**
-   - Create the initial files:
-     ```bash
-     echo "Content for file 1" > file1.txt
-     echo "Content for file 2" > file2.txt
-     echo "Content for file 3" > file3.txt
-     ```
-   - Use `git status` to see the untracked files:
-     ```bash
-     git status
-     ```
+## Lab Instructions
 
-3. **Add Files to Staging and Commit**
-   - Add the files to staging:
-     ```bash
-     git add file1.txt file2.txt file3.txt
-     ```
-   - Commit the changes:
-     ```bash
-     git commit -m "Initial commit with three files"
-     ```
-   - Verify the commit:
-     ```bash
-     git status
-     git log
-     ```
+### Step 1: Initial Setup
 
-### Step 2: Modify Files and Second Commit
+1.  **Create a working directory**:
+    Open your terminal and run the following commands to create a directory for this lab:
+    ```bash
+    mkdir git-lab
+    cd git-lab
+    ```
 
-1. **Modify Files**
-   - Make changes to the files:
-     ```bash
-     echo "Additional content for file 1" >> file1.txt
-     echo "Additional content for file 2" >> file2.txt
-     ```
+2.  **Initialize Git**:
+    Initialize a new Git repository in this directory:
+    ```bash
+    git init
+    ```
+    *This creates a hidden `.git` folder that tracks your changes.*
 
-2. **Monitor Changes and Commit**
-   - Check the status to see the modified files:
-     ```bash
-     git status
-     ```
-   - Stage the modified files and commit:
-     ```bash
-     git add file1.txt file2.txt
-     git commit -m "Updated file1 and file2"
-     ```
-   - Verify the changes:
-     ```bash
-     git status
-     git log
-     ```
+### Step 2: The Basic Workflow (Edit, Add, Commit)
 
-### Step 3: Final Modifications and Commit
+1.  **Create some files**:
+    Create three text files with some content:
+    ```bash
+    echo "Content for file 1" > file1.txt
+    echo "Content for file 2" > file2.txt
+    echo "Content for file 3" > file3.txt
+    ```
 
-1. **Final Modifications**
-   - Modify the third file:
-     ```bash
-     echo "Additional content for file 3" >> file3.txt
-     ```
+2.  **Check Status**:
+    See how Git views these new files:
+    ```bash
+    git status
+    ```
+    *You should see the files listed as "Untracked files".*
 
-2. **Final Commit**
-   - Use `git status` to check the changes:
-     ```bash
-     git status
-     ```
-   - Stage and commit the final change:
-     ```bash
-     git add file3.txt
-     git commit -m "Final update to file3"
-     ```
-   - Verify the final commit:
-     ```bash
-     git status
-     git log
-     ```
+3.  **Stage the files**:
+    Add the files to the "Staging Area". This tells Git you want to include these updates in the next snapshot.
+    ```bash
+    git add file1.txt file2.txt file3.txt
+    ```
 
-### Conclusion
+4.  **Commit**:
+    Save the snapshot with a descriptive message:
+    ```bash
+    git commit -m "Initial commit with three files"
+    ```
 
-Through these steps, you've created a lab environment that demonstrates the basic workflow of Git, including monitoring file changes with `git status`, staging changes with `git add`, and committing changes with `git commit`.
+### Step 3: Modifying Files and using `git diff`
+
+1.  **Modify files**:
+    Append new content to two of existing files:
+    ```bash
+    echo "Additional content for file 1" >> file1.txt
+    echo "Additional content for file 2" >> file2.txt
+    ```
+
+2.  **Inspect Changes**:
+    Before adding, it is good practice to review exactly what changed:
+    ```bash
+    git diff
+    ```
+    *This shows the line-by-line differences between your working directory and the last commit.*
+
+3.  **Commit Step-by-Step**:
+    Let's modify the staging area and commit.
+    ```bash
+    git add file1.txt file2.txt
+    git commit -m "Updated file1 and file2"
+    ```
+
+### Step 4: Ignoring Files with `.gitignore`
+
+Sometimes you have files you do NOT want to track (temporary files, partial builds, secrets).
+
+1.  **Create "secret" files**:
+    These mimic files that shouldn't be in Git.
+    ```bash
+    echo "Secret API Key" > .env
+    echo "Debug logs..." > debug.log
+    ```
+
+2.  **Create `.gitignore`**:
+    Create a special file named `.gitignore` and list the patterns to ignore:
+    ```bash
+    echo ".env" > .gitignore
+    echo "*.log" >> .gitignore
+    ```
+
+3.  **Verify Status**:
+    Check status again. You should see `.gitignore` as a new untracked file, but NOT `.env` or `debug.log`.
+    ```bash
+    git status
+    ```
+
+4.  **Final Commit**:
+    Add the ignore file and any other pending changes.
+    ```bash
+    echo "More content" >> file3.txt
+    git add .
+    git commit -m "Final update with gitignore"
+    ```
+
+### Step 5: Review History
+
+Look at the history of your project:
+
+```bash
+git log --oneline --graph --all
+```
+
+---
+
+## Helper Scripts
+
+We have provided two scripts to help you with this lab:
+
+-   **`clean.sh`**: Deletes the `git-lab` directory so you can start over fresh.
+    ```bash
+    ./clean.sh
+    ```
+
+-   **`solution.sh`**: automatically runs all the steps above to demonstrate the expected output.
+    ```bash
+    ./solution.sh
+    ```
+
+## Challenge (Optional)
+
+1.  Create a branch named `feature-login`.
+2.  Switch to that branch.
+3.  Create a file `login.html`.
+4.  Commit it on that branch.
+5.  Switch back to `main` and verify `login.html` is gone.
