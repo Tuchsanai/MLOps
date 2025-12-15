@@ -117,25 +117,3 @@ git log --oneline --graph --all
 ```
 
 ---
-
-## Helper Scripts
-
-We have provided two scripts to help you with this lab:
-
--   **`clean.sh`**: Deletes the `git-lab` directory so you can start over fresh.
-    ```bash
-    ./clean.sh
-    ```
-
--   **`solution.sh`**: automatically runs all the steps above to demonstrate the expected output.
-    ```bash
-    ./solution.sh
-    ```
-
-## Challenge (Optional)
-
-1.  Create a branch named `feature-login`.
-2.  Switch to that branch.
-3.  Create a file `login.html`.
-4.  Commit it on that branch.
-5.  Switch back to `main` and verify `login.html` is gone.
