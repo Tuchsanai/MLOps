@@ -164,6 +164,11 @@ cd ml-git-lab
 git init
 ```
 
+📤 **Expected Output:**
+```
+Initialized empty Git repository in /path/to/ml-git-lab/.git/
+```
+
 > 💡 **สังเกต**: จะเห็นข้อความ "Initialized empty Git repository" และมีโฟลเดอร์ `.git` ซ่อนอยู่
 
 ---
@@ -198,6 +203,34 @@ print("Model saved to model.pkl")
 EOF
 ```
 
+📄 **ไฟล์ที่สร้าง: `train.py`**
+```python
+import pickle
+from sklearn.datasets import load_iris
+from sklearn.model_selection import train_test_split
+from sklearn.ensemble import RandomForestClassifier
+from sklearn.metrics import accuracy_score
+
+# Load data
+X, y = load_iris(return_X_y=True)
+X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
+
+# Train model
+model = RandomForestClassifier(n_estimators=100, random_state=42)
+model.fit(X_train, y_train)
+
+# Evaluate
+accuracy = accuracy_score(y_test, model.predict(X_test))
+print(f"Accuracy: {accuracy:.4f}")
+
+# Save model
+with open("model.pkl", "wb") as f:
+    pickle.dump(model, f)
+print("Model saved to model.pkl")
+```
+
+---
+
 2. **สร้าง configuration file** (`config.py`):
 ```bash
 cat > config.py << 'EOF'
@@ -208,23 +241,72 @@ TEST_SIZE = 0.2
 EOF
 ```
 
+📄 **ไฟล์ที่สร้าง: `config.py`**
+```python
+# Model hyperparameters
+N_ESTIMATORS = 100
+RANDOM_STATE = 42
+TEST_SIZE = 0.2
+```
+
+---
+
 3. **ตรวจสอบสถานะ**:
 ```bash
 git status
 ```
 
-> 💡 **คาดหวัง**: เห็น `train.py` และ `config.py` เป็น "Untracked files" (สีแดง)
+📤 **Expected Output:**
+```
+On branch master
 
-4. **Stage และ Commit**:
+No commits yet
+
+Untracked files:
+  (use "git add <file>..." to include in what will be committed)
+        config.py
+        train.py
+
+nothing added to commit but untracked files present (use "git add" to track)
+```
+
+> 💡 **สังเกต**: `train.py` และ `config.py` เป็น "Untracked files" (สีแดงใน terminal)
+
+---
+
+4. **Stage ไฟล์**:
 ```bash
 git add train.py config.py
 git status
 ```
 
-> 💡 **คาดหวัง**: เห็นไฟล์เป็น "Changes to be committed" (สีเขียว)
+📤 **Expected Output:**
+```
+On branch master
 
+No commits yet
+
+Changes to be committed:
+  (use "git rm --cached <file>..." to unstage)
+        new file:   config.py
+        new file:   train.py
+```
+
+> 💡 **สังเกต**: ไฟล์เปลี่ยนเป็น "Changes to be committed" (สีเขียวใน terminal)
+
+---
+
+5. **Commit**:
 ```bash
 git commit -m "Initial commit: training script and config"
+```
+
+📤 **Expected Output:**
+```
+[master (root-commit) abc1234] Initial commit: training script and config
+ 2 files changed, 24 insertions(+)
+ create mode 100644 config.py
+ create mode 100644 train.py
 ```
 
 ---
@@ -262,17 +344,96 @@ print("Model saved to model.pkl")
 EOF
 ```
 
-2. **ดูความเปลี่ยนแปลง**:
+📄 **ไฟล์ที่แก้ไข: `train.py` (Version 2)**
+```python
+import pickle
+from sklearn.datasets import load_iris
+from sklearn.model_selection import train_test_split
+from sklearn.ensemble import RandomForestClassifier
+from sklearn.metrics import accuracy_score
+from config import N_ESTIMATORS, RANDOM_STATE, TEST_SIZE  # ← NEW: import config
+
+# Load data
+X, y = load_iris(return_X_y=True)
+X_train, X_test, y_train, y_test = train_test_split(
+    X, y, test_size=TEST_SIZE, random_state=RANDOM_STATE  # ← CHANGED: use config values
+)
+
+# Train model
+model = RandomForestClassifier(n_estimators=N_ESTIMATORS, random_state=RANDOM_STATE)  # ← CHANGED
+model.fit(X_train, y_train)
+
+# Evaluate
+accuracy = accuracy_score(y_test, model.predict(X_test))
+print(f"Accuracy: {accuracy:.4f}")
+
+# Save model
+with open("model.pkl", "wb") as f:
+    pickle.dump(model, f)
+print("Model saved to model.pkl")
+```
+
+---
+
+🔍 **การเปรียบเทียบ Before vs After:**
+
+| บรรทัด | Before (Version 1) | After (Version 2) |
+|--------|-------------------|-------------------|
+| 6 | *(ไม่มี)* | `from config import N_ESTIMATORS, RANDOM_STATE, TEST_SIZE` |
+| 10 | `X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)` | `X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=TEST_SIZE, random_state=RANDOM_STATE)` |
+| 13 | `model = RandomForestClassifier(n_estimators=100, random_state=42)` | `model = RandomForestClassifier(n_estimators=N_ESTIMATORS, random_state=RANDOM_STATE)` |
+
+---
+
+2. **ดูความเปลี่ยนแปลงด้วย `git diff`**:
 ```bash
 git diff
 ```
 
-> 💡 **คาดหวัง**: เห็นบรรทัดที่เพิ่ม (สีเขียว +) และลบ (สีแดง -)
+📤 **Expected Output:**
+```diff
+diff --git a/train.py b/train.py
+index abc1234..def5678 100644
+--- a/train.py
++++ b/train.py
+@@ -3,14 +3,16 @@ from sklearn.datasets import load_iris
+ from sklearn.model_selection import train_test_split
+ from sklearn.ensemble import RandomForestClassifier
+ from sklearn.metrics import accuracy_score
++from config import N_ESTIMATORS, RANDOM_STATE, TEST_SIZE
+ 
+ # Load data
+ X, y = load_iris(return_X_y=True)
+-X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
++X_train, X_test, y_train, y_test = train_test_split(
++    X, y, test_size=TEST_SIZE, random_state=RANDOM_STATE
++)
+ 
+ # Train model
+-model = RandomForestClassifier(n_estimators=100, random_state=42)
++model = RandomForestClassifier(n_estimators=N_ESTIMATORS, random_state=RANDOM_STATE)
+ model.fit(X_train, y_train)
+ 
+ # Evaluate
+```
+
+> 💡 **อ่าน diff output:**
+> - บรรทัดที่ขึ้นต้นด้วย `-` (สีแดง) = บรรทัดที่ถูกลบ
+> - บรรทัดที่ขึ้นต้นด้วย `+` (สีเขียว) = บรรทัดที่ถูกเพิ่ม
+> - บรรทัดที่ไม่มีเครื่องหมาย = บรรทัดที่ไม่เปลี่ยนแปลง (context)
+
+---
 
 3. **Commit การเปลี่ยนแปลง**:
 ```bash
 git add train.py
 git commit -m "Refactor: use config for hyperparameters"
+```
+
+📤 **Expected Output:**
+```
+[master def5678] Refactor: use config for hyperparameters
+ 1 file changed, 5 insertions(+), 3 deletions(-)
 ```
 
 ---
@@ -284,6 +445,16 @@ git commit -m "Refactor: use config for hyperparameters"
 python train.py
 ```
 
+📤 **Expected Output:**
+```
+Accuracy: 1.0000
+Model saved to model.pkl
+```
+
+> 📁 **ไฟล์ที่ถูกสร้าง:** `model.pkl` (binary file ~5KB)
+
+---
+
 2. **สร้างไฟล์ที่ไม่ควร track**:
 ```bash
 mkdir -p data logs
@@ -292,12 +463,46 @@ echo "2024-01-01 Training started..." > logs/training.log
 echo "API_KEY=secret123" > .env
 ```
 
+📁 **ไฟล์ที่ถูกสร้าง:**
+
+**`data/dataset.csv`:**
+```csv
+sample,data
+```
+
+**`logs/training.log`:**
+```
+2024-01-01 Training started...
+```
+
+**`.env`:**
+```
+API_KEY=secret123
+```
+
+---
+
 3. **ตรวจสอบสถานะ (ก่อนสร้าง .gitignore)**:
 ```bash
 git status
 ```
 
-> 💡 **คาดหวัง**: เห็นทุกไฟล์ที่สร้างใหม่ รวมถึง `model.pkl`, `.env`, `data/`, `logs/`
+📤 **Expected Output:**
+```
+On branch master
+Untracked files:
+  (use "git add <file>..." to include in what will be committed)
+        .env
+        data/
+        logs/
+        model.pkl
+
+nothing added to commit but untracked files present (use "git add" to track)
+```
+
+> ⚠️ **ปัญหา**: Git เห็นทุกไฟล์ที่สร้างใหม่ รวมถึงไฟล์ที่ไม่ควร track!
+
+---
 
 4. **สร้าง `.gitignore`**:
 ```bash
@@ -326,17 +531,80 @@ __pycache__/
 EOF
 ```
 
+📄 **ไฟล์ที่สร้าง: `.gitignore`**
+```gitignore
+# Model artifacts
+*.pkl
+*.joblib
+*.h5
+
+# Data files
+data/
+*.csv
+
+# Logs
+logs/
+*.log
+
+# Environment and secrets
+.env
+.env.*
+
+# Python cache
+__pycache__/
+*.pyc
+.ipynb_checkpoints/
+```
+
+> 💡 **Pattern ที่ใช้:**
+> - `*.pkl` = ignore ทุกไฟล์ที่ลงท้ายด้วย `.pkl`
+> - `data/` = ignore ทั้งโฟลเดอร์ `data`
+> - `.env.*` = ignore ไฟล์ที่ขึ้นต้นด้วย `.env.` เช่น `.env.local`, `.env.production`
+
+---
+
 5. **ตรวจสอบสถานะอีกครั้ง (หลังสร้าง .gitignore)**:
 ```bash
 git status
 ```
 
-> 💡 **คาดหวัง**: เห็นเฉพาะ `.gitignore` เป็น untracked — ไม่เห็น `model.pkl`, `.env`, `data/`, `logs/`
+📤 **Expected Output:**
+```
+On branch master
+Untracked files:
+  (use "git add <file>..." to include in what will be committed)
+        .gitignore
+
+nothing added to commit but untracked files present (use "git add" to track)
+```
+
+> ✅ **สำเร็จ!** เห็นเฉพาะ `.gitignore` — ไม่เห็น `model.pkl`, `.env`, `data/`, `logs/` แล้ว
+
+---
+
+🔍 **เปรียบเทียบ git status: Before vs After `.gitignore`**
+
+| Before .gitignore | After .gitignore |
+|-------------------|------------------|
+| `.env` ❌ | *(hidden)* |
+| `data/` ❌ | *(hidden)* |
+| `logs/` ❌ | *(hidden)* |
+| `model.pkl` ❌ | *(hidden)* |
+| | `.gitignore` ✅ |
+
+---
 
 6. **Commit .gitignore**:
 ```bash
 git add .gitignore
 git commit -m "Add .gitignore for ML artifacts"
+```
+
+📤 **Expected Output:**
+```
+[master ghi9012] Add .gitignore for ML artifacts
+ 1 file changed, 18 insertions(+)
+ create mode 100644 .gitignore
 ```
 
 ---
@@ -361,15 +629,61 @@ print(f"Predicted species: {species[prediction[0]]}")
 EOF
 ```
 
+📄 **ไฟล์ที่สร้าง: `predict.py`**
+```python
+import pickle
+import numpy as np
+
+# Load model
+with open("model.pkl", "rb") as f:
+    model = pickle.load(f)
+
+# Sample prediction
+sample = np.array([[5.1, 3.5, 1.4, 0.2]])
+prediction = model.predict(sample)
+species = ["setosa", "versicolor", "virginica"]
+print(f"Predicted species: {species[prediction[0]]}")
+```
+
+---
+
 2. **ทดสอบรัน**:
 ```bash
 python predict.py
 ```
 
-3. **Stage และ Commit**:
+📤 **Expected Output:**
+```
+Predicted species: setosa
+```
+
+---
+
+3. **ตรวจสอบสถานะและ Commit**:
+```bash
+git status
+```
+
+📤 **Expected Output:**
+```
+On branch master
+Untracked files:
+  (use "git add <file>..." to include in what will be committed)
+        predict.py
+
+nothing added to commit but untracked files present (use "git add" to track)
+```
+
 ```bash
 git add predict.py
 git commit -m "Add prediction script"
+```
+
+📤 **Expected Output:**
+```
+[master jkl3456] Add prediction script
+ 1 file changed, 12 insertions(+)
+ create mode 100644 predict.py
 ```
 
 ---
@@ -380,7 +694,66 @@ git commit -m "Add prediction script"
 git log --oneline --graph --all
 ```
 
-> 💡 **คาดหวัง**: เห็น 4 commits ตามลำดับที่ทำ
+📤 **Expected Output:**
+```
+* jkl3456 (HEAD -> master) Add prediction script
+* ghi9012 Add .gitignore for ML artifacts
+* def5678 Refactor: use config for hyperparameters
+* abc1234 Initial commit: training script and config
+```
+
+> 💡 **อ่าน git log:**
+> - `*` = commit
+> - `(HEAD -> master)` = ตำแหน่งปัจจุบัน
+> - hash (`jkl3456`) = commit ID ย่อ
+> - ข้อความหลัง hash = commit message
+
+---
+
+**ดูรายละเอียดเพิ่มเติม:**
+```bash
+git log --stat
+```
+
+📤 **Expected Output:**
+```
+commit jkl3456...
+Author: Your Name <your@email.com>
+Date:   Mon Jan 1 12:00:00 2024 +0700
+
+    Add prediction script
+
+ predict.py | 12 ++++++++++++
+ 1 file changed, 12 insertions(+)
+
+commit ghi9012...
+Author: Your Name <your@email.com>
+Date:   Mon Jan 1 11:30:00 2024 +0700
+
+    Add .gitignore for ML artifacts
+
+ .gitignore | 18 ++++++++++++++++++
+ 1 file changed, 18 insertions(+)
+
+commit def5678...
+Author: Your Name <your@email.com>
+Date:   Mon Jan 1 11:00:00 2024 +0700
+
+    Refactor: use config for hyperparameters
+
+ train.py | 8 +++++---
+ 1 file changed, 5 insertions(+), 3 deletions(-)
+
+commit abc1234...
+Author: Your Name <your@email.com>
+Date:   Mon Jan 1 10:00:00 2024 +0700
+
+    Initial commit: training script and config
+
+ config.py |  4 ++++
+ train.py  | 20 ++++++++++++++++++++
+ 2 files changed, 24 insertions(+)
+```
 
 ---
 
@@ -391,11 +764,43 @@ git log --oneline --graph --all
 git branch
 ```
 
+📤 **Expected Output:**
+```
+* master
+```
+
 2. **เปลี่ยนชื่อเป็น main**:
 ```bash
 git branch -m main
 git branch
 ```
+
+📤 **Expected Output:**
+```
+* main
+```
+
+---
+
+## 📊 สรุปไฟล์ทั้งหมดในโปรเจค
+
+### ไฟล์ที่ Track (อยู่ใน Git)
+
+| ไฟล์ | ขนาดโดยประมาณ | สร้างใน Step |
+|------|---------------|--------------|
+| `train.py` | ~600 bytes | Step 2, แก้ไขใน Step 3 |
+| `config.py` | ~80 bytes | Step 2 |
+| `.gitignore` | ~200 bytes | Step 4 |
+| `predict.py` | ~300 bytes | Step 5 |
+
+### ไฟล์ที่ Ignore (ไม่อยู่ใน Git)
+
+| ไฟล์ | ทำไมไม่ track | สร้างใน Step |
+|------|---------------|--------------|
+| `model.pkl` | Binary file, สร้างใหม่ได้ | Step 4 |
+| `.env` | มี secrets/API keys | Step 4 |
+| `data/dataset.csv` | Data files ใหญ่ | Step 4 |
+| `logs/training.log` | Generated files | Step 4 |
 
 ---
 
@@ -423,3 +828,11 @@ git branch
 | `git log` | ดูประวัติ |
 | `git branch -m` | เปลี่ยนชื่อ branch |
 
+---
+
+## 🔑 Key Takeaways
+
+1. **ทุกครั้งที่สร้างไฟล์** → ตรวจสอบด้วย `git status`
+2. **ก่อน commit** → ใช้ `git diff` ดูว่าเปลี่ยนอะไรบ้าง
+3. **ML project ต้องมี `.gitignore`** → ไม่ track model files, data, secrets
+4. **Commit message ควรอธิบาย "ทำอะไร"** → เช่น "Add", "Fix", "Refactor"
