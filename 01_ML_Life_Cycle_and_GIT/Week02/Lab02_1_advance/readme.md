@@ -516,7 +516,7 @@ config/
 > - บันทึก model ไว้ใช้ต่อ
 
 ```bash
-cat > src/train.py << 'EOF'
+cat > src/train.py << 'TRAINEOF'
 """
 Training Module - Train ML model ตาม config
 """
@@ -618,7 +618,7 @@ def main():
 
 if __name__ == "__main__":
     main()
-EOF
+TRAINEOF
 ```
 
 **ตรวจสอบไฟล์ที่สร้าง:**
@@ -759,7 +759,7 @@ git commit -m "Add training pipeline พร้อม config file"
 > - สร้าง confusion matrix plot
 
 ```bash
-cat > src/evaluate.py << 'EOF'
+cat > src/evaluate.py << 'EVALEOF'
 """
 Evaluation Module - ประเมินผล ML model
 """
@@ -871,7 +871,7 @@ def main():
 
 if __name__ == "__main__":
     main()
-EOF
+EVALEOF
 ```
 
 **ตรวจสอบไฟล์ที่สร้าง:**
