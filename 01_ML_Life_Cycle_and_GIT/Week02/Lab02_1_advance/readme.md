@@ -186,29 +186,47 @@ EOF
 > เป็นไฟล์อธิบายโปรเจคที่จะแสดงหน้าแรกใน GitHub ช่วยให้คนอื่นเข้าใจโปรเจคได้เร็ว
 
 ```bash
-cat > README.md << 'EOF'
+cat > README.md << 'ENDOFFILE'
 # ML Git Lab 03 - Iris Classification
 
-## 📋 รายละเอียดโปรเจค
+## รายละเอียดโปรเจค
 โปรเจคนี้สาธิตการใช้ Git กับ Machine Learning โดยใช้ Iris dataset
 
-## 🚀 วิธีใช้งาน
-```bash
-# ติดตั้ง dependencies
-pip install -r requirements.txt
+## วิธีใช้งาน
 
-# Train model
-python src/train.py
+    # ติดตั้ง dependencies
+    pip install -r requirements.txt
 
-# Evaluate model
-python src/evaluate.py
+    # Train model
+    python src/train.py
+
+    # Evaluate model
+    python src/evaluate.py
+
+## Dataset
+- ชื่อ: Iris Dataset
+- Features: 4 (ความยาว/ความกว้างของกลีบดอกและกลีบเลี้ยง)
+- Classes: 3 ชนิด (setosa, versicolor, virginica)
+ENDOFFILE
 ```
 
-## 📊 Dataset
-- **ชื่อ:** Iris Dataset
-- **Features:** 4 (ความยาว/ความกว้างของกลีบดอกและกลีบเลี้ยง)
-- **Classes:** 3 ชนิด (setosa, versicolor, virginica)
-EOF
+**ตรวจสอบไฟล์ที่สร้าง:**
+```bash
+cat README.md
+```
+
+**ตัวอย่างผลลัพธ์:**
+```
+# ML Git Lab 03 - Iris Classification
+
+## รายละเอียดโปรเจค
+โปรเจคนี้สาธิตการใช้ Git กับ Machine Learning โดยใช้ Iris dataset
+
+## วิธีใช้งาน
+
+    # ติดตั้ง dependencies
+    pip install -r requirements.txt
+...
 ```
 
 ---
@@ -274,7 +292,7 @@ from sklearn.model_selection import train_test_split
 def load_data():
     """โหลด Iris dataset"""
     iris = load_iris()
-    print(f"✅ โหลดข้อมูลสำเร็จ: {iris.data.shape[0]} ตัวอย่าง, {iris.data.shape[1]} features")
+    print(f"โหลดข้อมูลสำเร็จ: {iris.data.shape[0]} ตัวอย่าง, {iris.data.shape[1]} features")
     return iris.data, iris.target, iris.feature_names, iris.target_names
 
 
@@ -283,7 +301,7 @@ def split_data(X, y, test_size=0.2, random_state=42):
     X_train, X_test, y_train, y_test = train_test_split(
         X, y, test_size=test_size, random_state=random_state, stratify=y
     )
-    print(f"✅ แบ่งข้อมูล: Train={len(X_train)}, Test={len(X_test)}")
+    print(f"แบ่งข้อมูล: Train={len(X_train)}, Test={len(X_test)}")
     return X_train, X_test, y_train, y_test
 
 
@@ -291,9 +309,14 @@ def split_data(X, y, test_size=0.2, random_state=42):
 if __name__ == "__main__":
     X, y, feature_names, target_names = load_data()
     X_train, X_test, y_train, y_test = split_data(X, y)
-    print(f"📊 Features: {feature_names}")
-    print(f"🎯 Classes: {list(target_names)}")
+    print(f"Features: {feature_names}")
+    print(f"Classes: {list(target_names)}")
 EOF
+```
+
+**ตรวจสอบไฟล์ที่สร้าง:**
+```bash
+cat src/data_loader.py
 ```
 
 ---
@@ -306,10 +329,10 @@ python src/data_loader.py
 
 **ตัวอย่างผลลัพธ์:**
 ```
-✅ โหลดข้อมูลสำเร็จ: 150 ตัวอย่าง, 4 features
-✅ แบ่งข้อมูล: Train=120, Test=30
-📊 Features: ['sepal length (cm)', 'sepal width (cm)', 'petal length (cm)', 'petal width (cm)']
-🎯 Classes: ['setosa', 'versicolor', 'virginica']
+โหลดข้อมูลสำเร็จ: 150 ตัวอย่าง, 4 features
+แบ่งข้อมูล: Train=120, Test=30
+Features: ['sepal length (cm)', 'sepal width (cm)', 'petal length (cm)', 'petal width (cm)']
+Classes: ['setosa', 'versicolor', 'virginica']
 ```
 
 ---
@@ -319,6 +342,13 @@ python src/data_loader.py
 ```bash
 git add src/data_loader.py
 git commit -m "Add data_loader: โหลดและแบ่งข้อมูล Iris"
+```
+
+**ตัวอย่างผลลัพธ์:**
+```
+[main b2c3d4e] Add data_loader: โหลดและแบ่งข้อมูล Iris
+ 1 file changed, 25 insertions(+)
+ create mode 100644 src/data_loader.py
 ```
 
 ---
@@ -343,9 +373,9 @@ data:
   test_size: 0.2
   random_state: 42
 
-# ประเภท model ที่ใช้ (เลือกอันเดียว)
+# ประเภท model ที่ใช้
 model:
-  type: random_forest   # ตัวเลือก: random_forest, svm
+  type: random_forest
 
   # Random Forest parameters
   random_forest:
@@ -369,6 +399,11 @@ output:
   model_path: models/model.joblib
   results_path: results/metrics.json
 EOF
+```
+
+**ตรวจสอบไฟล์ที่สร้าง:**
+```bash
+cat config/model_config.yaml
 ```
 
 ---
@@ -402,7 +437,7 @@ def load_config(path='../config/model_config.yaml'):
     """อ่าน config จากไฟล์ YAML"""
     with open(path, 'r') as f:
         config = yaml.safe_load(f)
-    print(f"✅ โหลด config จาก {path}")
+    print(f"โหลด config จาก {path}")
     return config
 
 
@@ -419,13 +454,13 @@ def create_model(config):
     else:
         raise ValueError(f"ไม่รู้จัก model: {model_type}")
     
-    print(f"✅ สร้าง {model_type} model")
+    print(f"สร้าง {model_type} model")
     return model
 
 
 def main():
     print("=" * 50)
-    print("🚀 เริ่มต้น Training Pipeline")
+    print("เริ่มต้น Training Pipeline")
     print("=" * 50)
     
     # 1. โหลด config
@@ -443,7 +478,7 @@ def main():
     scaler = StandardScaler()
     X_train_scaled = scaler.fit_transform(X_train)
     X_test_scaled = scaler.transform(X_test)
-    print("✅ Scale features เรียบร้อย")
+    print("Scale features เรียบร้อย")
     
     # 4. สร้างและ train model
     model = create_model(config)
@@ -454,7 +489,7 @@ def main():
             model, X_train_scaled, y_train, 
             cv=config['training']['cv_folds']
         )
-        print(f"✅ Cross-validation: {cv_scores.mean():.4f} (+/- {cv_scores.std()*2:.4f})")
+        print(f"Cross-validation: {cv_scores.mean():.4f} (+/- {cv_scores.std()*2:.4f})")
     
     # Train final model
     model.fit(X_train_scaled, y_train)
@@ -462,8 +497,8 @@ def main():
     # 5. ประเมินผล
     train_acc = model.score(X_train_scaled, y_train)
     test_acc = model.score(X_test_scaled, y_test)
-    print(f"📊 Train Accuracy: {train_acc:.4f}")
-    print(f"📊 Test Accuracy: {test_acc:.4f}")
+    print(f"Train Accuracy: {train_acc:.4f}")
+    print(f"Test Accuracy: {test_acc:.4f}")
     
     # 6. บันทึก model
     model_data = {
@@ -475,16 +510,21 @@ def main():
         'timestamp': datetime.now().isoformat()
     }
     joblib.dump(model_data, config['output']['model_path'])
-    print(f"💾 บันทึก model ที่ {config['output']['model_path']}")
+    print(f"บันทึก model ที่ {config['output']['model_path']}")
     
     print("=" * 50)
-    print("✅ Training เสร็จสิ้น!")
+    print("Training เสร็จสิ้น!")
     print("=" * 50)
 
 
 if __name__ == "__main__":
     main()
 EOF
+```
+
+**ตรวจสอบไฟล์ที่สร้าง:**
+```bash
+cat src/train.py
 ```
 
 ---
@@ -500,19 +540,19 @@ cd ..
 **ตัวอย่างผลลัพธ์:**
 ```
 ==================================================
-🚀 เริ่มต้น Training Pipeline
+เริ่มต้น Training Pipeline
 ==================================================
-✅ โหลด config จาก ../config/model_config.yaml
-✅ โหลดข้อมูลสำเร็จ: 150 ตัวอย่าง, 4 features
-✅ แบ่งข้อมูล: Train=120, Test=30
-✅ Scale features เรียบร้อย
-✅ สร้าง random_forest model
-✅ Cross-validation: 0.9417 (+/- 0.0385)
-📊 Train Accuracy: 1.0000
-📊 Test Accuracy: 0.9667
-💾 บันทึก model ที่ ../models/model.joblib
+โหลด config จาก ../config/model_config.yaml
+โหลดข้อมูลสำเร็จ: 150 ตัวอย่าง, 4 features
+แบ่งข้อมูล: Train=120, Test=30
+Scale features เรียบร้อย
+สร้าง random_forest model
+Cross-validation: 0.9417 (+/- 0.0385)
+Train Accuracy: 1.0000
+Test Accuracy: 0.9667
+บันทึก model ที่ ../models/model.joblib
 ==================================================
-✅ Training เสร็จสิ้น!
+Training เสร็จสิ้น!
 ==================================================
 ```
 
@@ -555,6 +595,14 @@ git add config/model_config.yaml src/train.py
 git commit -m "Add training pipeline พร้อม config file"
 ```
 
+**ตัวอย่างผลลัพธ์:**
+```
+[main c3d4e5f] Add training pipeline พร้อม config file
+ 2 files changed, 95 insertions(+)
+ create mode 100644 config/model_config.yaml
+ create mode 100644 src/train.py
+```
+
 ---
 
 ## 📈 Part 4: สร้าง Evaluation Module
@@ -585,9 +633,9 @@ from data_loader import load_data, split_data
 def load_model(path):
     """โหลด model จากไฟล์"""
     model_data = joblib.load(path)
-    print(f"✅ โหลด model จาก {path}")
-    print(f"   - ประเภท: {type(model_data['model']).__name__}")
-    print(f"   - Train เมื่อ: {model_data['timestamp']}")
+    print(f"โหลด model จาก {path}")
+    print(f"  - ประเภท: {type(model_data['model']).__name__}")
+    print(f"  - Train เมื่อ: {model_data['timestamp']}")
     return model_data
 
 
@@ -600,7 +648,7 @@ def evaluate(model, X_test, y_test, target_names):
         'confusion_matrix': confusion_matrix(y_test, y_pred).tolist()
     }
     
-    print("\n📊 Classification Report:")
+    print("\nClassification Report:")
     print(classification_report(y_test, y_pred, target_names=target_names))
     
     return metrics, y_pred
@@ -628,12 +676,12 @@ def plot_confusion_matrix(cm, target_names, save_path):
     plt.tight_layout()
     plt.savefig(save_path, dpi=150)
     plt.close()
-    print(f"📊 บันทึก confusion matrix ที่ {save_path}")
+    print(f"บันทึก confusion matrix ที่ {save_path}")
 
 
 def main():
     print("=" * 50)
-    print("📊 เริ่มต้น Evaluation Pipeline")
+    print("เริ่มต้น Evaluation Pipeline")
     print("=" * 50)
     
     # 1. โหลด model
@@ -656,7 +704,7 @@ def main():
     
     # 4. ประเมินผล
     metrics, y_pred = evaluate(model, X_test_scaled, y_test, target_names)
-    print(f"🎯 Test Accuracy: {metrics['accuracy']:.4f}")
+    print(f"Test Accuracy: {metrics['accuracy']:.4f}")
     
     # 5. สร้าง confusion matrix plot
     cm = np.array(metrics['confusion_matrix'])
@@ -670,16 +718,21 @@ def main():
     }
     with open('../results/metrics.json', 'w') as f:
         json.dump(results, f, indent=2)
-    print(f"💾 บันทึกผลลัพธ์ที่ ../results/metrics.json")
+    print(f"บันทึกผลลัพธ์ที่ ../results/metrics.json")
     
     print("=" * 50)
-    print("✅ Evaluation เสร็จสิ้น!")
+    print("Evaluation เสร็จสิ้น!")
     print("=" * 50)
 
 
 if __name__ == "__main__":
     main()
 EOF
+```
+
+**ตรวจสอบไฟล์ที่สร้าง:**
+```bash
+cat src/evaluate.py
 ```
 
 ---
@@ -695,15 +748,15 @@ cd ..
 **ตัวอย่างผลลัพธ์:**
 ```
 ==================================================
-📊 เริ่มต้น Evaluation Pipeline
+เริ่มต้น Evaluation Pipeline
 ==================================================
-✅ โหลด model จาก ../models/model.joblib
-   - ประเภท: RandomForestClassifier
-   - Train เมื่อ: 2024-12-16T10:30:00
-✅ โหลดข้อมูลสำเร็จ: 150 ตัวอย่าง, 4 features
-✅ แบ่งข้อมูล: Train=120, Test=30
+โหลด model จาก ../models/model.joblib
+  - ประเภท: RandomForestClassifier
+  - Train เมื่อ: 2024-12-16T10:30:00
+โหลดข้อมูลสำเร็จ: 150 ตัวอย่าง, 4 features
+แบ่งข้อมูล: Train=120, Test=30
 
-📊 Classification Report:
+Classification Report:
               precision    recall  f1-score   support
 
       setosa       1.00      1.00      1.00        10
@@ -712,11 +765,11 @@ cd ..
 
     accuracy                           0.97        30
 
-🎯 Test Accuracy: 0.9667
-📊 บันทึก confusion matrix ที่ ../results/confusion_matrix.png
-💾 บันทึกผลลัพธ์ที่ ../results/metrics.json
+Test Accuracy: 0.9667
+บันทึก confusion matrix ที่ ../results/confusion_matrix.png
+บันทึกผลลัพธ์ที่ ../results/metrics.json
 ==================================================
-✅ Evaluation เสร็จสิ้น!
+Evaluation เสร็จสิ้น!
 ==================================================
 ```
 
@@ -727,6 +780,13 @@ cd ..
 ```bash
 git add src/evaluate.py
 git commit -m "Add evaluation module พร้อม confusion matrix plot"
+```
+
+**ตัวอย่างผลลัพธ์:**
+```
+[main d4e5f6g] Add evaluation module พร้อม confusion matrix plot
+ 1 file changed, 85 insertions(+)
+ create mode 100644 src/evaluate.py
 ```
 
 ---
@@ -763,10 +823,10 @@ a1b2c3d Initial commit: สร้างโครงสร้างโปรเ�
 ### Step 22: เชื่อมต่อกับ Remote และ Push
 
 ```bash
-# เพิ่ม remote
+# เพิ่ม remote (แทน YOUR_USERNAME ด้วย username ของนักศึกษา)
 git remote add origin https://github.com/YOUR_USERNAME/ml-git-lab03_advance.git
 
-# ตรวจสอบ
+# ตรวจสอบ remote
 git remote -v
 
 # Push ขึ้น GitHub
@@ -775,6 +835,9 @@ git push -u origin main
 
 **ตัวอย่างผลลัพธ์:**
 ```
+origin  https://github.com/YOUR_USERNAME/ml-git-lab03_advance.git (fetch)
+origin  https://github.com/YOUR_USERNAME/ml-git-lab03_advance.git (push)
+
 Enumerating objects: 15, done.
 Counting objects: 100% (15/15), done.
 Writing objects: 100% (15/15), 3.5 KiB | 1.75 MiB/s, done.
@@ -803,7 +866,7 @@ data:
   random_state: 42
 
 model:
-  type: svm   # <<< เปลี่ยนจาก random_forest เป็น svm
+  type: svm
 
   random_forest:
     n_estimators: 100
@@ -847,8 +910,12 @@ git diff config/model_config.yaml
  
  model:
 -  type: random_forest
-+  type: svm   # <<< เปลี่ยนจาก random_forest เป็น svm
++  type: svm
 ```
+
+> 📝 **อ่าน diff:**
+> - บรรทัดที่ขึ้นต้นด้วย `-` คือถูกลบ
+> - บรรทัดที่ขึ้นต้นด้วย `+` คือถูกเพิ่ม
 
 ---
 
@@ -863,9 +930,9 @@ cd ..
 
 **ตัวอย่างผลลัพธ์:**
 ```
-✅ สร้าง svm model
-✅ Cross-validation: 0.9583 (+/- 0.0527)
-📊 Test Accuracy: 0.9667
+สร้าง svm model
+Cross-validation: 0.9583 (+/- 0.0527)
+Test Accuracy: 0.9667
 ```
 
 ---
@@ -877,12 +944,27 @@ git add config/model_config.yaml
 git commit -m "Experiment: เปลี่ยนจาก RandomForest เป็น SVM"
 ```
 
+**ตัวอย่างผลลัพธ์:**
+```
+[main e5f6g7h] Experiment: เปลี่ยนจาก RandomForest เป็น SVM
+ 1 file changed, 2 insertions(+), 1 deletion(-)
+```
+
 ---
 
 ### Step 27: Push ขึ้น Remote
 
 ```bash
 git push
+```
+
+**ตัวอย่างผลลัพธ์:**
+```
+Enumerating objects: 7, done.
+Counting objects: 100% (7/7), done.
+Writing objects: 100% (4/4), 456 bytes | 456.00 KiB/s, done.
+To https://github.com/YOUR_USERNAME/ml-git-lab03_advance.git
+   d4e5f6g..e5f6g7h  main -> main
 ```
 
 ---
@@ -919,9 +1001,11 @@ git show c3d4e5f:config/model_config.yaml
 
 ...
 model:
-  type: random_forest   # <<< เห็นว่าเวอร์ชันก่อนใช้ random_forest
+  type: random_forest
 ...
 ```
+
+> 📝 **สังเกต:** เห็นว่าเวอร์ชันก่อนใช้ `type: random_forest`
 
 ---
 
@@ -982,6 +1066,69 @@ git restore config/model_config.yaml
 
 ---
 
+## 🎯 Best Practices สำหรับ ML Project กับ Git
+
+### 1. โครงสร้างที่ดี
+```
+project/
+├── src/           # โค้ด ✅ track
+├── config/        # config ✅ track
+├── data/          # ข้อมูล ❌ ignore ไฟล์ใหญ่
+├── models/        # models ❌ ignore
+├── results/       # ผลลัพธ์ ❌ ignore
+└── .gitignore     # กำหนดไฟล์ที่ไม่ track
+```
+
+### 2. สิ่งที่ควร Track
+- ✅ Source code (.py)
+- ✅ Config files (.yaml, .json)
+- ✅ Requirements.txt
+- ✅ README.md
+- ✅ .gitignore
+
+### 3. สิ่งที่ไม่ควร Track
+- ❌ ไฟล์ข้อมูลขนาดใหญ่ (.csv, .parquet)
+- ❌ Model files (.pkl, .joblib, .h5)
+- ❌ ผลลัพธ์ที่ generate ใหม่ได้ (.png, results)
+- ❌ Python cache (__pycache__)
+
+### 4. Commit Message ที่ดี
+```
+✅ "Add data_loader: โหลดและแบ่งข้อมูล Iris"
+✅ "Add training pipeline พร้อม config file"
+✅ "Experiment: เปลี่ยนจาก RandomForest เป็น SVM"
+✅ "Fix: แก้ bug ใน feature scaling"
+
+❌ "update"
+❌ "fix bug"
+❌ "asdfgh"
+```
+
+---
+
+## ✅ แบบฝึกหัดท้าย Lab
+
+### แบบฝึกหัดที่ 1: เพิ่ม Logistic Regression
+1. แก้ไข `train.py` ให้รองรับ `LogisticRegression`
+2. เพิ่ม config ใน `model_config.yaml`
+3. ทดสอบ train และ evaluate
+4. Commit และ Push
+
+### แบบฝึกหัดที่ 2: เปรียบเทียบ Model
+1. ใช้ `git show` ดู config ของแต่ละ experiment
+2. บันทึก accuracy ของแต่ละ model
+3. เขียนสรุปใน README.md
+
+### แบบฝึกหัดที่ 3: กู้คืนการทดลอง
+1. ใช้ `git log` หา commit ที่ต้องการ
+2. ใช้ `git checkout <commit> -- config/model_config.yaml` กู้คืน
+3. Train model ใหม่
+
+### แบบฝึกหัดที่ 4: ทำงานกับ Remote
+1. แก้ไข README.md บน GitHub
+2. ใช้ `git pull` ดึงการเปลี่ยนแปลงลงมา
+
+---
 
 ## 🧹 ทำความสะอาด (Optional)
 
