@@ -1050,6 +1050,7 @@ git remote add origin https://github.com/YOUR_USERNAME/ml-git-lab03_advance.git
 git remote -v
 
 # Push ขึ้น GitHub
+git branch -M main
 git push -u origin main
 ```
 
