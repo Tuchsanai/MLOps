@@ -515,8 +515,14 @@ config/
 > - Train model ตาม config
 > - บันทึก model ไว้ใช้ต่อ
 
+**สร้างไฟล์ด้วย nano หรือ text editor:**
 ```bash
-cat > src/train.py << 'TRAINEOF'
+nano src/train.py
+```
+
+**คัดลอกโค้ดด้านล่างนี้ใส่ในไฟล์ แล้วบันทึก (Ctrl+O, Enter, Ctrl+X):**
+
+```python
 """
 Training Module - Train ML model ตาม config
 """
@@ -618,7 +624,6 @@ def main():
 
 if __name__ == "__main__":
     main()
-TRAINEOF
 ```
 
 **ตรวจสอบไฟล์ที่สร้าง:**
@@ -758,8 +763,14 @@ git commit -m "Add training pipeline พร้อม config file"
 > - คำนวณ metrics ต่างๆ
 > - สร้าง confusion matrix plot
 
+**สร้างไฟล์ด้วย nano หรือ text editor:**
 ```bash
-cat > src/evaluate.py << 'EVALEOF'
+nano src/evaluate.py
+```
+
+**คัดลอกโค้ดด้านล่างนี้ใส่ในไฟล์ แล้วบันทึก (Ctrl+O, Enter, Ctrl+X):**
+
+```python
 """
 Evaluation Module - ประเมินผล ML model
 """
@@ -871,7 +882,6 @@ def main():
 
 if __name__ == "__main__":
     main()
-EVALEOF
 ```
 
 **ตรวจสอบไฟล์ที่สร้าง:**
