@@ -112,7 +112,7 @@ Step 5-6: Complete & Review
 ### โครงสร้างโปรเจคที่จะสร้าง
 
 ```
-ml-git-lab/
+ml-git-lab01_advance/
 ├── .git/                  # Git repository (ซ่อนอยู่)
 ├── .gitignore             # ✅ กำหนดไฟล์ที่ไม่ต้อง track
 ├── config.py              # ✅ Hyperparameters
@@ -132,6 +132,7 @@ ml-git-lab/
 
 | คำสั่ง | หน้าที่ | เมื่อไหร่ใช้ |
 |--------|---------|-------------|
+| `git config` | ตั้งค่า Git | ก่อนเริ่มใช้งานครั้งแรก |
 | `git init` | สร้าง repository ใหม่ | เริ่มโปรเจคใหม่ |
 | `git status` | ดูสถานะไฟล์ | ก่อน add/commit |
 | `git add <file>` | เพิ่มไฟล์เข้า staging | เตรียม commit |
@@ -149,14 +150,105 @@ ml-git-lab/
 
 ---
 
+## ⚙️ Git Configuration (ทำครั้งเดียวก่อนเริ่ม Lab)
+
+ก่อนเริ่มใช้งาน Git ต้องตั้งค่าข้อมูลประจำตัวของผู้ใช้ก่อน เพื่อให้ Git รู้ว่าใครเป็นคนทำการเปลี่ยนแปลง
+
+### ตั้งค่าชื่อผู้ใช้และอีเมล
+
+```bash
+git config --global user.name "YourUsername"
+git config --global user.email "youremail@example.com"
+```
+
+📤 **ไม่มี Output** (ถ้าสำเร็จจะไม่แสดงอะไร)
+
+---
+
+### ตรวจสอบการตั้งค่า
+
+```bash
+git config --global --list
+```
+
+📤 **Expected Output:**
+```
+user.name=YourUsername
+user.email=youremail@example.com
+```
+
+---
+
+### 💡 คำอธิบาย
+
+| Option | ความหมาย |
+|--------|----------|
+| `--global` | ตั้งค่าสำหรับทุก repository ในเครื่อง (ถ้าไม่ใส่จะตั้งค่าเฉพาะ repo ปัจจุบัน) |
+| `user.name` | ชื่อที่จะแสดงใน commit history (ควรใช้ชื่อจริงหรือ username ที่ใช้ใน GitHub) |
+| `user.email` | อีเมลที่ใช้ (ควรตรงกับอีเมลที่ลงทะเบียนใน GitHub เพื่อเชื่อมโยง commit กับบัญชี) |
+
+> ⚠️ **สำคัญ**: ข้อมูลนี้จะถูกบันทึกในทุก commit ที่คุณสร้าง และจะแสดงให้คนอื่นเห็นเมื่อ push ขึ้น GitHub ดังนั้นควรใช้ข้อมูลที่เหมาะสม
+
+---
+
+### ทำไมต้องตั้งค่านี้?
+
+```
+┌─────────────────────────────────────────────────────────────────────────────┐
+│                         Commit ประกอบด้วยอะไรบ้าง?                          │
+└─────────────────────────────────────────────────────────────────────────────┘
+
+  ┌──────────────────────────────────────────────────────────────┐
+  │  commit abc1234                                              │
+  │  Author: YourUsername <youremail@example.com>  ◀── จาก config│
+  │  Date:   Mon Jan 1 10:00:00 2024 +0700                       │
+  │                                                              │
+  │      Initial commit: training script and config              │
+  │                                                              │
+  │  Files changed:                                              │
+  │      config.py (new)                                         │
+  │      train.py (new)                                          │
+  └──────────────────────────────────────────────────────────────┘
+```
+
+ทุกครั้งที่ทำ `git commit` Git จะบันทึก:
+- **ใคร** ทำการเปลี่ยนแปลง (จาก `user.name` และ `user.email`)
+- **เมื่อไหร่** (timestamp อัตโนมัติ)
+- **อะไร** เปลี่ยนแปลง (ไฟล์ที่ถูก staged)
+- **ทำไม** (จาก commit message)
+
+---
+
+### ระดับของ Git Config
+
+```
+┌─────────────────────────────────────────────────────────────────────────────┐
+│                          Git Config Levels                                  │
+└─────────────────────────────────────────────────────────────────────────────┘
+
+  ┌─────────────────────────────────────────────────────────────────────────┐
+  │  Level          │  Flag       │  ไฟล์ที่เก็บ           │  ขอบเขต        │
+  ├─────────────────┼─────────────┼───────────────────────┼────────────────┤
+  │  System         │  --system   │  /etc/gitconfig       │  ทุก user      │
+  │  Global (User)  │  --global   │  ~/.gitconfig         │  user ปัจจุบัน  │
+  │  Local (Repo)   │  --local    │  .git/config          │  repo นี้เท่านั้น│
+  └─────────────────────────────────────────────────────────────────────────┘
+  
+  Priority (สูง → ต่ำ): Local > Global > System
+```
+
+> 💡 **Tip**: ใช้ `--global` สำหรับการตั้งค่าทั่วไป แต่ถ้าต้องการใช้ชื่อ/อีเมลต่างกันในแต่ละโปรเจค ให้ใช้ `--local` (หรือไม่ใส่ flag) ภายใน repository นั้น
+
+---
+
 ## 🔬 Lab Instructions
 
 ### Step 1: Initial Setup
 
 1. **สร้างโฟลเดอร์โปรเจค**:
 ```bash
-mkdir ml-git-lab
-cd ml-git-lab
+mkdir ml-git-lab01_advance
+cd ml-git-lab01_advance
 ```
 
 2. **Initialize Git repository**:
@@ -166,7 +258,7 @@ git init
 
 📤 **Expected Output:**
 ```
-Initialized empty Git repository in /path/to/ml-git-lab/.git/
+Initialized empty Git repository in /path/to/ml-git-lab01_advance/.git/
 ```
 
 > 💡 **สังเกต**: จะเห็นข้อความ "Initialized empty Git repository" และมีโฟลเดอร์ `.git` ซ่อนอยู่
@@ -806,6 +898,7 @@ git branch
 
 ## ✅ Checklist สิ่งที่ต้องทำได้
 
+- [ ] ตั้งค่า Git config (user.name, user.email) ได้
 - [ ] สร้าง Git repository ใหม่ได้
 - [ ] ใช้ `git status` ตรวจสอบสถานะได้
 - [ ] ใช้ `git add` และ `git commit` ได้
@@ -819,6 +912,7 @@ git branch
 
 | คำสั่ง | หน้าที่ |
 |--------|---------|
+| `git config --global` | ตั้งค่า Git สำหรับทุก repo |
 | `git init` | สร้าง repository |
 | `git status` | ดูสถานะไฟล์ |
 | `git add` | Stage ไฟล์ |
@@ -832,7 +926,8 @@ git branch
 
 ## 🔑 Key Takeaways
 
-1. **ทุกครั้งที่สร้างไฟล์** → ตรวจสอบด้วย `git status`
-2. **ก่อน commit** → ใช้ `git diff` ดูว่าเปลี่ยนอะไรบ้าง
-3. **ML project ต้องมี `.gitignore`** → ไม่ track model files, data, secrets
-4. **Commit message ควรอธิบาย "ทำอะไร"** → เช่น "Add", "Fix", "Refactor"
+1. **ก่อนใช้ Git ครั้งแรก** → ตั้งค่า `user.name` และ `user.email` ด้วย `git config --global`
+2. **ทุกครั้งที่สร้างไฟล์** → ตรวจสอบด้วย `git status`
+3. **ก่อน commit** → ใช้ `git diff` ดูว่าเปลี่ยนอะไรบ้าง
+4. **ML project ต้องมี `.gitignore`** → ไม่ track model files, data, secrets
+5. **Commit message ควรอธิบาย "ทำอะไร"** → เช่น "Add", "Fix", "Refactor"
