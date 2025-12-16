@@ -1,5 +1,8 @@
 # 🎓 Git Lab 03: การใช้งาน Git กับ Machine Learning Project (MLOps)
 
+![results](img/results.png)
+
+
 ## 📋 Pipeline Overview
 
 ```
