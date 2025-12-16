@@ -1104,29 +1104,6 @@ project/
 ❌ "asdfgh"
 ```
 
----
-
-## ✅ แบบฝึกหัดท้าย Lab
-
-### แบบฝึกหัดที่ 1: เพิ่ม Logistic Regression
-1. แก้ไข `train.py` ให้รองรับ `LogisticRegression`
-2. เพิ่ม config ใน `model_config.yaml`
-3. ทดสอบ train และ evaluate
-4. Commit และ Push
-
-### แบบฝึกหัดที่ 2: เปรียบเทียบ Model
-1. ใช้ `git show` ดู config ของแต่ละ experiment
-2. บันทึก accuracy ของแต่ละ model
-3. เขียนสรุปใน README.md
-
-### แบบฝึกหัดที่ 3: กู้คืนการทดลอง
-1. ใช้ `git log` หา commit ที่ต้องการ
-2. ใช้ `git checkout <commit> -- config/model_config.yaml` กู้คืน
-3. Train model ใหม่
-
-### แบบฝึกหัดที่ 4: ทำงานกับ Remote
-1. แก้ไข README.md บน GitHub
-2. ใช้ `git pull` ดึงการเปลี่ยนแปลงลงมา
 
 ---
 
