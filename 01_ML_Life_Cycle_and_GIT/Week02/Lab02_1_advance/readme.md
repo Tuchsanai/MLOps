@@ -394,10 +394,10 @@ training:
   cross_validation: true
   cv_folds: 5
 
-# output
+# output (path relative จาก src/)
 output:
-  model_path: models/model.joblib
-  results_path: results/metrics.json
+  model_path: ../models/model.joblib
+  results_path: ../results/metrics.json
 EOF
 ```
 
@@ -883,8 +883,8 @@ training:
   cv_folds: 5
 
 output:
-  model_path: models/model.joblib
-  results_path: results/metrics.json
+  model_path: ../models/model.joblib
+  results_path: ../results/metrics.json
 EOF
 ```
 
