@@ -314,16 +314,16 @@ tree -a
 ```bash
 cat > README.md << 'EOF'
 # My Git Branch Lab
-โปรเจกต์สำหรับเรียนรู้ Git Branch
+A project for learning Git Branch
 
-## วัตถุประสงค์
-- เรียนรู้การใช้งาน Git Branch
-- ฝึกการสลับ Branch
-- เข้าใจ Remote Branch
+## Objectives
+- Learn how to use Git Branch
+- Practice switching branches
+- Understand Remote Branch
 
-## ผู้จัดทำ
-- นักศึกษา: [ชื่อของคุณ]
-- รหัส: [รหัสนักศึกษา]
+## Author
+- Student: [Your Name]
+- ID: [Student ID]
 EOF
 ```
 
@@ -335,16 +335,16 @@ cat README.md
 **ผลลัพธ์ที่คาดหวัง:**
 ```
 # My Git Branch Lab
-โปรเจกต์สำหรับเรียนรู้ Git Branch
+A project for learning Git Branch
 
-## วัตถุประสงค์
-- เรียนรู้การใช้งาน Git Branch
-- ฝึกการสลับ Branch
-- เข้าใจ Remote Branch
+## Objectives
+- Learn how to use Git Branch
+- Practice switching branches
+- Understand Remote Branch
 
-## ผู้จัดทำ
-- นักศึกษา: [ชื่อของคุณ]
-- รหัส: [รหัสนักศึกษา]
+## Author
+- Student: [Your Name]
+- ID: [Student ID]
 ```
 
 ### 0.2 ใช้ tree ดูโครงสร้างหลังสร้างไฟล์
@@ -557,7 +557,7 @@ Changes to be committed:
 
 ```bash
 # Commit ครั้งแรก
-git commit -m "Initial commit: สร้างโครงสร้างโปรเจกต์"
+git commit -m "Initial commit: create project structure"
 
 # ดู log
 git log --oneline
@@ -565,7 +565,7 @@ git log --oneline
 
 **ผลลัพธ์ที่คาดหวัง:**
 ```
-abc1234 Initial commit: สร้างโครงสร้างโปรเจกต์
+abc1234 Initial commit: create project structure
 ```
 
 ---
@@ -823,7 +823,7 @@ EOF
 cat > src/auth/login.py << 'EOF'
 """
 Login Module
-ระบบ Login สำหรับผู้ใช้งาน
+User login system
 """
 
 class User:
@@ -837,34 +837,34 @@ class User:
 
 def login(username, password):
     """
-    ฟังก์ชันสำหรับ Login
+    Login function
     
     Args:
-        username: ชื่อผู้ใช้
-        password: รหัสผ่าน
+        username: Username
+        password: Password
     
     Returns:
-        bool: True ถ้า login สำเร็จ
+        bool: True if login successful
     """
     print(f"Attempting to login: {username}")
-    # TODO: เพิ่มการตรวจสอบจริง
+    # TODO: Add real validation
     if username and password:
         print("Login successful!")
         return True
     return False
 
 def logout(user):
-    """ฟังก์ชันสำหรับ Logout"""
+    """Logout function"""
     print(f"Logging out: {user.username}")
     user.is_logged_in = False
     return True
 
 def validate_user(username):
-    """ตรวจสอบความถูกต้องของ username"""
+    """Validate username"""
     if len(username) < 3:
-        return False, "Username ต้องมีอย่างน้อย 3 ตัวอักษร"
+        return False, "Username must be at least 3 characters"
     if not username.isalnum():
-        return False, "Username ต้องเป็นตัวอักษรหรือตัวเลขเท่านั้น"
+        return False, "Username must contain only letters and numbers"
     return True, "Valid username"
 EOF
 ```
@@ -881,31 +881,31 @@ sys.path.insert(0, '..')
 from src.auth.login import login, logout, validate_user, User
 
 def test_login_success():
-    """ทดสอบ login สำเร็จ"""
+    """Test successful login"""
     result = login("testuser", "password123")
     assert result == True
     print("✓ test_login_success passed")
 
 def test_login_empty_username():
-    """ทดสอบ login ด้วย username ว่าง"""
+    """Test login with empty username"""
     result = login("", "password123")
     assert result == False
     print("✓ test_login_empty_username passed")
 
 def test_validate_user_short():
-    """ทดสอบ username สั้นเกินไป"""
+    """Test username too short"""
     valid, msg = validate_user("ab")
     assert valid == False
     print("✓ test_validate_user_short passed")
 
 def test_validate_user_valid():
-    """ทดสอบ username ถูกต้อง"""
+    """Test valid username"""
     valid, msg = validate_user("testuser")
     assert valid == True
     print("✓ test_validate_user_valid passed")
 
 def test_user_class():
-    """ทดสอบ User class"""
+    """Test User class"""
     user = User("john", "secret")
     assert user.username == "john"
     assert user.is_logged_in == False
@@ -987,7 +987,7 @@ Untracked files:
 ```bash
 # เพิ่มและ commit
 git add .
-git commit -m "feat: เพิ่มระบบ Login พร้อม tests"
+git commit -m "feat: add login system with tests"
 
 # ดู log
 git log --oneline
@@ -995,8 +995,8 @@ git log --oneline
 
 **ผลลัพธ์ที่คาดหวัง:**
 ```
-def5678 feat: เพิ่มระบบ Login พร้อม tests
-abc1234 Initial commit: สร้างโครงสร้างโปรเจกต์
+def5678 feat: add login system with tests
+abc1234 Initial commit: create project structure
 ```
 
 ### 4.6 เปรียบเทียบโครงสร้างระหว่าง Branch
@@ -1054,22 +1054,22 @@ mkdir -p src/auth
 cat > src/auth/register.py << 'EOF'
 """
 Register Module
-ระบบลงทะเบียนผู้ใช้ใหม่
+New user registration system
 """
 
 import re
 from datetime import datetime
 
 class RegistrationError(Exception):
-    """Exception สำหรับข้อผิดพลาดในการลงทะเบียน"""
+    """Exception for registration errors"""
     pass
 
 def validate_email(email):
     """
-    ตรวจสอบรูปแบบ email
+    Validate email format
     
     Args:
-        email: อีเมลที่ต้องการตรวจสอบ
+        email: Email to validate
     
     Returns:
         tuple: (is_valid, message)
@@ -1077,24 +1077,24 @@ def validate_email(email):
     pattern = r'^[\w\.-]+@[\w\.-]+\.\w+$'
     if re.match(pattern, email):
         return True, "Email valid"
-    return False, "รูปแบบ email ไม่ถูกต้อง"
+    return False, "Invalid email format"
 
 def validate_password(password):
     """
-    ตรวจสอบความแข็งแรงของ password
+    Validate password strength
     
     Requirements:
-    - อย่างน้อย 8 ตัวอักษร
-    - มีตัวพิมพ์ใหญ่
-    - มีตัวเลข
+    - At least 8 characters
+    - Contains uppercase letter
+    - Contains number
     """
     errors = []
     if len(password) < 8:
-        errors.append("Password ต้องมีอย่างน้อย 8 ตัวอักษร")
+        errors.append("Password must be at least 8 characters")
     if not any(c.isupper() for c in password):
-        errors.append("Password ต้องมีตัวพิมพ์ใหญ่")
+        errors.append("Password must contain uppercase letter")
     if not any(c.isdigit() for c in password):
-        errors.append("Password ต้องมีตัวเลข")
+        errors.append("Password must contain a number")
     
     if errors:
         return False, errors
@@ -1102,15 +1102,15 @@ def validate_password(password):
 
 def register(username, email, password):
     """
-    ลงทะเบียนผู้ใช้ใหม่
+    Register new user
     
     Args:
-        username: ชื่อผู้ใช้
-        email: อีเมล
-        password: รหัสผ่าน
+        username: Username
+        email: Email
+        password: Password
     
     Returns:
-        dict: ข้อมูลผู้ใช้ที่ลงทะเบียน
+        dict: Registered user data
     """
     # Validate email
     email_valid, email_msg = validate_email(email)
@@ -1122,7 +1122,7 @@ def register(username, email, password):
     if not pass_valid:
         raise RegistrationError(", ".join(pass_msgs))
     
-    # สร้างผู้ใช้ใหม่
+    # Create new user
     user = {
         'username': username,
         'email': email,
@@ -1130,7 +1130,7 @@ def register(username, email, password):
         'is_active': True
     }
     
-    print(f"✓ ลงทะเบียนสำเร็จ: {username}")
+    print(f"✓ Registration successful: {username}")
     return user
 EOF
 ```
@@ -1152,38 +1152,38 @@ from src.auth.register import (
 )
 
 def test_validate_email_valid():
-    """ทดสอบ email ถูกต้อง"""
+    """Test valid email"""
     valid, msg = validate_email("test@example.com")
     assert valid == True
     print("✓ test_validate_email_valid passed")
 
 def test_validate_email_invalid():
-    """ทดสอบ email ไม่ถูกต้อง"""
+    """Test invalid email"""
     valid, msg = validate_email("invalid-email")
     assert valid == False
     print("✓ test_validate_email_invalid passed")
 
 def test_validate_password_weak():
-    """ทดสอบ password อ่อนแอ"""
+    """Test weak password"""
     valid, msgs = validate_password("short")
     assert valid == False
     print("✓ test_validate_password_weak passed")
 
 def test_validate_password_strong():
-    """ทดสอบ password แข็งแรง"""
+    """Test strong password"""
     valid, msgs = validate_password("StrongPass123")
     assert valid == True
     print("✓ test_validate_password_strong passed")
 
 def test_register_success():
-    """ทดสอบลงทะเบียนสำเร็จ"""
+    """Test successful registration"""
     user = register("newuser", "new@example.com", "SecurePass123")
     assert user['username'] == "newuser"
     assert user['is_active'] == True
     print("✓ test_register_success passed")
 
 def test_register_invalid_email():
-    """ทดสอบลงทะเบียนด้วย email ไม่ถูกต้อง"""
+    """Test registration with invalid email"""
     try:
         register("user", "bad-email", "Pass123456")
         assert False, "Should have raised error"
@@ -1228,7 +1228,7 @@ tree
 ```bash
 # Commit
 git add .
-git commit -m "feat: เพิ่มระบบ Register พร้อม validation"
+git commit -m "feat: add register system with validation"
 
 # ดู log
 git log --oneline
@@ -1420,11 +1420,11 @@ git switch feature-dashboard
 cat > src/dashboard.py << 'EOF'
 """
 Dashboard Module
-หน้า Dashboard สำหรับแสดงข้อมูลสรุป
+Dashboard page for displaying summary data
 """
 
 def show_dashboard():
-    """แสดง Dashboard หลัก"""
+    """Display main dashboard"""
     print("╔════════════════════════════╗")
     print("║       DASHBOARD            ║")
     print("╠════════════════════════════╣")
@@ -1432,7 +1432,7 @@ def show_dashboard():
     print("╚════════════════════════════╝")
 
 def get_stats():
-    """ดึงข้อมูลสถิติ"""
+    """Get statistics data"""
     return {
         'users': 100,
         'active': 50,
@@ -1441,7 +1441,7 @@ def get_stats():
     }
 
 def display_stats():
-    """แสดงสถิติ"""
+    """Display statistics"""
     stats = get_stats()
     print("\n📊 Statistics:")
     for key, value in stats.items():
@@ -1459,7 +1459,7 @@ tree src
 
 # Commit
 git add .
-git commit -m "feat: เพิ่ม dashboard module"
+git commit -m "feat: add dashboard module"
 
 # กลับไป main
 git switch main
@@ -1636,9 +1636,9 @@ git branch -v
 
 **ผลลัพธ์ที่คาดหวัง:**
 ```
-  feature-login   def5678 feat: เพิ่มระบบ Login พร้อม tests
-  feature-signup  ghi9012 feat: เพิ่มระบบ Register พร้อม validation
-* main            abc1234 Initial commit: สร้างโครงสร้างโปรเจกต์
+  feature-login   def5678 feat: add login system with tests
+  feature-signup  ghi9012 feat: add register system with validation
+* main            abc1234 Initial commit: create project structure
 ```
 
 ### 10.2 ดู Branch ที่ Merge แล้ว/ยังไม่ Merge
@@ -1659,7 +1659,7 @@ git branch -vv
 
 **ผลลัพธ์ที่คาดหวัง:**
 ```
-  feature-login   def5678 [origin/feature-login] feat: เพิ่มระบบ Login
+  feature-login   def5678 [origin/feature-login] feat: add login system
 * main            abc1234 [origin/main] Initial commit
 ```
 
@@ -1675,10 +1675,10 @@ git log --oneline --graph --all --decorate
 
 **ผลลัพธ์ที่คาดหวัง:**
 ```
-* def5678 (feature-login) feat: เพิ่มระบบ Login พร้อม tests
-| * ghi9012 (feature-signup) feat: เพิ่มระบบ Register พร้อม validation
+* def5678 (feature-login) feat: add login system with tests
+| * ghi9012 (feature-signup) feat: add register system with validation
 |/
-* abc1234 (HEAD -> main, origin/main) Initial commit: สร้างโครงสร้างโปรเจกต์
+* abc1234 (HEAD -> main, origin/main) Initial commit: create project structure
 ```
 
 ### 10.5 ใช้ Pipeline กับ Git Log
@@ -1749,7 +1749,7 @@ cat .gitignore
 
 # Commit
 git add .gitignore
-git commit -m "chore: เพิ่ม .gitignore"
+git commit -m "chore: add .gitignore"
 ```
 
 ### 10.7 ใช้ tree ร่วมกับ .gitignore
