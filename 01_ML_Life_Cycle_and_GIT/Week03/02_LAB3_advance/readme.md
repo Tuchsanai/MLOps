@@ -2020,21 +2020,7 @@ echo "Feature branches: $(git branch | grep feature | wc -l)"
 
 ---
 
-## 🎯 แบบฝึกหัดเพิ่มเติม
 
-### Challenge 1: เพิ่ม SVM Experiment
-สร้าง branch ใหม่ `experiment/svm` และทดลอง SVM classifier กับ hyperparameters ต่างๆ
-
-### Challenge 2: Cross-Validation
-เพิ่ม cross-validation ใน training pipeline และ log ผลลัพธ์
-
-### Challenge 3: Feature Selection
-สร้าง branch `feature/selection` และเพิ่ม feature selection methods (SelectKBest, RFE)
-
-### Challenge 4: Model Comparison Report
-สร้าง script ที่เปรียบเทียบ models ทั้งหมดจาก experiments.csv และสร้าง visualization
-
----
 
 ## 📚 แหล่งเรียนรู้เพิ่มเติม
 
