@@ -1269,7 +1269,7 @@ git switch main
 # ดู log เพื่อหา commit hash
 git log --oneline
 
-# checkout ไปที่ commit ใด commit หนึ่ง (ใช้ hash จาก log ของคุณ)
+# checkout ไปที่ commit ใด commit หนึ่ง (ใช้ hash จาก log ของคุณ  ** ถ้า copy แล้ววางเลย จะ error เพราะไม่มี hash)
 git checkout abc1234
 ```
 
