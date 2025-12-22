@@ -42,6 +42,20 @@ main---E---F---G
 | **Remote Branch** | Branch ที่อยู่บน Server (เช่น GitHub, GitLab) |
 | **Tracking Branch** | Local Branch ที่เชื่อมต่อกับ Remote Branch |
 
+### ทำไมต้องมีหลาย Commits ใน main ก่อนสร้าง Branch?
+
+การมีหลาย commits ใน main ก่อนสร้าง branch ใหม่มีประโยชน์:
+- เห็นภาพชัดเจนว่า branch ใหม่แยกออกมาจากจุดไหน
+- ฝึกการใช้ `git log` ดูประวัติ commits
+- เข้าใจการทำงานของ HEAD pointer
+- เตรียมพร้อมสำหรับการ merge ในอนาคต
+
+```
+main:    A---B---C  (3 commits ก่อนสร้าง branch)
+                 \
+feature:          D---E  (commits ใหม่ใน branch)
+```
+
 ---
 
 ## 🔧 ความรู้เบื้องต้น: Pipeline ใน Linux
@@ -84,37 +98,10 @@ wc -l           →  นับจำนวนบรรทัด (line count)
 ls | grep ".py"
 ```
 
-**อธิบายทีละขั้นตอน:**
-```
-ls              →  แสดงรายชื่อไฟล์ทั้งหมด
-                   main.py
-                   README.md
-                   utils.py
-                   config.json
-        |
-        ↓
-grep ".py"      →  กรองเฉพาะบรรทัดที่มี ".py"
-                   ผลลัพธ์:
-                   main.py
-                   utils.py
-```
-
 **ตัวอย่างที่ 3: นับจำนวน branch ทั้งหมด**
 
 ```bash
 git branch | wc -l
-```
-
-**อธิบายทีละขั้นตอน:**
-```
-git branch      →  แสดงรายชื่อ branch
-                   * main
-                     feature-login
-                     feature-register
-        |
-        ↓
-wc -l           →  นับจำนวนบรรทัด
-                   ผลลัพธ์: 3
 ```
 
 ### สรุปคำสั่งที่ใช้บ่อยกับ Pipeline
@@ -268,37 +255,11 @@ nothing to commit (create/copy files and use "git add" to track)
 
 ```bash
 echo "=== ตรวจสอบ branch ปัจจุบัน ==="
-git branch
+git branch --show-current || echo "(ยังไม่มี commit)"
 echo "=== จบการตรวจสอบ ==="
 ```
 
-**ผลลัพธ์ที่คาดหวัง (ถ้าเป็น main):**
-```
-=== ตรวจสอบ branch ปัจจุบัน ===
-* main
-=== จบการตรวจสอบ ===
-```
-
-**ถ้าเห็น `master`** ให้เปลี่ยนชื่อเป็น `main`:
-
-**2.1.2 เปลี่ยนชื่อ branch จาก master เป็น main:**
-
-```bash
-git branch -m master main
-echo "✓ เปลี่ยนชื่อ branch เป็น main เรียบร้อย"
-git branch
-```
-
-**ผลลัพธ์ที่คาดหวัง:**
-```
-✓ เปลี่ยนชื่อ branch เป็น main เรียบร้อย
-* main
-```
-
-> 💡 **ทำไมต้องใช้ main?**
-> - GitHub, GitLab และ Git เวอร์ชันใหม่ใช้ `main` เป็นค่าเริ่มต้น
-> - เป็นมาตรฐานใหม่ในวงการ Software Development
-> - ช่วยให้ทำงานร่วมกับ Remote Repository ได้ง่ายขึ้น
+> 💡 **หมายเหตุ:** ก่อนมี commit แรก คำสั่ง `git branch` จะไม่แสดงอะไร เป็นเรื่องปกติ
 
 ---
 
@@ -319,7 +280,7 @@ tree
 
 ---
 
-## 📝 แบบฝึกหัดที่ 0: การใช้ Here Document สร้างไฟล์
+## 📝 แบบฝึกหัดที่ 0: การใช้ Here Document สร้างไฟล์และ Commit แรก
 
 ### 0.1 สร้างไฟล์ README.md
 
@@ -362,23 +323,36 @@ A project for learning Git Branch
 
 ---
 
-### 0.2 ใช้ tree ดูโครงสร้างหลังสร้างไฟล์
+### 0.2 Commit แรก: สร้าง README.md
 
 ```bash
-tree
+git add README.md
+git commit -m "docs: add README.md with project description"
 ```
 
 **ผลลัพธ์ที่คาดหวัง:**
 ```
-.
-└── README.md
-
-0 directories, 1 file
+[main (root-commit) a1b2c3d] docs: add README.md with project description
+ 1 file changed, 12 insertions(+)
+ create mode 100644 README.md
 ```
+
+**ตรวจสอบ log:**
+
+```bash
+git log --oneline
+```
+
+**ผลลัพธ์ที่คาดหวัง:**
+```
+a1b2c3d (HEAD -> main) docs: add README.md with project description
+```
+
+> ✅ **Commit 1/3 ใน main สำเร็จ!**
 
 ---
 
-### 0.3 สร้างไฟล์ Python ด้วย Here Document
+### 0.3 สร้างไฟล์ main.py และ Commit ที่สอง
 
 ```bash
 cat > main.py << 'EOF'
@@ -403,24 +377,53 @@ EOF
 cat main.py
 ```
 
-**0.3.2 ดูโครงสร้างโปรเจกต์:**
+**ผลลัพธ์ที่คาดหวัง:**
+```
+#!/usr/bin/env python3
+"""
+Main application file
+Git Branch Lab Project
+"""
+
+def main():
+    print("Welcome to Git Branch Lab!")
+    print("Let's learn about branches!")
+
+if __name__ == "__main__":
+    main()
+```
+
+**0.3.2 Commit ที่สอง:**
 
 ```bash
-tree
+git add main.py
+git commit -m "feat: add main.py entry point"
 ```
 
 **ผลลัพธ์ที่คาดหวัง:**
 ```
-.
-├── README.md
-└── main.py
-
-0 directories, 2 files
+[main e4f5g6h] feat: add main.py entry point
+ 1 file changed, 12 insertions(+)
+ create mode 100644 main.py
 ```
+
+**ตรวจสอบ log:**
+
+```bash
+git log --oneline
+```
+
+**ผลลัพธ์ที่คาดหวัง:**
+```
+e4f5g6h (HEAD -> main) feat: add main.py entry point
+a1b2c3d docs: add README.md with project description
+```
+
+> ✅ **Commit 2/3 ใน main สำเร็จ!**
 
 ---
 
-### 0.4 สร้างโฟลเดอร์และไฟล์หลายไฟล์
+### 0.4 สร้างโครงสร้างโปรเจกต์และ Commit ที่สาม
 
 **0.4.1 สร้างโฟลเดอร์ src:**
 
@@ -505,12 +508,50 @@ tree
 
 ---
 
-### 0.6 ใช้ Pipeline กับ tree
+### 0.6 Commit ที่สาม: สร้างโครงสร้างโปรเจกต์
+
+```bash
+git add .
+git commit -m "feat: add project structure with src and tests"
+```
+
+**ผลลัพธ์ที่คาดหวัง:**
+```
+[main i7j8k9l] feat: add project structure with src and tests
+ 3 files changed, 24 insertions(+)
+ create mode 100644 src/__init__.py
+ create mode 100644 src/utils.py
+ create mode 100644 tests/test_utils.py
+```
+
+**ตรวจสอบ log:**
+
+```bash
+git log --oneline
+```
+
+**ผลลัพธ์ที่คาดหวัง:**
+```
+i7j8k9l (HEAD -> main) feat: add project structure with src and tests
+e4f5g6h feat: add main.py entry point
+a1b2c3d docs: add README.md with project description
+```
+
+> ✅ **Commit 3/3 ใน main สำเร็จ! พร้อมสร้าง Branch ใหม่แล้ว!**
+
+---
+
+### 0.7 ใช้ Pipeline กับ tree
 
 **นับจำนวนไฟล์ Python:**
 
 ```bash
 tree | grep ".py" | wc -l
+```
+
+**ผลลัพธ์ที่คาดหวัง:**
+```
+4
 ```
 
 **อธิบายทีละขั้นตอน:**
@@ -531,7 +572,7 @@ wc -l           →  นับจำนวนบรรทัด
 
 ---
 
-### 0.7 ตัวเลือกที่มีประโยชน์ของ tree
+### 0.8 ตัวเลือกที่มีประโยชน์ของ tree
 
 | คำสั่ง | คำอธิบาย |
 |--------|----------|
@@ -546,102 +587,65 @@ wc -l           →  นับจำนวนบรรทัด
 
 ---
 
-### 0.8 เปรียบเทียบวิธีสร้างไฟล์
+### 0.9 สรุปสถานะ main ก่อนสร้าง Branch
 
-| คำสั่ง | การทำงาน | ตัวอย่าง |
-|--------|----------|----------|
-| `cat > file << 'EOF'` | สร้างไฟล์หลายบรรทัด (ทับ) | ดูตัวอย่างด้านบน |
-| `cat >> file << 'EOF'` | เพิ่มต่อท้ายไฟล์ (หลายบรรทัด) | เพิ่มเนื้อหาต่อท้าย |
-| `echo "text" > file` | สร้างไฟล์บรรทัดเดียว (ทับ) | `echo "hello" > test.txt` |
-| `echo "text" >> file` | เพิ่มต่อท้าย (บรรทัดเดียว) | `echo "world" >> test.txt` |
-
----
-
-## 📝 แบบฝึกหัดที่ 1: Commit ไฟล์ที่สร้าง
-
-### 1.1 ดูสถานะ
+**ตรวจสอบจำนวน commits:**
 
 ```bash
-git status
-```
-
-**ผลลัพธ์ที่คาดหวัง:**
-```
-On branch main
-
-No commits yet
-
-Untracked files:
-  (use "git add <file>..." to include in what will be committed)
-        README.md
-        main.py
-        src/
-        tests/
-
-nothing added to commit but untracked files present (use "git add" to track)
-```
-
-### 1.2 เพิ่มไฟล์ทั้งหมดและดูสถานะ
-
-```bash
-git add .
-echo "✓ เพิ่มไฟล์เรียบร้อย"
-git status
-```
-
-**ผลลัพธ์ที่คาดหวัง:**
-```
-✓ เพิ่มไฟล์เรียบร้อย
-On branch main
-
-No commits yet
-
-Changes to be committed:
-  (use "git rm --cached <file>..." to unstage)
-        new file:   README.md
-        new file:   main.py
-        new file:   src/__init__.py
-        new file:   src/utils.py
-        new file:   tests/test_utils.py
-```
-
-### 1.3 Commit ครั้งแรก
-
-```bash
-git commit -m "Initial commit: create project structure"
-```
-
-**ผลลัพธ์ที่คาดหวัง:**
-```
-[main (root-commit) abc1234] Initial commit: create project structure
- 5 files changed, 49 insertions(+)
- create mode 100644 README.md
- create mode 100644 main.py
- create mode 100644 src/__init__.py
- create mode 100644 src/utils.py
- create mode 100644 tests/test_utils.py
-```
-
-### 1.4 ดู log
-
-```bash
-echo "=== Git Log ==="
+echo "=== สรุป Commits ใน main ==="
+echo -n "จำนวน commits: "
+git log --oneline | wc -l
+echo ""
+echo "รายการ commits:"
 git log --oneline
-echo "==============="
+echo "================================"
 ```
 
 **ผลลัพธ์ที่คาดหวัง:**
 ```
-=== Git Log ===
-abc1234 Initial commit: create project structure
-===============
+=== สรุป Commits ใน main ===
+จำนวน commits: 3
+
+รายการ commits:
+i7j8k9l (HEAD -> main) feat: add project structure with src and tests
+e4f5g6h feat: add main.py entry point
+a1b2c3d docs: add README.md with project description
+================================
 ```
+
+**ตรวจสอบโครงสร้างโปรเจกต์:**
+
+```bash
+echo "=== โครงสร้างโปรเจกต์ ==="
+tree
+echo "=========================="
+```
+
+**ผลลัพธ์ที่คาดหวัง:**
+```
+=== โครงสร้างโปรเจกต์ ===
+.
+├── README.md
+├── main.py
+├── src
+│   ├── __init__.py
+│   └── utils.py
+└── tests
+    └── test_utils.py
+
+2 directories, 5 files
+==========================
+```
+
+> 🎉 **main มี 3 commits แล้ว! พร้อมสำหรับการสร้าง Branch ใหม่!**
 
 ---
 
-## 📝 แบบฝึกหัดที่ 2: การสร้างและดู Branch
+## 📝 แบบฝึกหัดที่ 1: การสร้างและดู Branch
 
-### 2.1 ดูรายชื่อ Branch ทั้งหมด
+> ⚠️ **สำคัญ:** ตรวจสอบให้แน่ใจว่า main มี 3 commits ก่อนดำเนินการต่อ
+
+### 1.1 ดูรายชื่อ Branch ทั้งหมด
 
 **ดู local branch ทั้งหมด:**
 
@@ -659,8 +663,6 @@ echo "===================="
 ```
 
 > 💡 เครื่องหมาย `*` แสดงว่าเราอยู่ที่ branch ไหน
->
-> ⚠️ **หมายเหตุ:** ถ้าคุณเห็น `* master` แทน `* main` หมายความว่ายังไม่ได้เปลี่ยนชื่อ branch กรุณากลับไปทำ **ขั้นตอนที่ 2.1** ในส่วน **🛠️ เตรียมความพร้อม** ก่อน
 
 **ดูพร้อมรายละเอียด (commit ล่าสุด):**
 
@@ -673,13 +675,13 @@ echo "============================="
 **ผลลัพธ์ที่คาดหวัง:**
 ```
 === Branches with Details ===
-* main abc1234 Initial commit: create project structure
+* main i7j8k9l feat: add project structure with src and tests
 =============================
 ```
 
 ---
 
-### 2.2 สร้าง Branch ใหม่
+### 1.2 สร้าง Branch ใหม่
 
 **สร้าง branch แต่ไม่ย้ายไป:**
 
@@ -696,9 +698,11 @@ git branch
 * main
 ```
 
+> 💡 **สังเกต:** feature-login ถูกสร้างจาก commit ล่าสุดของ main (i7j8k9l)
+
 ---
 
-### 2.3 สร้าง Branch เพิ่มเติม
+### 1.3 สร้าง Branch เพิ่มเติม
 
 **สร้าง branch หลายอันพร้อมกัน:**
 
@@ -735,7 +739,30 @@ echo "===================="
 
 ---
 
-### 2.4 ใช้ Pipeline นับจำนวน Branch
+### 1.4 ดู Branch พร้อม Commit ที่แยกออกมา
+
+```bash
+echo "=== Branches with Commit Info ==="
+git branch -v
+echo "=================================="
+```
+
+**ผลลัพธ์ที่คาดหวัง:**
+```
+=== Branches with Commit Info ===
+  bugfix-navbar    i7j8k9l feat: add project structure with src and tests
+  feature-login    i7j8k9l feat: add project structure with src and tests
+  feature-register i7j8k9l feat: add project structure with src and tests
+  hotfix-security  i7j8k9l feat: add project structure with src and tests
+* main             i7j8k9l feat: add project structure with src and tests
+==================================
+```
+
+> 💡 **สังเกต:** ทุก branch ชี้ไปที่ commit เดียวกัน เพราะเพิ่งสร้างจาก main
+
+---
+
+### 1.5 ใช้ Pipeline นับจำนวน Branch
 
 **นับจำนวน branch ทั้งหมด:**
 
@@ -751,20 +778,6 @@ echo "======================="
 === นับจำนวน Branch ===
 จำนวน branch ทั้งหมด: 5
 =======================
-```
-
-**อธิบายทีละขั้นตอน:**
-```
-git branch      →  แสดงรายชื่อ branch
-                   * main
-                     feature-login
-                     feature-register
-                     bugfix-navbar
-                     hotfix-security
-        |
-        ↓
-wc -l           →  นับจำนวนบรรทัด
-                   ผลลัพธ์: 5
 ```
 
 **ค้นหา branch ที่มีคำว่า "feature":**
@@ -785,9 +798,9 @@ echo "========================"
 
 ---
 
-## 📝 แบบฝึกหัดที่ 3: การสลับ Branch ด้วย git switch และ git checkout
+## 📝 แบบฝึกหัดที่ 2: การสลับ Branch ด้วย git switch และ git checkout
 
-### 3.1 การใช้ git switch (วิธีใหม่ - แนะนำ)
+### 2.1 การใช้ git switch (วิธีใหม่ - แนะนำ)
 
 **สลับไป branch feature-login:**
 
@@ -810,7 +823,7 @@ Switched to branch 'feature-login'
 
 ---
 
-### 3.2 การใช้ git checkout (วิธีเก่า - ยังใช้ได้)
+### 2.2 การใช้ git checkout (วิธีเก่า - ยังใช้ได้)
 
 **สลับไป branch main ด้วย checkout:**
 
@@ -833,7 +846,7 @@ Switched to branch 'main'
 
 ---
 
-### 3.3 สร้าง Branch และสลับไปพร้อมกัน
+### 2.3 สร้าง Branch และสลับไปพร้อมกัน
 
 **วิธีที่ 1: ใช้ git switch -c (แนะนำ)**
 
@@ -882,7 +895,7 @@ Switched to a new branch 'feature-profile'
 
 ---
 
-### 3.4 เปรียบเทียบ git switch vs git checkout
+### 2.4 เปรียบเทียบ git switch vs git checkout
 
 | คำสั่ง | การใช้งาน | หมายเหตุ |
 |--------|----------|----------|
@@ -896,14 +909,19 @@ Switched to a new branch 'feature-profile'
 
 ---
 
-## 📝 แบบฝึกหัดที่ 4: ทำงานกับ Branch และใช้ tree ตรวจสอบ
+## 📝 แบบฝึกหัดที่ 3: ทำงานกับ Branch และใช้ tree ตรวจสอบ
 
-### 4.1 สร้างการเปลี่ยนแปลงใน Branch
+### 3.1 สร้างการเปลี่ยนแปลงใน Branch
 
 **ไปที่ feature-login:**
 
 ```bash
 git switch feature-login
+```
+
+**ผลลัพธ์ที่คาดหวัง:**
+```
+Switched to branch 'feature-login'
 ```
 
 **ดูโครงสร้างปัจจุบัน:**
@@ -928,7 +946,7 @@ tree
 
 ---
 
-### 4.2 สร้างไฟล์ใหม่สำหรับ Login Feature
+### 3.2 สร้างไฟล์ใหม่สำหรับ Login Feature
 
 **สร้างโฟลเดอร์ auth:**
 
@@ -1001,7 +1019,7 @@ EOF
 
 ---
 
-### 4.3 สร้างไฟล์ Test สำหรับ Login
+### 3.3 สร้างไฟล์ Test สำหรับ Login
 
 ```bash
 cat > tests/test_login.py << 'EOF'
@@ -1055,7 +1073,7 @@ EOF
 
 ---
 
-### 4.4 ใช้ tree ตรวจสอบโครงสร้างที่เปลี่ยนแปลง
+### 3.4 ใช้ tree ตรวจสอบโครงสร้างที่เปลี่ยนแปลง
 
 **ดูโครงสร้างทั้งหมด:**
 
@@ -1101,7 +1119,7 @@ src
 
 ---
 
-### 4.5 ดูสถานะและ Commit
+### 3.5 ดูสถานะและ Commit
 
 **ดูสถานะ:**
 
@@ -1116,18 +1134,24 @@ Untracked files:
   (use "git add <file>..." to include in what will be committed)
         src/auth/
         tests/test_login.py
+
+nothing added to commit but untracked files present (use "git add" to track)
 ```
 
-**เพิ่มไฟล์:**
+**เพิ่มไฟล์และ Commit:**
 
 ```bash
 git add .
+git commit -m "feat: add login system with tests"
 ```
 
-**Commit:**
-
-```bash
-git commit -m "feat: add login system with tests"
+**ผลลัพธ์ที่คาดหวัง:**
+```
+[feature-login m1n2o3p] feat: add login system with tests
+ 3 files changed, 75 insertions(+)
+ create mode 100644 src/auth/__init__.py
+ create mode 100644 src/auth/login.py
+ create mode 100644 tests/test_login.py
 ```
 
 **ดู log:**
@@ -1138,22 +1162,42 @@ git log --oneline
 
 **ผลลัพธ์ที่คาดหวัง:**
 ```
-def5678 feat: add login system with tests
-abc1234 Initial commit: create project structure
+m1n2o3p (HEAD -> feature-login) feat: add login system with tests
+i7j8k9l feat: add project structure with src and tests
+e4f5g6h feat: add main.py entry point
+a1b2c3d docs: add README.md with project description
 ```
+
+> 💡 **สังเกต:** feature-login มี 4 commits (3 จาก main + 1 ใหม่)
 
 ---
 
-### 4.6 เปรียบเทียบโครงสร้างระหว่าง Branch
+### 3.6 เปรียบเทียบโครงสร้างระหว่าง Branch
 
 **ดูโครงสร้างใน feature-login:**
 
 ```bash
 echo "=== feature-login ==="
+tree
 ```
 
-```bash
-tree
+**ผลลัพธ์ที่คาดหวัง:**
+```
+=== feature-login ===
+.
+├── README.md
+├── main.py
+├── src
+│   ├── __init__.py
+│   ├── auth
+│   │   ├── __init__.py
+│   │   └── login.py
+│   └── utils.py
+└── tests
+    ├── test_login.py
+    └── test_utils.py
+
+3 directories, 8 files
 ```
 
 **สลับไป main:**
@@ -1162,17 +1206,19 @@ tree
 git switch main
 ```
 
+**ผลลัพธ์ที่คาดหวัง:**
+```
+Switched to branch 'main'
+```
+
 **ดูโครงสร้างใน main:**
 
 ```bash
 echo "=== main ==="
-```
-
-```bash
 tree
 ```
 
-**ผลลัพธ์ที่คาดหวังใน main:**
+**ผลลัพธ์ที่คาดหวัง:**
 ```
 === main ===
 .
@@ -1189,11 +1235,35 @@ tree
 
 > 💡 สังเกตว่าโฟลเดอร์ `src/auth` และไฟล์ `tests/test_login.py` ไม่มีใน main เพราะมันอยู่ใน feature-login
 
+**เปรียบเทียบ commits:**
+
+```bash
+echo "=== Commits in main ==="
+git log --oneline
+echo ""
+echo "=== Commits in feature-login ==="
+git log --oneline feature-login
+```
+
+**ผลลัพธ์ที่คาดหวัง:**
+```
+=== Commits in main ===
+i7j8k9l (HEAD -> main) feat: add project structure with src and tests
+e4f5g6h feat: add main.py entry point
+a1b2c3d docs: add README.md with project description
+
+=== Commits in feature-login ===
+m1n2o3p (feature-login) feat: add login system with tests
+i7j8k9l (HEAD -> main) feat: add project structure with src and tests
+e4f5g6h feat: add main.py entry point
+a1b2c3d docs: add README.md with project description
+```
+
 ---
 
-## 📝 แบบฝึกหัดที่ 5: สร้าง Feature อีก Branch พร้อมไฟล์
+## 📝 แบบฝึกหัดที่ 4: สร้าง Feature อีก Branch พร้อมไฟล์
 
-### 5.1 สร้าง Feature Register
+### 4.1 สร้าง Feature Register
 
 **สลับไป feature-register:**
 
@@ -1201,10 +1271,29 @@ tree
 git switch feature-register
 ```
 
+**ผลลัพธ์ที่คาดหวัง:**
+```
+Switched to branch 'feature-register'
+```
+
 **ดูโครงสร้างปัจจุบัน (ควรเหมือน main):**
 
 ```bash
 tree
+```
+
+**ผลลัพธ์ที่คาดหวัง:**
+```
+.
+├── README.md
+├── main.py
+├── src
+│   ├── __init__.py
+│   └── utils.py
+└── tests
+    └── test_utils.py
+
+2 directories, 5 files
 ```
 
 **สร้างโฟลเดอร์:**
@@ -1215,7 +1304,7 @@ mkdir -p src/auth
 
 ---
 
-### 5.2 สร้างไฟล์ register.py
+### 4.2 สร้างไฟล์ register.py
 
 ```bash
 cat > src/auth/register.py << 'EOF'
@@ -1304,7 +1393,7 @@ EOF
 
 ---
 
-### 5.3 สร้าง Test สำหรับ Register
+### 4.3 สร้าง Test สำหรับ Register
 
 ```bash
 cat > tests/test_register.py << 'EOF'
@@ -1372,7 +1461,7 @@ EOF
 
 ---
 
-### 5.4 ตรวจสอบโครงสร้างและ Commit
+### 4.4 ตรวจสอบโครงสร้างและ Commit
 
 **ดูโครงสร้าง:**
 
@@ -1397,16 +1486,19 @@ tree
 3 directories, 7 files
 ```
 
-**เพิ่มไฟล์:**
+**เพิ่มไฟล์และ Commit:**
 
 ```bash
 git add .
+git commit -m "feat: add register system with validation"
 ```
 
-**Commit:**
-
-```bash
-git commit -m "feat: add register system with validation"
+**ผลลัพธ์ที่คาดหวัง:**
+```
+[feature-register q4r5s6t] feat: add register system with validation
+ 2 files changed, 98 insertions(+)
+ create mode 100644 src/auth/register.py
+ create mode 100644 tests/test_register.py
 ```
 
 **ดู log:**
@@ -1415,11 +1507,19 @@ git commit -m "feat: add register system with validation"
 git log --oneline
 ```
 
+**ผลลัพธ์ที่คาดหวัง:**
+```
+q4r5s6t (HEAD -> feature-register) feat: add register system with validation
+i7j8k9l feat: add project structure with src and tests
+e4f5g6h feat: add main.py entry point
+a1b2c3d docs: add README.md with project description
+```
+
 ---
 
-## 📝 แบบฝึกหัดที่ 6: Detached HEAD State
+## 📝 แบบฝึกหัดที่ 5: Detached HEAD State
 
-### 6.1 ทำความเข้าใจ HEAD
+### 5.1 ทำความเข้าใจ HEAD
 
 **HEAD** คือตัวชี้ที่บอกว่าเราอยู่ที่ไหนใน Git history
 
@@ -1428,12 +1528,13 @@ git log --oneline
         ↓
        main
         ↓
-A---B---C---D
+A---B---C
 ```
 
 **ดูว่า HEAD ชี้ไปที่ไหน:**
 
 ```bash
+git switch main
 echo "=== HEAD Position ==="
 git log --oneline -1
 git branch
@@ -1442,22 +1543,26 @@ echo "===================="
 
 **ผลลัพธ์ที่คาดหวัง:**
 ```
+Switched to branch 'main'
 === HEAD Position ===
-ghi9012 feat: add register system with validation
-* feature-register
+i7j8k9l feat: add project structure with src and tests
+  bugfix-navbar
+  feature-dashboard
   feature-login
-  main
+  feature-profile
+  feature-register
+  hotfix-security
+* main
 ====================
 ```
 
 ---
 
-### 6.2 เข้าสู่สถานะ Detached HEAD
+### 5.2 เข้าสู่สถานะ Detached HEAD
 
-**กลับไป main และดู commit history:**
+**ดู commit history ของ main:**
 
 ```bash
-git switch main
 echo "=== Commit History ==="
 git log --oneline
 echo "======================"
@@ -1465,23 +1570,24 @@ echo "======================"
 
 **ผลลัพธ์ที่คาดหวัง:**
 ```
-Switched to branch 'main'
 === Commit History ===
-abc1234 Initial commit: create project structure
+i7j8k9l feat: add project structure with src and tests
+e4f5g6h feat: add main.py entry point
+a1b2c3d docs: add README.md with project description
 ======================
 ```
 
-**checkout ไปที่ commit ใด commit หนึ่ง (ใช้ hash จาก log ของคุณ):**
+**checkout ไปที่ commit แรก:**
+
+> ⚠️ **หมายเหตุ:** แทนที่ `a1b2c3d` ด้วย hash จริงจาก log ของคุณ
 
 ```bash
-git checkout abc1234
+git checkout a1b2c3d
 ```
-
-> ⚠️ **หมายเหตุ:** แทนที่ `abc1234` ด้วย hash จริงจาก log ของคุณ
 
 **ผลลัพธ์ที่คาดหวัง:**
 ```
-Note: switching to 'abc1234'.
+Note: switching to 'a1b2c3d'.
 
 You are in 'detached HEAD' state. You can look around, make experimental
 changes and commit them, and you can discard any commits you make in this
@@ -1496,19 +1602,19 @@ Or undo this operation with:
 
   git switch -
 
-HEAD is now at abc1234 Initial commit: create project structure
+HEAD is now at a1b2c3d docs: add README.md with project description
 ```
 
 ---
 
-### 6.3 ทำความเข้าใจ Detached HEAD
+### 5.3 ทำความเข้าใจ Detached HEAD
 
 ```
             main
               ↓
 A---B---C---D
-    ↑
-   HEAD (detached)
+↑
+HEAD (detached - ชี้ไปที่ commit โดยตรง ไม่ผ่าน branch)
 ```
 
 **ดูสถานะใน Detached HEAD:**
@@ -1522,28 +1628,52 @@ echo "============================"
 **ผลลัพธ์ที่คาดหวัง:**
 ```
 === Detached HEAD Status ===
-HEAD detached at abc1234
+HEAD detached at a1b2c3d
 nothing to commit, working tree clean
 ============================
 ```
 
 ---
 
-### 6.4 สิ่งที่ทำได้ใน Detached HEAD
+### 5.4 สิ่งที่ทำได้ใน Detached HEAD
 
 **ดูไฟล์ในเวอร์ชันเก่าและโครงสร้าง:**
 
 ```bash
-echo "=== Files in this version ==="
+echo "=== Files at first commit ==="
 cat README.md
 echo ""
-echo "=== Project Structure ==="
+echo "=== Project Structure at first commit ==="
 tree
 ```
 
+**ผลลัพธ์ที่คาดหวัง:**
+```
+=== Files at first commit ===
+# My Git Branch Lab
+A project for learning Git Branch
+
+## Objectives
+- Learn how to use Git Branch
+- Practice switching branches
+- Understand Remote Branch
+
+## Author
+- Student: [Your Name]
+- ID: [Student ID]
+
+=== Project Structure at first commit ===
+.
+└── README.md
+
+0 directories, 1 file
+```
+
+> 💡 **สังเกต:** ที่ commit แรก มีแค่ไฟล์ README.md เท่านั้น!
+
 ---
 
-### 6.5 ออกจาก Detached HEAD
+### 5.5 ออกจาก Detached HEAD
 
 **กลับไป branch main:**
 
@@ -1561,13 +1691,33 @@ On branch main
 nothing to commit, working tree clean
 ```
 
+**ตรวจสอบโครงสร้างปัจจุบัน:**
+
+```bash
+tree
+```
+
+**ผลลัพธ์ที่คาดหวัง:**
+```
+.
+├── README.md
+├── main.py
+├── src
+│   ├── __init__.py
+│   └── utils.py
+└── tests
+    └── test_utils.py
+
+2 directories, 5 files
+```
+
 > ⚠️ **คำเตือน:** ถ้าคุณ commit ใน Detached HEAD แล้วสลับออกไป commits เหล่านั้นอาจหายได้ ควรสร้าง branch ก่อน
 
 ---
 
-## 📝 แบบฝึกหัดที่ 7: การเปลี่ยนชื่อ Branch
+## 📝 แบบฝึกหัดที่ 6: การเปลี่ยนชื่อ Branch
 
-### 7.1 เปลี่ยนชื่อ Branch ปัจจุบัน
+### 6.1 เปลี่ยนชื่อ Branch ปัจจุบัน
 
 **ไปที่ branch ที่ต้องการเปลี่ยนชื่อและเปลี่ยนชื่อ:**
 
@@ -1593,7 +1743,7 @@ Switched to branch 'bugfix-navbar'
 
 ---
 
-### 7.2 เปลี่ยนชื่อ Branch อื่น (ไม่ต้องไปอยู่ที่ branch นั้น)
+### 6.2 เปลี่ยนชื่อ Branch อื่น (ไม่ต้องไปอยู่ที่ branch นั้น)
 
 **กลับไป main และเปลี่ยนชื่อ branch อื่น:**
 
@@ -1619,9 +1769,9 @@ Switched to branch 'main'
 
 ---
 
-## 📝 แบบฝึกหัดที่ 8: การลบ Branch
+## 📝 แบบฝึกหัดที่ 7: การลบ Branch
 
-### 8.1 ลบ Branch ที่ไม่มี Commit ใหม่
+### 7.1 ลบ Branch ที่ไม่มี Commit ใหม่
 
 **ใช้ -d (delete) สำหรับ branch ที่ไม่มี commit ใหม่:**
 
@@ -1633,7 +1783,7 @@ git branch
 
 **ผลลัพธ์ที่คาดหวัง:**
 ```
-Deleted branch fix-navbar (was abc1234).
+Deleted branch fix-navbar (was i7j8k9l).
 --- Branches หลังจากลบ ---
   feature-dashboard
   feature-login
@@ -1645,7 +1795,7 @@ Deleted branch fix-navbar (was abc1234).
 
 ---
 
-### 8.2 ลบ Branch ที่มี Commit ยังไม่ได้ Merge (บังคับลบ)
+### 7.2 ลบ Branch ที่มี Commit ยังไม่ได้ Merge (บังคับลบ)
 
 **สลับไป feature-dashboard และสร้างไฟล์ใหม่:**
 
@@ -1738,7 +1888,7 @@ git commit -m "feat: add dashboard module"
 
 **ผลลัพธ์ที่คาดหวัง:**
 ```
-[feature-dashboard xyz1234] feat: add dashboard module
+[feature-dashboard u7v8w9x] feat: add dashboard module
  1 file changed, 28 insertions(+)
  create mode 100644 src/dashboard.py
 ```
@@ -1769,7 +1919,7 @@ git branch
 
 **ผลลัพธ์ที่คาดหวัง:**
 ```
-Deleted branch feature-dashboard (was xyz1234).
+Deleted branch feature-dashboard (was u7v8w9x).
 --- Branches หลังจาก force delete ---
   feature-login
   feature-profile
@@ -1782,9 +1932,9 @@ Deleted branch feature-dashboard (was xyz1234).
 
 ---
 
-## 📝 แบบฝึกหัดที่ 9: Remote Branch
+## 📝 แบบฝึกหัดที่ 8: Remote Branch
 
-### 9.1 เตรียม Remote Repository
+### 8.1 เตรียม Remote Repository
 
 สำหรับแบบฝึกหัดนี้ คุณต้องมี GitHub account และสร้าง repository ใหม่
 
@@ -1808,7 +1958,7 @@ origin  https://github.com/YOUR_USERNAME/git-branch-lab.git (push)
 
 ---
 
-### 9.2 Push Branch ไป Remote
+### 8.2 Push Branch ไป Remote
 
 **Push main ไป remote:**
 
@@ -1818,8 +1968,12 @@ git push -u origin main
 
 **ผลลัพธ์ที่คาดหวัง:**
 ```
-Enumerating objects: 3, done.
-...
+Enumerating objects: 12, done.
+Counting objects: 100% (12/12), done.
+Delta compression using up to 8 threads
+Compressing objects: 100% (9/9), done.
+Writing objects: 100% (12/12), 1.50 KiB | 1.50 MiB/s, done.
+Total 12 (delta 1), reused 0 (delta 0)
 To https://github.com/YOUR_USERNAME/git-branch-lab.git
  * [new branch]      main -> main
 Branch 'main' set up to track remote branch 'main' from 'origin'.
@@ -1840,15 +1994,17 @@ git branch -a
 **ผลลัพธ์ที่คาดหวัง:**
 ```
   feature-login
+  feature-profile
   feature-register
 * main
+  security-patch
   remotes/origin/feature-login
   remotes/origin/main
 ```
 
 ---
 
-### 9.3 ดึง Remote Branch มาทำงาน
+### 8.3 ดึง Remote Branch มาทำงาน
 
 **ดึงข้อมูลจาก remote:**
 
@@ -1860,6 +2016,12 @@ git fetch origin
 
 ```bash
 git branch -r
+```
+
+**ผลลัพธ์ที่คาดหวัง:**
+```
+  origin/feature-login
+  origin/main
 ```
 
 **ใช้ Pipeline กรอง remote branch:**
@@ -1875,21 +2037,7 @@ git branch -r | grep "feature"
 
 ---
 
-**สร้าง local branch จาก remote branch:**
-
-```bash
-git switch -c feature-from-remote origin/feature-login
-```
-
-**หรือใช้วิธีสั้น ๆ (Git จะหา remote branch ให้อัตโนมัติ):**
-
-```bash
-git switch feature-login
-```
-
----
-
-### 9.4 Push Branch ใหม่ไป Remote
+### 8.4 Push Branch ใหม่ไป Remote
 
 **ไปที่ branch ที่ต้องการ push:**
 
@@ -1909,9 +2057,21 @@ git push -u origin feature-register
 git branch -a
 ```
 
+**ผลลัพธ์ที่คาดหวัง:**
+```
+  feature-login
+  feature-profile
+* feature-register
+  main
+  security-patch
+  remotes/origin/feature-login
+  remotes/origin/feature-register
+  remotes/origin/main
+```
+
 ---
 
-### 9.5 เปลี่ยนชื่อ Remote Branch
+### 8.5 เปลี่ยนชื่อ Remote Branch
 
 **ไปที่ branch นั้นก่อน:**
 
@@ -1931,6 +2091,12 @@ git branch -m feature-signup
 git push origin --delete feature-register
 ```
 
+**ผลลัพธ์ที่คาดหวัง:**
+```
+To https://github.com/YOUR_USERNAME/git-branch-lab.git
+ - [deleted]         feature-register
+```
+
 **ขั้นตอนที่ 3: Push branch ใหม่:**
 
 ```bash
@@ -1943,9 +2109,21 @@ git push -u origin feature-signup
 git branch -a
 ```
 
+**ผลลัพธ์ที่คาดหวัง:**
+```
+  feature-login
+  feature-profile
+* feature-signup
+  main
+  security-patch
+  remotes/origin/feature-login
+  remotes/origin/feature-signup
+  remotes/origin/main
+```
+
 ---
 
-### 9.6 ลบ Remote Branch
+### 8.6 ลบ Remote Branch
 
 **วิธีที่ 1:**
 
@@ -1953,10 +2131,10 @@ git branch -a
 git push origin --delete feature-login
 ```
 
-**วิธีที่ 2 (ใช้ : หน้าชื่อ branch):**
-
-```bash
-git push origin :feature-login
+**ผลลัพธ์ที่คาดหวัง:**
+```
+To https://github.com/YOUR_USERNAME/git-branch-lab.git
+ - [deleted]         feature-login
 ```
 
 **อัพเดท remote tracking branches:**
@@ -1971,11 +2149,24 @@ git fetch --prune
 git branch -a
 ```
 
+**ผลลัพธ์ที่คาดหวัง:**
+```
+  feature-login
+  feature-profile
+* feature-signup
+  main
+  security-patch
+  remotes/origin/feature-signup
+  remotes/origin/main
+```
+
+> 💡 **สังเกต:** `remotes/origin/feature-login` หายไปแล้ว แต่ local `feature-login` ยังอยู่
+
 ---
 
-## 📝 แบบฝึกหัดที่ 10: คำสั่งที่มีประโยชน์อื่น ๆ
+## 📝 แบบฝึกหัดที่ 9: คำสั่งที่มีประโยชน์อื่น ๆ
 
-### 10.1 ดู Branch พร้อม Commit ล่าสุด
+### 9.1 ดู Branch พร้อม Commit ล่าสุด
 
 ```bash
 echo "=== Branches with Latest Commits ==="
@@ -1986,19 +2177,22 @@ echo "====================================="
 **ผลลัพธ์ที่คาดหวัง:**
 ```
 === Branches with Latest Commits ===
-  feature-login   def5678 feat: add login system with tests
-  feature-signup  ghi9012 feat: add register system with validation
-* main            abc1234 Initial commit: create project structure
+  feature-login   m1n2o3p feat: add login system with tests
+  feature-profile i7j8k9l feat: add project structure with src and tests
+* feature-signup  q4r5s6t feat: add register system with validation
+  main            i7j8k9l feat: add project structure with src and tests
+  security-patch  i7j8k9l feat: add project structure with src and tests
 =====================================
 ```
 
 ---
 
-### 10.2 ดู Branch ที่ Merge แล้ว/ยังไม่ Merge
+### 9.2 ดู Branch ที่ Merge แล้ว/ยังไม่ Merge
 
 **Branch ที่ merge เข้า main แล้ว:**
 
 ```bash
+git switch main
 echo "=== Merged Branches ==="
 git branch --merged main
 echo "======================="
@@ -2006,6 +2200,7 @@ echo "======================="
 
 **ผลลัพธ์ที่คาดหวัง:**
 ```
+Switched to branch 'main'
 === Merged Branches ===
   feature-profile
 * main
@@ -2025,13 +2220,13 @@ echo "========================="
 ```
 === Unmerged Branches ===
   feature-login
-  feature-register
+  feature-signup
 =========================
 ```
 
 ---
 
-### 10.3 ดู Branch Tracking
+### 9.3 ดู Branch Tracking
 
 ```bash
 echo "=== Branch Tracking Info ==="
@@ -2042,14 +2237,17 @@ echo "============================"
 **ผลลัพธ์ที่คาดหวัง:**
 ```
 === Branch Tracking Info ===
-  feature-login   def5678 [origin/feature-login] feat: add login system
-* main            abc1234 [origin/main] Initial commit
+  feature-login   m1n2o3p feat: add login system with tests
+  feature-profile i7j8k9l feat: add project structure with src and tests
+  feature-signup  q4r5s6t [origin/feature-signup] feat: add register system with validation
+* main            i7j8k9l [origin/main] feat: add project structure with src and tests
+  security-patch  i7j8k9l feat: add project structure with src and tests
 ============================
 ```
 
 ---
 
-### 10.4 ดู Log แบบ Graph
+### 9.4 ดู Log แบบ Graph
 
 **ดู log ทุก branch แบบ graph:**
 
@@ -2062,30 +2260,27 @@ echo "========================"
 **ผลลัพธ์ที่คาดหวัง:**
 ```
 === Git Branch Graph ===
-* def5678 (feature-login) feat: add login system with tests
-| * ghi9012 (feature-signup) feat: add register system with validation
-|/
-* abc1234 (HEAD -> main, origin/main) Initial commit: create project structure
+* m1n2o3p (feature-login) feat: add login system with tests
+| * q4r5s6t (origin/feature-signup, feature-signup) feat: add register system with validation
+|/  
+* i7j8k9l (HEAD -> main, origin/main, security-patch, feature-profile) feat: add project structure with src and tests
+* e4f5g6h feat: add main.py entry point
+* a1b2c3d docs: add README.md with project description
 ========================
-```
-
-**ดูแบบสวยงามพร้อม branch names:**
-
-```bash
-echo "=== Decorated Git Graph ==="
-git log --oneline --graph --all --decorate
-echo "==========================="
 ```
 
 ---
 
-### 10.5 ใช้ Pipeline กับ Git Log
+### 9.5 ใช้ Pipeline กับ Git Log
 
 **นับจำนวน commit ทั้งหมด:**
 
 ```bash
 echo "=== Commit Statistics ==="
-echo -n "จำนวน commit ทั้งหมด: "
+echo -n "จำนวน commit ทั้งหมดใน main: "
+git log --oneline | wc -l
+echo ""
+echo -n "จำนวน commit ทั้งหมดทุก branch: "
 git log --oneline --all | wc -l
 echo "========================="
 ```
@@ -2093,7 +2288,8 @@ echo "========================="
 **ผลลัพธ์ที่คาดหวัง:**
 ```
 === Commit Statistics ===
-จำนวน commit ทั้งหมด: 3
+จำนวน commit ทั้งหมดใน main: 3
+จำนวน commit ทั้งหมดทุก branch: 5
 =========================
 ```
 
@@ -2108,25 +2304,16 @@ echo "======================="
 **ผลลัพธ์ที่คาดหวัง:**
 ```
 === Feature Commits ===
-def5678 feat: add login system with tests
-ghi9012 feat: add register system with validation
+m1n2o3p feat: add login system with tests
+q4r5s6t feat: add register system with validation
+i7j8k9l feat: add project structure with src and tests
+e4f5g6h feat: add main.py entry point
 =======================
-```
-
-**อธิบายตัวอย่าง pipeline:**
-```
-git log --oneline --all    →  แสดง commit ทั้งหมดจากทุก branch
-        |
-        ↓
-grep "feat"                →  กรองเฉพาะ commit ที่มี "feat"
-        |
-        ↓
-                              ผลลัพธ์: เฉพาะ feature commits
 ```
 
 ---
 
-### 10.6 สร้างไฟล์ .gitignore
+### 9.6 สร้างไฟล์ .gitignore
 
 ```bash
 cat > .gitignore << 'EOF'
@@ -2165,34 +2352,6 @@ EOF
 echo "✓ สร้างไฟล์ .gitignore เรียบร้อย"
 ```
 
-**ผลลัพธ์ที่คาดหวัง:**
-```
-✓ สร้างไฟล์ .gitignore เรียบร้อย
-```
-
-**ตรวจสอบเนื้อหา .gitignore:**
-
-```bash
-echo "=== .gitignore Content (first 10 lines) ==="
-head -10 .gitignore
-echo "============================================"
-```
-
-**ผลลัพธ์ที่คาดหวัง:**
-```
-=== .gitignore Content (first 10 lines) ===
-# Python
-__pycache__/
-*.py[cod]
-*.so
-.Python
-*.egg-info/
-dist/
-build/
-
-============================================
-```
-
 **Commit ไฟล์ .gitignore:**
 
 ```bash
@@ -2202,38 +2361,30 @@ git commit -m "chore: add .gitignore"
 
 **ผลลัพธ์ที่คาดหวัง:**
 ```
-[main xyz1234] chore: add .gitignore
+[main y0z1a2b] chore: add .gitignore
  1 file changed, 25 insertions(+)
  create mode 100644 .gitignore
 ```
 
----
-
-### 10.7 ใช้ tree ร่วมกับ .gitignore
-
-**ดูโครงสร้างโดยไม่รวมไฟล์ที่อยู่ใน .gitignore:**
+**ตรวจสอบ log ของ main:**
 
 ```bash
-echo "=== Project Structure (filtered) ==="
-tree -I '__pycache__|*.pyc|venv|.env'
-echo "====================================="
+git log --oneline
 ```
 
 **ผลลัพธ์ที่คาดหวัง:**
 ```
-=== Project Structure (filtered) ===
-.
-├── README.md
-├── main.py
-├── src
-│   ├── __init__.py
-│   └── utils.py
-└── tests
-    └── test_utils.py
-
-2 directories, 5 files
-=====================================
+y0z1a2b (HEAD -> main) chore: add .gitignore
+i7j8k9l (origin/main, security-patch, feature-profile) feat: add project structure with src and tests
+e4f5g6h feat: add main.py entry point
+a1b2c3d docs: add README.md with project description
 ```
+
+> 💡 **สังเกต:** ตอนนี้ main มี 4 commits แล้ว!
+
+---
+
+### 9.7 ใช้ tree ร่วมกับ .gitignore
 
 **ดูเฉพาะไฟล์ที่ git track:**
 
@@ -2331,6 +2482,7 @@ tests/test_utils.py
 
 - [ ] ตั้งค่า `git config --global init.defaultBranch main` แล้ว
 - [ ] เข้าใจความแตกต่างระหว่าง `master` และ `main`
+- [ ] **main มี 3 commits ก่อนสร้าง branch ใหม่**
 - [ ] เข้าใจการใช้ Pipeline (`|`) และสามารถใช้งานได้
 - [ ] ใช้ Here Document (`cat > file << 'EOF'`) สร้างไฟล์ได้
 - [ ] ใช้ `tree` ตรวจสอบโครงสร้างโปรเจกต์ได้
@@ -2342,5 +2494,48 @@ tests/test_utils.py
 - [ ] Push และ track remote branch ได้
 - [ ] ใช้ `git log --graph` ดูโครงสร้าง branch ได้
 - [ ] ใช้ Pipeline กับคำสั่ง git ได้ (เช่น `git branch | grep "feature"`)
+
+---
+
+## 📊 สรุป Commit History ที่ควรได้
+
+หลังจากทำ LAB จนจบ ควรมี commits ดังนี้:
+
+### ใน main (4 commits):
+```
+y0z1a2b chore: add .gitignore
+i7j8k9l feat: add project structure with src and tests
+e4f5g6h feat: add main.py entry point
+a1b2c3d docs: add README.md with project description
+```
+
+### ใน feature-login (4 commits):
+```
+m1n2o3p feat: add login system with tests
+i7j8k9l feat: add project structure with src and tests
+e4f5g6h feat: add main.py entry point
+a1b2c3d docs: add README.md with project description
+```
+
+### ใน feature-signup (4 commits):
+```
+q4r5s6t feat: add register system with validation
+i7j8k9l feat: add project structure with src and tests
+e4f5g6h feat: add main.py entry point
+a1b2c3d docs: add README.md with project description
+```
+
+### Branch Graph:
+```
+* y0z1a2b (main) chore: add .gitignore
+|
+| * m1n2o3p (feature-login) feat: add login system with tests
+|/
+| * q4r5s6t (feature-signup) feat: add register system with validation
+|/
+* i7j8k9l feat: add project structure with src and tests
+* e4f5g6h feat: add main.py entry point
+* a1b2c3d docs: add README.md with project description
+```
 
 ---
