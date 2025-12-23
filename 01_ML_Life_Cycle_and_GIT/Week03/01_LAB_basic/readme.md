@@ -1,4 +1,4 @@
-# 🌿 LAB: Git Branch - การจัดการ Branch ใน Git
+# 🌿 LAB: Git Branch & Merge - การจัดการ Branch และ Merge ใน Git
 
 ## 📋 วัตถุประสงค์การเรียนรู้
 
@@ -12,6 +12,8 @@
 - ✅ ใช้คำสั่ง `cat` และ Here Document สร้างไฟล์
 - ✅ เข้าใจการใช้ Pipeline (`|`) ใน Linux
 - ✅ ใช้คำสั่ง Git พื้นฐานอื่น ๆ เพื่อช่วยในการทำงาน
+- ✅ **เข้าใจและใช้งาน Git Merge ได้อย่างถูกต้อง**
+- ✅ **แก้ไข Merge Conflict ได้**
 
 ---
 
@@ -74,38 +76,6 @@ command 1  |  command 2  |  command 3
 
 ### ตัวอย่างการใช้ Pipeline
 
-**ตัวอย่างที่ 1: นับจำนวนไฟล์ในโฟลเดอร์**
-
-```bash
-ls | wc -l
-```
-
-**อธิบายทีละขั้นตอน:**
-```
-ls              →  list all files
-                   file1.txt
-                   file2.txt
-                   file3.txt
-        |
-        ↓
-wc -l           →  count lines
-                   result: 3
-```
-
-**ตัวอย่างที่ 2: ค้นหาไฟล์ .py**
-
-```bash
-ls | grep ".py"
-```
-
-**ตัวอย่างที่ 3: นับจำนวน branch ทั้งหมด**
-
-```bash
-git branch | wc -l
-```
-
-### สรุปคำสั่งที่ใช้บ่อยกับ Pipeline
-
 | คำสั่ง | หน้าที่ | ตัวอย่าง |
 |--------|--------|----------|
 | `grep "text"` | กรองบรรทัดที่มีข้อความ | `cat file \| grep "error"` |
@@ -113,7 +83,6 @@ git branch | wc -l
 | `head -n` | เอา n บรรทัดแรก | `cat file \| head -10` |
 | `tail -n` | เอา n บรรทัดสุดท้าย | `cat file \| tail -5` |
 | `sort` | เรียงลำดับ | `cat file \| sort` |
-| `uniq` | ลบบรรทัดซ้ำ | `cat file \| sort \| uniq` |
 
 ---
 
@@ -136,92 +105,24 @@ EOF
 - `<< 'EOF'` = เริ่มต้น Here Document (EOF = End Of File, ใช้คำอื่นก็ได้)
 - `EOF` = สิ้นสุด Here Document
 
-### เปรียบเทียบวิธีสร้างไฟล์
-
-| วิธี | ข้อดี | ข้อเสีย |
-|------|-------|---------|
-| `echo "text" > file` | ง่าย รวดเร็ว | เขียนได้แค่บรรทัดเดียว |
-| `cat > file` แล้ว Ctrl+D | เขียนได้หลายบรรทัด | ต้องจำกด Ctrl+D |
-| `cat > file << 'EOF'` | เขียนได้หลายบรรทัด, ชัดเจน | พิมพ์ยาวกว่า |
-
 ---
 
 ## 🛠️ เตรียมความพร้อม
 
 ### ขั้นตอนที่ 1: ตั้งค่า Git (ถ้ายังไม่เคยตั้ง)
 
-**1.1 ตั้งค่าชื่อผู้ใช้:**
-
 ```bash
 git config --global user.name "Your Name"
-echo "Done: user.name configured"
-```
-
-**ผลลัพธ์ที่คาดหวัง:**
-```
-Done: user.name configured
-```
-
-**1.2 ตั้งค่าอีเมล:**
-
-```bash
 git config --global user.email "your.email@example.com"
-echo "Done: user.email configured"
-```
-
-**ผลลัพธ์ที่คาดหวัง:**
-```
-Done: user.email configured
-```
-
-**1.3 ⭐ ตั้งค่าให้ใช้ main เป็น default branch (สำคัญ!):**
-
-```bash
 git config --global init.defaultBranch main
-echo "Done: default branch set to main"
-```
-
-**ผลลัพธ์ที่คาดหวัง:**
-```
-Done: default branch set to main
 ```
 
 > 💡 **หมายเหตุ:** การตั้ง `init.defaultBranch main` จะทำให้ทุกครั้งที่สร้าง repository ใหม่ด้วย `git init` จะใช้ชื่อ `main` แทน `master`
 
-**1.4 ตรวจสอบการตั้งค่า:**
-
-```bash
-git config --list | grep -E "user\.|init\."
-```
-
-**ผลลัพธ์ที่คาดหวัง:**
-```
-user.name=Your Name
-user.email=your.email@example.com
-init.defaultbranch=main
-```
-
----
-
 ### ขั้นตอนที่ 2: สร้างโปรเจกต์สำหรับฝึก
-
-**2.1 สร้างโฟลเดอร์ใหม่และเข้าไป:**
 
 ```bash
 mkdir git-branch-lab && cd git-branch-lab
-echo "Created folder and entered successfully"
-pwd
-```
-
-**ผลลัพธ์ที่คาดหวัง:**
-```
-Created folder and entered successfully
-/path/to/git-branch-lab
-```
-
-**2.2 เริ่มต้น Git repository:**
-
-```bash
 git init
 ```
 
@@ -230,59 +131,11 @@ git init
 Initialized empty Git repository in /path/to/git-branch-lab/.git/
 ```
 
-**2.3 ตรวจสอบสถานะ:**
-
-```bash
-git status
-```
-
-**ผลลัพธ์ที่คาดหวัง:**
-```
-On branch main
-
-No commits yet
-
-nothing to commit (create/copy files and use "git add" to track)
-```
-
----
-
-### ขั้นตอนที่ 2.1: ⭐ ตรวจสอบและแก้ไขชื่อ Branch เริ่มต้น
-
-> ⚠️ **สำคัญ:** Git เวอร์ชันเก่า (ก่อน 2.28) จะใช้ `master` เป็นชื่อ branch เริ่มต้น ถ้าคุณเห็น `master` ให้เปลี่ยนเป็น `main` ตามขั้นตอนด้านล่าง
-
-**2.1.1 ตรวจสอบชื่อ branch ปัจจุบัน:**
-
-```bash
-echo "=== Checking current branch ==="
-git branch --show-current || echo "(no commits yet)"
-echo "=== End of check ==="
-```
-
-> 💡 **หมายเหตุ:** ก่อนมี commit แรก คำสั่ง `git branch` จะไม่แสดงอะไร เป็นเรื่องปกติ
-
----
-
-### ขั้นตอนที่ 3: ใช้ tree ดูโครงสร้างโปรเจกต์
-
-```bash
-tree
-```
-
-**ผลลัพธ์ที่คาดหวัง:**
-```
-.
-
-0 directories, 0 files
-```
-
-> 💡 คำสั่ง `tree` แสดงโครงสร้างไฟล์และโฟลเดอร์ในโปรเจกต์
-
 ---
 
 ## 📝 แบบฝึกหัดที่ 0: การใช้ Here Document สร้างไฟล์และ Commit แรก
 
-### 0.1 สร้างไฟล์ README.md
+### 0.1 สร้างไฟล์ README.md และ Commit แรก
 
 ```bash
 cat > README.md << 'EOF'
@@ -298,61 +151,19 @@ A project for learning Git Branch
 - Student: [Your Name]
 - ID: [Student ID]
 EOF
-```
 
-**0.1.1 ตรวจสอบไฟล์ที่สร้าง:**
-
-```bash
-cat README.md
-```
-
-**ผลลัพธ์ที่คาดหวัง:**
-```
-# My Git Branch Lab
-A project for learning Git Branch
-
-## Objectives
-- Learn how to use Git Branch
-- Practice switching branches
-- Understand Remote Branch
-
-## Author
-- Student: [Your Name]
-- ID: [Student ID]
-```
-
----
-
-### 0.2 Commit แรก: สร้าง README.md
-
-```bash
 git add README.md
 git commit -m "docs: add README.md with project description"
 ```
 
 **ผลลัพธ์ที่คาดหวัง:**
 ```
-[main (root-commit) a1b2c3d] docs: add README.md with project description
- 1 file changed, 12 insertions(+)
+[main (root-commit) 721e631] docs: add README.md with project description
+ 1 file changed, 11 insertions(+)
  create mode 100644 README.md
 ```
 
-**ตรวจสอบ log:**
-
-```bash
-git log --oneline
-```
-
-**ผลลัพธ์ที่คาดหวัง:**
-```
-a1b2c3d (HEAD -> main) docs: add README.md with project description
-```
-
-> ✅ **Commit 1/3 in main successful!**
-
----
-
-### 0.3 สร้างไฟล์ main.py และ Commit ที่สอง
+### 0.2 สร้างไฟล์ main.py และ Commit ที่สอง
 
 ```bash
 cat > main.py << 'EOF'
@@ -369,80 +180,28 @@ def main():
 if __name__ == "__main__":
     main()
 EOF
-```
 
-**0.3.1 ตรวจสอบไฟล์:**
-
-```bash
-cat main.py
-```
-
-**ผลลัพธ์ที่คาดหวัง:**
-```
-#!/usr/bin/env python3
-"""
-Main application file
-Git Branch Lab Project
-"""
-
-def main():
-    print("Welcome to Git Branch Lab!")
-    print("Let's learn about branches!")
-
-if __name__ == "__main__":
-    main()
-```
-
-**0.3.2 Commit ที่สอง:**
-
-```bash
 git add main.py
 git commit -m "feat: add main.py entry point"
 ```
 
 **ผลลัพธ์ที่คาดหวัง:**
 ```
-[main e4f5g6h] feat: add main.py entry point
+[main cfe1851] feat: add main.py entry point
  1 file changed, 12 insertions(+)
  create mode 100644 main.py
 ```
 
-**ตรวจสอบ log:**
+### 0.3 สร้างโครงสร้างโปรเจกต์และ Commit ที่สาม
 
 ```bash
-git log --oneline
-```
+mkdir -p src tests
 
-**ผลลัพธ์ที่คาดหวัง:**
-```
-e4f5g6h (HEAD -> main) feat: add main.py entry point
-a1b2c3d docs: add README.md with project description
-```
-
-> ✅ **Commit 2/3 in main successful!**
-
----
-
-### 0.4 สร้างโครงสร้างโปรเจกต์และ Commit ที่สาม
-
-**0.4.1 สร้างโฟลเดอร์ src:**
-
-```bash
-mkdir src
-```
-
-**0.4.2 สร้างไฟล์ __init__.py:**
-
-```bash
 cat > src/__init__.py << 'EOF'
 # Package initialization
 __version__ = "1.0.0"
 EOF
-```
 
-**0.4.3 สร้างไฟล์ utils.py:**
-
-```bash
 cat > src/utils.py << 'EOF'
 """Utility functions"""
 
@@ -454,17 +213,7 @@ def add(a, b):
     """Add two numbers"""
     return a + b
 EOF
-```
 
-**0.4.4 สร้างโฟลเดอร์ tests:**
-
-```bash
-mkdir tests
-```
-
-**0.4.5 สร้างไฟล์ test:**
-
-```bash
 cat > tests/test_utils.py << 'EOF'
 """Unit tests for utils module"""
 import sys
@@ -482,148 +231,28 @@ if __name__ == "__main__":
     test_add()
     print("All tests passed!")
 EOF
-```
 
----
-
-### 0.5 ใช้ tree ดูโครงสร้างโปรเจกต์ทั้งหมด
-
-```bash
-tree
-```
-
-**ผลลัพธ์ที่คาดหวัง:**
-```
-.
-├── README.md
-├── main.py
-├── src
-│   ├── __init__.py
-│   └── utils.py
-└── tests
-    └── test_utils.py
-
-2 directories, 5 files
-```
-
----
-
-### 0.6 Commit ที่สาม: สร้างโครงสร้างโปรเจกต์
-
-```bash
 git add .
 git commit -m "feat: add project structure with src and tests"
 ```
 
 **ผลลัพธ์ที่คาดหวัง:**
 ```
-[main i7j8k9l] feat: add project structure with src and tests
- 3 files changed, 24 insertions(+)
+[main 29a6460] feat: add project structure with src and tests
+ 3 files changed, 26 insertions(+)
  create mode 100644 src/__init__.py
  create mode 100644 src/utils.py
  create mode 100644 tests/test_utils.py
 ```
 
-**ตรวจสอบ log:**
+### 0.4 ตรวจสอบโครงสร้างและ Log
 
 ```bash
-git log --oneline
-```
-
-**ผลลัพธ์ที่คาดหวัง:**
-```
-i7j8k9l (HEAD -> main) feat: add project structure with src and tests
-e4f5g6h feat: add main.py entry point
-a1b2c3d docs: add README.md with project description
-```
-
-> ✅ **Commit 3/3 in main successful! Ready to create new Branch!**
-
----
-
-### 0.7 ใช้ Pipeline กับ tree
-
-**นับจำนวนไฟล์ Python:**
-
-```bash
-tree | grep ".py" | wc -l
-```
-
-**ผลลัพธ์ที่คาดหวัง:**
-```
-4
-```
-
-**อธิบายทีละขั้นตอน:**
-```
-tree            →  show all file structure
-        |
-        ↓
-grep ".py"      →  filter lines containing ".py"
-                   ├── main.py
-                   ├── __init__.py
-                   └── utils.py
-                   └── test_utils.py
-        |
-        ↓
-wc -l           →  count lines
-                   result: 4
-```
-
----
-
-### 0.8 ตัวเลือกที่มีประโยชน์ของ tree
-
-| คำสั่ง | คำอธิบาย |
-|--------|----------|
-| `tree` | ดูโครงสร้างพื้นฐาน |
-| `tree -L 2` | แสดงแค่ 2 ระดับ |
-| `tree -d` | แสดงเฉพาะโฟลเดอร์ |
-| `tree -f` | แสดง full path |
-| `tree -h` | แสดงขนาดไฟล์ |
-| `tree -I "node_modules"` | ไม่แสดงโฟลเดอร์ที่ระบุ |
-| `tree --du` | แสดงขนาดรวมของโฟลเดอร์ |
-| `tree -P "*.py"` | แสดงเฉพาะไฟล์ .py |
-
----
-
-### 0.9 สรุปสถานะ main ก่อนสร้าง Branch
-
-**ตรวจสอบจำนวน commits:**
-
-```bash
-echo "=== Summary: Commits in main ==="
-echo -n "Total commits: "
-git log --oneline | wc -l
-echo ""
-echo "Commit list:"
-git log --oneline
-echo "================================"
-```
-
-**ผลลัพธ์ที่คาดหวัง:**
-```
-=== Summary: Commits in main ===
-Total commits: 3
-
-Commit list:
-i7j8k9l (HEAD -> main) feat: add project structure with src and tests
-e4f5g6h feat: add main.py entry point
-a1b2c3d docs: add README.md with project description
-================================
-```
-
-**ตรวจสอบโครงสร้างโปรเจกต์:**
-
-```bash
-echo "=== Project Structure ==="
 tree
-echo "=========================="
 ```
 
 **ผลลัพธ์ที่คาดหวัง:**
 ```
-=== Project Structure ===
 .
 ├── README.md
 ├── main.py
@@ -634,166 +263,94 @@ echo "=========================="
     └── test_utils.py
 
 2 directories, 5 files
-==========================
 ```
 
-> 🎉 **main has 3 commits! Ready to create new Branch!**
+```bash
+git log --oneline
+```
+
+**ผลลัพธ์ที่คาดหวัง:**
+```
+29a6460 feat: add project structure with src and tests
+cfe1851 feat: add main.py entry point
+721e631 docs: add README.md with project description
+```
+
+> 🎉 **main มี 3 commits แล้ว! พร้อมสำหรับสร้าง Branch ใหม่!**
 
 ---
 
 ## 📝 แบบฝึกหัดที่ 1: การสร้างและดู Branch
 
-> ⚠️ **สำคัญ:** ตรวจสอบให้แน่ใจว่า main มี 3 commits ก่อนดำเนินการต่อ
-
 ### 1.1 ดูรายชื่อ Branch ทั้งหมด
 
-**ดู local branch ทั้งหมด:**
-
 ```bash
-echo "=== Local Branches ==="
 git branch
-echo "===================="
 ```
 
 **ผลลัพธ์ที่คาดหวัง:**
 ```
-=== Local Branches ===
 * main
-====================
 ```
 
 > 💡 เครื่องหมาย `*` แสดงว่าเราอยู่ที่ branch ไหน
 
-**ดูพร้อมรายละเอียด (commit ล่าสุด):**
-
-```bash
-echo "=== Branches with Details ==="
-git branch -v
-echo "============================="
-```
-
-**ผลลัพธ์ที่คาดหวัง:**
-```
-=== Branches with Details ===
-* main i7j8k9l feat: add project structure with src and tests
-=============================
-```
-
----
-
 ### 1.2 สร้าง Branch ใหม่
-
-**สร้าง branch แต่ไม่ย้ายไป:**
 
 ```bash
 git branch feature-login
-echo "Done: created branch 'feature-login'"
-git branch
-```
-
-**ผลลัพธ์ที่คาดหวัง:**
-```
-Done: created branch 'feature-login'
-  feature-login
-* main
-```
-
-> 💡 **สังเกต:** feature-login ถูกสร้างจาก commit ล่าสุดของ main (i7j8k9l)
-
----
-
-### 1.3 สร้าง Branch เพิ่มเติม
-
-**สร้าง branch หลายอันพร้อมกัน:**
-
-```bash
 git branch feature-register
 git branch bugfix-navbar
 git branch hotfix-security
-echo "Done: created additional branches"
-```
 
-**ผลลัพธ์ที่คาดหวัง:**
-```
-Done: created additional branches
-```
-
-**ดูรายการ branch ทั้งหมด:**
-
-```bash
-echo "=== All Branches ==="
 git branch
-echo "===================="
 ```
 
 **ผลลัพธ์ที่คาดหวัง:**
 ```
-=== All Branches ===
   bugfix-navbar
   feature-login
   feature-register
   hotfix-security
 * main
-====================
 ```
 
----
-
-### 1.4 ดู Branch พร้อม Commit ที่แยกออกมา
+### 1.3 ดู Branch พร้อม Commit Info
 
 ```bash
-echo "=== Branches with Commit Info ==="
 git branch -v
-echo "=================================="
 ```
 
 **ผลลัพธ์ที่คาดหวัง:**
 ```
-=== Branches with Commit Info ===
-  bugfix-navbar    i7j8k9l feat: add project structure with src and tests
-  feature-login    i7j8k9l feat: add project structure with src and tests
-  feature-register i7j8k9l feat: add project structure with src and tests
-  hotfix-security  i7j8k9l feat: add project structure with src and tests
-* main             i7j8k9l feat: add project structure with src and tests
-==================================
+  bugfix-navbar    29a6460 feat: add project structure with src and tests
+  feature-login    29a6460 feat: add project structure with src and tests
+  feature-register 29a6460 feat: add project structure with src and tests
+  hotfix-security  29a6460 feat: add project structure with src and tests
+* main             29a6460 feat: add project structure with src and tests
 ```
 
 > 💡 **สังเกต:** ทุก branch ชี้ไปที่ commit เดียวกัน เพราะเพิ่งสร้างจาก main
 
----
-
-### 1.5 ใช้ Pipeline นับจำนวน Branch
-
-**นับจำนวน branch ทั้งหมด:**
+### 1.4 ใช้ Pipeline นับจำนวน Branch
 
 ```bash
-echo "=== Count Branches ==="
-echo -n "Total branches: "
 git branch | wc -l
-echo "======================="
 ```
 
 **ผลลัพธ์ที่คาดหวัง:**
 ```
-=== Count Branches ===
-Total branches: 5
-=======================
+5
 ```
-
-**ค้นหา branch ที่มีคำว่า "feature":**
 
 ```bash
-echo "=== Feature Branches ==="
 git branch | grep "feature"
-echo "========================"
 ```
 
 **ผลลัพธ์ที่คาดหวัง:**
 ```
-=== Feature Branches ===
   feature-login
   feature-register
-========================
 ```
 
 ---
@@ -802,18 +359,14 @@ echo "========================"
 
 ### 2.1 การใช้ git switch (วิธีใหม่ - แนะนำ)
 
-**สลับไป branch feature-login:**
-
 ```bash
 git switch feature-login
-echo "Done: switched branch"
 git branch
 ```
 
 **ผลลัพธ์ที่คาดหวัง:**
 ```
 Switched to branch 'feature-login'
-Done: switched branch
   bugfix-navbar
 * feature-login
   feature-register
@@ -821,22 +374,16 @@ Done: switched branch
   main
 ```
 
----
-
 ### 2.2 การใช้ git checkout (วิธีเก่า - ยังใช้ได้)
-
-**สลับไป branch main ด้วย checkout:**
 
 ```bash
 git checkout main
-echo "Done: checkout successful"
 git branch
 ```
 
 **ผลลัพธ์ที่คาดหวัง:**
 ```
 Switched to branch 'main'
-Done: checkout successful
   bugfix-navbar
   feature-login
   feature-register
@@ -844,22 +391,18 @@ Done: checkout successful
 * main
 ```
 
----
-
 ### 2.3 สร้าง Branch และสลับไปพร้อมกัน
 
 **วิธีที่ 1: ใช้ git switch -c (แนะนำ)**
 
 ```bash
 git switch -c feature-dashboard
-echo "Done: created and switched to new branch"
 git branch
 ```
 
 **ผลลัพธ์ที่คาดหวัง:**
 ```
 Switched to a new branch 'feature-dashboard'
-Done: created and switched to new branch
   bugfix-navbar
 * feature-dashboard
   feature-login
@@ -868,14 +411,11 @@ Done: created and switched to new branch
   main
 ```
 
----
-
-**กลับไป main และทดลองวิธีที่ 2:**
+**วิธีที่ 2: ใช้ git checkout -b**
 
 ```bash
 git switch main
 git checkout -b feature-profile
-echo "Done: checkout -b successful"
 git branch
 ```
 
@@ -883,7 +423,6 @@ git branch
 ```
 Switched to branch 'main'
 Switched to a new branch 'feature-profile'
-Done: checkout -b successful
   bugfix-navbar
   feature-dashboard
   feature-login
@@ -893,8 +432,6 @@ Done: checkout -b successful
   main
 ```
 
----
-
 ### 2.4 เปรียบเทียบ git switch vs git checkout
 
 | คำสั่ง | การใช้งาน | หมายเหตุ |
@@ -903,71 +440,22 @@ Done: checkout -b successful
 | `git switch -c <branch>` | สร้างและสลับ | เหมือน checkout -b |
 | `git checkout <branch>` | สลับ branch | วิธีเก่า ยังใช้ได้ |
 | `git checkout -b <branch>` | สร้างและสลับ | วิธีเก่า |
-| `git checkout <file>` | กู้ไฟล์ | ⚠️ checkout ทำได้หลายอย่าง |
-
-> 💡 **แนะนำ:** ใช้ `git switch` สำหรับสลับ branch และ `git restore` สำหรับกู้ไฟล์ เพื่อความชัดเจน
 
 ---
 
-## 📝 แบบฝึกหัดที่ 3: ทำงานกับ Branch และใช้ tree ตรวจสอบ
+## 📝 แบบฝึกหัดที่ 3: ทำงานกับ Branch และสร้างไฟล์
 
-### 3.1 สร้างการเปลี่ยนแปลงใน Branch
-
-**ไปที่ feature-login:**
+### 3.1 สร้างการเปลี่ยนแปลงใน feature-login
 
 ```bash
 git switch feature-login
-```
-
-**ผลลัพธ์ที่คาดหวัง:**
-```
-Switched to branch 'feature-login'
-```
-
-**ดูโครงสร้างปัจจุบัน:**
-
-```bash
-tree
-```
-
-**ผลลัพธ์ที่คาดหวัง:**
-```
-.
-├── README.md
-├── main.py
-├── src
-│   ├── __init__.py
-│   └── utils.py
-└── tests
-    └── test_utils.py
-
-2 directories, 5 files
-```
-
----
-
-### 3.2 สร้างไฟล์ใหม่สำหรับ Login Feature
-
-**สร้างโฟลเดอร์ auth:**
-
-```bash
 mkdir -p src/auth
-```
 
-**สร้างไฟล์ __init__.py สำหรับ auth module:**
-
-```bash
 cat > src/auth/__init__.py << 'EOF'
 # Authentication module
 __all__ = ['login', 'logout', 'validate_user']
 EOF
-```
 
----
-
-**สร้างไฟล์ login.py:**
-
-```bash
 cat > src/auth/login.py << 'EOF'
 """
 Login Module
@@ -984,18 +472,8 @@ class User:
         return f"User({self.username})"
 
 def login(username, password):
-    """
-    Login function
-    
-    Args:
-        username: Username
-        password: Password
-    
-    Returns:
-        bool: True if login successful
-    """
+    """Login function"""
     print(f"Attempting to login: {username}")
-    # TODO: Add real validation
     if username and password:
         print("Login successful!")
         return True
@@ -1015,67 +493,43 @@ def validate_user(username):
         return False, "Username must contain only letters and numbers"
     return True, "Valid username"
 EOF
-```
 
----
-
-### 3.3 สร้างไฟล์ Test สำหรับ Login
-
-```bash
 cat > tests/test_login.py << 'EOF'
-"""
-Unit Tests for Login Module
-"""
+"""Unit Tests for Login Module"""
 import sys
 sys.path.insert(0, '..')
 from src.auth.login import login, logout, validate_user, User
 
 def test_login_success():
-    """Test successful login"""
     result = login("testuser", "password123")
     assert result == True
     print("test_login_success passed")
 
 def test_login_empty_username():
-    """Test login with empty username"""
     result = login("", "password123")
     assert result == False
     print("test_login_empty_username passed")
 
 def test_validate_user_short():
-    """Test username too short"""
     valid, msg = validate_user("ab")
     assert valid == False
     print("test_validate_user_short passed")
 
 def test_validate_user_valid():
-    """Test valid username"""
     valid, msg = validate_user("testuser")
     assert valid == True
     print("test_validate_user_valid passed")
-
-def test_user_class():
-    """Test User class"""
-    user = User("john", "secret")
-    assert user.username == "john"
-    assert user.is_logged_in == False
-    print("test_user_class passed")
 
 if __name__ == "__main__":
     test_login_success()
     test_login_empty_username()
     test_validate_user_short()
     test_validate_user_valid()
-    test_user_class()
     print("\nAll login tests passed!")
 EOF
 ```
 
----
-
-### 3.4 ใช้ tree ตรวจสอบโครงสร้างที่เปลี่ยนแปลง
-
-**ดูโครงสร้างทั้งหมด:**
+### 3.2 ตรวจสอบโครงสร้างและ Commit
 
 ```bash
 tree
@@ -1099,128 +553,38 @@ tree
 3 directories, 8 files
 ```
 
-**ดูเฉพาะโฟลเดอร์ src:**
-
-```bash
-tree src
-```
-
-**ผลลัพธ์ที่คาดหวัง:**
-```
-src
-├── __init__.py
-├── auth
-│   ├── __init__.py
-│   └── login.py
-└── utils.py
-
-1 directory, 4 files
-```
-
----
-
-### 3.5 ดูสถานะและ Commit
-
-**ดูสถานะ:**
-
-```bash
-git status
-```
-
-**ผลลัพธ์ที่คาดหวัง:**
-```
-On branch feature-login
-Untracked files:
-  (use "git add <file>..." to include in what will be committed)
-        src/auth/
-        tests/test_login.py
-
-nothing added to commit but untracked files present (use "git add" to track)
-```
-
-**เพิ่มไฟล์และ Commit:**
-
 ```bash
 git add .
 git commit -m "feat: add login system with tests"
-```
-
-**ผลลัพธ์ที่คาดหวัง:**
-```
-[feature-login m1n2o3p] feat: add login system with tests
- 3 files changed, 75 insertions(+)
- create mode 100644 src/auth/__init__.py
- create mode 100644 src/auth/login.py
- create mode 100644 tests/test_login.py
-```
-
-**ดู log:**
-
-```bash
 git log --oneline
 ```
 
 **ผลลัพธ์ที่คาดหวัง:**
 ```
-m1n2o3p (HEAD -> feature-login) feat: add login system with tests
-i7j8k9l feat: add project structure with src and tests
-e4f5g6h feat: add main.py entry point
-a1b2c3d docs: add README.md with project description
+[feature-login 5d5a623] feat: add login system with tests
+ 3 files changed, 77 insertions(+)
+ create mode 100644 src/auth/__init__.py
+ create mode 100644 src/auth/login.py
+ create mode 100644 tests/test_login.py
+
+5d5a623 feat: add login system with tests
+29a6460 feat: add project structure with src and tests
+cfe1851 feat: add main.py entry point
+721e631 docs: add README.md with project description
 ```
 
 > 💡 **สังเกต:** feature-login มี 4 commits (3 จาก main + 1 ใหม่)
 
----
-
-### 3.6 เปรียบเทียบโครงสร้างระหว่าง Branch
-
-**ดูโครงสร้างใน feature-login:**
-
-```bash
-echo "=== feature-login ==="
-tree
-```
-
-**ผลลัพธ์ที่คาดหวัง:**
-```
-=== feature-login ===
-.
-├── README.md
-├── main.py
-├── src
-│   ├── __init__.py
-│   ├── auth
-│   │   ├── __init__.py
-│   │   └── login.py
-│   └── utils.py
-└── tests
-    ├── test_login.py
-    └── test_utils.py
-
-3 directories, 8 files
-```
-
-**สลับไป main:**
+### 3.3 เปรียบเทียบโครงสร้างระหว่าง Branch
 
 ```bash
 git switch main
+tree
 ```
 
 **ผลลัพธ์ที่คาดหวัง:**
 ```
 Switched to branch 'main'
-```
-
-**ดูโครงสร้างใน main:**
-
-```bash
-echo "=== main ==="
-tree
-```
-
-**ผลลัพธ์ที่คาดหวัง:**
-```
-=== main ===
 .
 ├── README.md
 ├── main.py
@@ -1235,78 +599,16 @@ tree
 
 > 💡 สังเกตว่าโฟลเดอร์ `src/auth` และไฟล์ `tests/test_login.py` ไม่มีใน main เพราะมันอยู่ใน feature-login
 
-**เปรียบเทียบ commits:**
-
-```bash
-echo "=== Commits in main ==="
-git log --oneline
-echo ""
-echo "=== Commits in feature-login ==="
-git log --oneline feature-login
-```
-
-**ผลลัพธ์ที่คาดหวัง:**
-```
-=== Commits in main ===
-i7j8k9l (HEAD -> main) feat: add project structure with src and tests
-e4f5g6h feat: add main.py entry point
-a1b2c3d docs: add README.md with project description
-
-=== Commits in feature-login ===
-m1n2o3p (feature-login) feat: add login system with tests
-i7j8k9l (HEAD -> main) feat: add project structure with src and tests
-e4f5g6h feat: add main.py entry point
-a1b2c3d docs: add README.md with project description
-```
-
 ---
 
-## 📝 แบบฝึกหัดที่ 4: สร้าง Feature อีก Branch พร้อมไฟล์
+## 📝 แบบฝึกหัดที่ 4: สร้าง Feature อีก Branch
 
 ### 4.1 สร้าง Feature Register
 
-**สลับไป feature-register:**
-
 ```bash
 git switch feature-register
-```
-
-**ผลลัพธ์ที่คาดหวัง:**
-```
-Switched to branch 'feature-register'
-```
-
-**ดูโครงสร้างปัจจุบัน (ควรเหมือน main):**
-
-```bash
-tree
-```
-
-**ผลลัพธ์ที่คาดหวัง:**
-```
-.
-├── README.md
-├── main.py
-├── src
-│   ├── __init__.py
-│   └── utils.py
-└── tests
-    └── test_utils.py
-
-2 directories, 5 files
-```
-
-**สร้างโฟลเดอร์:**
-
-```bash
 mkdir -p src/auth
-```
 
----
-
-### 4.2 สร้างไฟล์ register.py
-
-```bash
 cat > src/auth/register.py << 'EOF'
 """
 Register Module
@@ -1321,29 +623,14 @@ class RegistrationError(Exception):
     pass
 
 def validate_email(email):
-    """
-    Validate email format
-    
-    Args:
-        email: Email to validate
-    
-    Returns:
-        tuple: (is_valid, message)
-    """
+    """Validate email format"""
     pattern = r'^[\w\.-]+@[\w\.-]+\.\w+$'
     if re.match(pattern, email):
         return True, "Email valid"
     return False, "Invalid email format"
 
 def validate_password(password):
-    """
-    Validate password strength
-    
-    Requirements:
-    - At least 8 characters
-    - Contains uppercase letter
-    - Contains number
-    """
+    """Validate password strength"""
     errors = []
     if len(password) < 8:
         errors.append("Password must be at least 8 characters")
@@ -1357,28 +644,15 @@ def validate_password(password):
     return True, ["Password valid"]
 
 def register(username, email, password):
-    """
-    Register new user
-    
-    Args:
-        username: Username
-        email: Email
-        password: Password
-    
-    Returns:
-        dict: Registered user data
-    """
-    # Validate email
+    """Register new user"""
     email_valid, email_msg = validate_email(email)
     if not email_valid:
         raise RegistrationError(email_msg)
     
-    # Validate password
     pass_valid, pass_msgs = validate_password(password)
     if not pass_valid:
         raise RegistrationError(", ".join(pass_msgs))
     
-    # Create new user
     user = {
         'username': username,
         'email': email,
@@ -1389,130 +663,57 @@ def register(username, email, password):
     print(f"Registration successful: {username}")
     return user
 EOF
-```
 
----
-
-### 4.3 สร้าง Test สำหรับ Register
-
-```bash
 cat > tests/test_register.py << 'EOF'
-"""
-Unit Tests for Register Module
-"""
+"""Unit Tests for Register Module"""
 import sys
 sys.path.insert(0, '..')
-from src.auth.register import (
-    validate_email, 
-    validate_password, 
-    register,
-    RegistrationError
-)
+from src.auth.register import validate_email, validate_password, register, RegistrationError
 
 def test_validate_email_valid():
-    """Test valid email"""
     valid, msg = validate_email("test@example.com")
     assert valid == True
     print("test_validate_email_valid passed")
 
 def test_validate_email_invalid():
-    """Test invalid email"""
     valid, msg = validate_email("invalid-email")
     assert valid == False
     print("test_validate_email_invalid passed")
 
 def test_validate_password_weak():
-    """Test weak password"""
     valid, msgs = validate_password("short")
     assert valid == False
     print("test_validate_password_weak passed")
 
 def test_validate_password_strong():
-    """Test strong password"""
     valid, msgs = validate_password("StrongPass123")
     assert valid == True
     print("test_validate_password_strong passed")
-
-def test_register_success():
-    """Test successful registration"""
-    user = register("newuser", "new@example.com", "SecurePass123")
-    assert user['username'] == "newuser"
-    assert user['is_active'] == True
-    print("test_register_success passed")
-
-def test_register_invalid_email():
-    """Test registration with invalid email"""
-    try:
-        register("user", "bad-email", "Pass123456")
-        assert False, "Should have raised error"
-    except RegistrationError:
-        print("test_register_invalid_email passed")
 
 if __name__ == "__main__":
     test_validate_email_valid()
     test_validate_email_invalid()
     test_validate_password_weak()
     test_validate_password_strong()
-    test_register_success()
-    test_register_invalid_email()
     print("\nAll register tests passed!")
 EOF
-```
 
----
-
-### 4.4 ตรวจสอบโครงสร้างและ Commit
-
-**ดูโครงสร้าง:**
-
-```bash
-tree
-```
-
-**ผลลัพธ์ที่คาดหวัง:**
-```
-.
-├── README.md
-├── main.py
-├── src
-│   ├── __init__.py
-│   ├── auth
-│   │   └── register.py
-│   └── utils.py
-└── tests
-    ├── test_register.py
-    └── test_utils.py
-
-3 directories, 7 files
-```
-
-**เพิ่มไฟล์และ Commit:**
-
-```bash
 git add .
 git commit -m "feat: add register system with validation"
-```
-
-**ผลลัพธ์ที่คาดหวัง:**
-```
-[feature-register q4r5s6t] feat: add register system with validation
- 2 files changed, 98 insertions(+)
- create mode 100644 src/auth/register.py
- create mode 100644 tests/test_register.py
-```
-
-**ดู log:**
-
-```bash
 git log --oneline
 ```
 
 **ผลลัพธ์ที่คาดหวัง:**
 ```
-q4r5s6t (HEAD -> feature-register) feat: add register system with validation
-i7j8k9l feat: add project structure with src and tests
-e4f5g6h feat: add main.py entry point
-a1b2c3d docs: add README.md with project description
+[feature-register 72e31c0] feat: add register system with validation
+ 2 files changed, 83 insertions(+)
+ create mode 100644 src/auth/register.py
+ create mode 100644 tests/test_register.py
+
+72e31c0 feat: add register system with validation
+29a6460 feat: add project structure with src and tests
+cfe1851 feat: add main.py entry point
+721e631 docs: add README.md with project description
 ```
 
 ---
@@ -1523,195 +724,70 @@ a1b2c3d docs: add README.md with project description
 
 **HEAD** คือตัวชี้ที่บอกว่าเราอยู่ที่ไหนใน Git history
 
-```
-       HEAD
-        ↓
-       main
-        ↓
-A---B---C
-```
-
-**ดูว่า HEAD ชี้ไปที่ไหน:**
-
 ```bash
 git switch main
-echo "=== HEAD Position ==="
-git log --oneline -1
-git branch
-echo "===================="
+git log --oneline
 ```
 
 **ผลลัพธ์ที่คาดหวัง:**
 ```
-Switched to branch 'main'
-=== HEAD Position ===
-i7j8k9l feat: add project structure with src and tests
-  bugfix-navbar
-  feature-dashboard
-  feature-login
-  feature-profile
-  feature-register
-  hotfix-security
-* main
-====================
+29a6460 feat: add project structure with src and tests
+cfe1851 feat: add main.py entry point
+721e631 docs: add README.md with project description
 ```
-
----
 
 ### 5.2 เข้าสู่สถานะ Detached HEAD
 
-**ดู commit history ของ main:**
-
 ```bash
-echo "=== Commit History ==="
-git log --oneline
-echo "======================"
+# checkout ไปที่ commit แรก (ใช้ hash จริงจาก log ของคุณ)
+git checkout 721e631
 ```
 
 **ผลลัพธ์ที่คาดหวัง:**
 ```
-=== Commit History ===
-i7j8k9l feat: add project structure with src and tests
-e4f5g6h feat: add main.py entry point
-a1b2c3d docs: add README.md with project description
-======================
-```
-
-**checkout ไปที่ commit แรก:**
-
-> ⚠️ **หมายเหตุ:** แทนที่ `a1b2c3d` ด้วย hash จริงจาก log ของคุณ
-
-```bash
-git checkout a1b2c3d
-```
-
-**ผลลัพธ์ที่คาดหวัง:**
-```
-Note: switching to 'a1b2c3d'.
+Note: switching to '721e631'.
 
 You are in 'detached HEAD' state. You can look around, make experimental
 changes and commit them, and you can discard any commits you make in this
 state without impacting any branches by switching back to a branch.
 
-If you want to create a new branch to retain commits you create, you may
-do so (now or later) by using -c with the switch command. Example:
-
-  git switch -c <new-branch-name>
-
-Or undo this operation with:
-
-  git switch -
-
-HEAD is now at a1b2c3d docs: add README.md with project description
+HEAD is now at 721e631 docs: add README.md with project description
 ```
 
----
-
-### 5.3 ทำความเข้าใจ Detached HEAD
-
-```
-            main
-              ↓
-A---B---C---D
-↑
-HEAD (detached - points directly to commit, not through branch)
-```
-
-**ดูสถานะใน Detached HEAD:**
+### 5.3 ดูสถานะใน Detached HEAD
 
 ```bash
-echo "=== Detached HEAD Status ==="
 git status
-echo "============================"
+ls -la
 ```
 
 **ผลลัพธ์ที่คาดหวัง:**
 ```
-=== Detached HEAD Status ===
-HEAD detached at a1b2c3d
+HEAD detached at 721e631
 nothing to commit, working tree clean
-============================
-```
 
----
-
-### 5.4 สิ่งที่ทำได้ใน Detached HEAD
-
-**ดูไฟล์ในเวอร์ชันเก่าและโครงสร้าง:**
-
-```bash
-echo "=== Files at first commit ==="
-cat README.md
-echo ""
-echo "=== Project Structure at first commit ==="
-tree
-```
-
-**ผลลัพธ์ที่คาดหวัง:**
-```
-=== Files at first commit ===
-# My Git Branch Lab
-A project for learning Git Branch
-
-## Objectives
-- Learn how to use Git Branch
-- Practice switching branches
-- Understand Remote Branch
-
-## Author
-- Student: [Your Name]
-- ID: [Student ID]
-
-=== Project Structure at first commit ===
-.
-└── README.md
-
-0 directories, 1 file
+total 13
+drwxr-xr-x 3 root root 4096 ...
+-rw-r--r-- 1 root root  209 ... README.md
 ```
 
 > 💡 **สังเกต:** ที่ commit แรก มีแค่ไฟล์ README.md เท่านั้น!
 
----
-
-### 5.5 ออกจาก Detached HEAD
-
-**กลับไป branch main:**
+### 5.4 ออกจาก Detached HEAD
 
 ```bash
 git switch main
-echo "Done: returned to main"
 git status
 ```
 
 **ผลลัพธ์ที่คาดหวัง:**
 ```
 Switched to branch 'main'
-Done: returned to main
 On branch main
 nothing to commit, working tree clean
 ```
 
-**ตรวจสอบโครงสร้างปัจจุบัน:**
-
-```bash
-tree
-```
-
-**ผลลัพธ์ที่คาดหวัง:**
-```
-.
-├── README.md
-├── main.py
-├── src
-│   ├── __init__.py
-│   └── utils.py
-└── tests
-    └── test_utils.py
-
-2 directories, 5 files
-```
-
-> ⚠️ **คำเตือน:** ถ้าคุณ commit ใน Detached HEAD แล้วสลับออกไป commits เหล่านั้นอาจหายได้ ควรสร้าง branch ก่อน
+> ⚠️ **คำเตือน:** ถ้าคุณ commit ใน Detached HEAD แล้วสลับออกไป commits เหล่านั้นอาจหายได้!
 
 ---
 
@@ -1719,19 +795,15 @@ tree
 
 ### 6.1 เปลี่ยนชื่อ Branch ปัจจุบัน
 
-**ไปที่ branch ที่ต้องการเปลี่ยนชื่อและเปลี่ยนชื่อ:**
-
 ```bash
 git switch bugfix-navbar
 git branch -m fix-navbar
-echo "Done: branch renamed"
 git branch
 ```
 
 **ผลลัพธ์ที่คาดหวัง:**
 ```
 Switched to branch 'bugfix-navbar'
-Done: branch renamed
   feature-dashboard
   feature-login
   feature-profile
@@ -1741,23 +813,17 @@ Done: branch renamed
   main
 ```
 
----
-
 ### 6.2 เปลี่ยนชื่อ Branch อื่น (ไม่ต้องไปอยู่ที่ branch นั้น)
-
-**กลับไป main และเปลี่ยนชื่อ branch อื่น:**
 
 ```bash
 git switch main
 git branch -m hotfix-security security-patch
-echo "Done: renamed hotfix-security -> security-patch"
 git branch
 ```
 
 **ผลลัพธ์ที่คาดหวัง:**
 ```
 Switched to branch 'main'
-Done: renamed hotfix-security -> security-patch
   feature-dashboard
   feature-login
   feature-profile
@@ -1773,18 +839,14 @@ Done: renamed hotfix-security -> security-patch
 
 ### 7.1 ลบ Branch ที่ไม่มี Commit ใหม่
 
-**ใช้ -d (delete) สำหรับ branch ที่ไม่มี commit ใหม่:**
-
 ```bash
 git branch -d fix-navbar
-echo "--- Branches after deletion ---"
 git branch
 ```
 
 **ผลลัพธ์ที่คาดหวัง:**
 ```
-Deleted branch fix-navbar (was i7j8k9l).
---- Branches after deletion ---
+Deleted branch fix-navbar (was 29a6460).
   feature-dashboard
   feature-login
   feature-profile
@@ -1793,134 +855,52 @@ Deleted branch fix-navbar (was i7j8k9l).
   security-patch
 ```
 
----
-
 ### 7.2 ลบ Branch ที่มี Commit ยังไม่ได้ Merge (บังคับลบ)
-
-**สลับไป feature-dashboard และสร้างไฟล์ใหม่:**
 
 ```bash
 git switch feature-dashboard
-echo "Done: switched to feature-dashboard"
-tree src
-```
-
-**ผลลัพธ์ที่คาดหวัง:**
-```
-Switched to branch 'feature-dashboard'
-Done: switched to feature-dashboard
-src
-├── __init__.py
-└── utils.py
-
-0 directories, 2 files
-```
-
-**สร้างไฟล์ใหม่ด้วย heredoc:**
-
-```bash
 cat > src/dashboard.py << 'EOF'
-"""
-Dashboard Module
-Dashboard page for displaying summary data
-"""
+"""Dashboard Module"""
 
 def show_dashboard():
-    """Display main dashboard"""
     print("================================")
     print("          DASHBOARD             ")
     print("================================")
-    print("  Welcome to the dashboard!     ")
-    print("================================")
 
 def get_stats():
-    """Get statistics data"""
-    return {
-        'users': 100,
-        'active': 50,
-        'revenue': 5000,
-        'growth': '15%'
-    }
-
-def display_stats():
-    """Display statistics"""
-    stats = get_stats()
-    print("\nStatistics:")
-    for key, value in stats.items():
-        print(f"  - {key}: {value}")
-
-if __name__ == "__main__":
-    show_dashboard()
-    display_stats()
+    return {'users': 100, 'active': 50}
 EOF
-echo "Done: created dashboard.py"
-```
 
-**ผลลัพธ์ที่คาดหวัง:**
-```
-Done: created dashboard.py
-```
-
----
-
-**ดูโครงสร้างและ commit:**
-
-```bash
-tree src
-```
-
-**ผลลัพธ์ที่คาดหวัง:**
-```
-src
-├── __init__.py
-├── dashboard.py
-└── utils.py
-
-0 directories, 3 files
-```
-
-**Commit ไฟล์:**
-
-```bash
 git add .
 git commit -m "feat: add dashboard module"
 ```
 
 **ผลลัพธ์ที่คาดหวัง:**
 ```
-[feature-dashboard u7v8w9x] feat: add dashboard module
- 1 file changed, 28 insertions(+)
+[feature-dashboard ab22cce] feat: add dashboard module
+ 1 file changed, 9 insertions(+)
  create mode 100644 src/dashboard.py
 ```
-
----
-
-**กลับไป main และลองลบด้วย -d:**
 
 ```bash
 git switch main
 git branch -d feature-dashboard
 ```
 
-**ผลลัพธ์ที่คาดหวัง (จะ error):**
+**ผลลัพธ์ที่คาดหวัง (Error):**
 ```
-Switched to branch 'main'
-error: The branch 'feature-dashboard' is not fully merged.
-If you are sure you want to delete it, run 'git branch -D feature-dashboard'.
+error: the branch 'feature-dashboard' is not fully merged.
+If you are sure you want to delete it, run 'git branch -D feature-dashboard'
 ```
-
-**ใช้ -D (force delete) ถ้าแน่ใจว่าต้องการลบ:**
 
 ```bash
 git branch -D feature-dashboard
-echo "--- Branches after force delete ---"
 git branch
 ```
 
 **ผลลัพธ์ที่คาดหวัง:**
 ```
-Deleted branch feature-dashboard (was u7v8w9x).
---- Branches after force delete ---
+Deleted branch feature-dashboard (was ab22cce).
   feature-login
   feature-profile
   feature-register
@@ -1936,17 +916,8 @@ Deleted branch feature-dashboard (was u7v8w9x).
 
 ### 8.1 เตรียม Remote Repository
 
-สำหรับแบบฝึกหัดนี้ คุณต้องมี GitHub account และสร้าง repository ใหม่
-
-**เพิ่ม remote (แทนที่ URL ด้วยของคุณ):**
-
 ```bash
 git remote add origin https://github.com/YOUR_USERNAME/git-branch-lab.git
-```
-
-**ตรวจสอบ remote:**
-
-```bash
 git remote -v
 ```
 
@@ -1956,38 +927,11 @@ origin  https://github.com/YOUR_USERNAME/git-branch-lab.git (fetch)
 origin  https://github.com/YOUR_USERNAME/git-branch-lab.git (push)
 ```
 
----
-
 ### 8.2 Push Branch ไป Remote
-
-**Push main ไป remote:**
 
 ```bash
 git push -u origin main
-```
-
-**ผลลัพธ์ที่คาดหวัง:**
-```
-Enumerating objects: 12, done.
-Counting objects: 100% (12/12), done.
-Delta compression using up to 8 threads
-Compressing objects: 100% (9/9), done.
-Writing objects: 100% (12/12), 1.50 KiB | 1.50 MiB/s, done.
-Total 12 (delta 1), reused 0 (delta 0)
-To https://github.com/YOUR_USERNAME/git-branch-lab.git
- * [new branch]      main -> main
-Branch 'main' set up to track remote branch 'main' from 'origin'.
-```
-
-**Push feature-login ไป remote:**
-
-```bash
 git push -u origin feature-login
-```
-
-**ดู branch ทั้งหมด (local และ remote):**
-
-```bash
 git branch -a
 ```
 
@@ -2002,437 +946,757 @@ git branch -a
   remotes/origin/main
 ```
 
----
-
-### 8.3 ดึง Remote Branch มาทำงาน
-
-**ดึงข้อมูลจาก remote:**
-
-```bash
-git fetch origin
-```
-
-**ดู remote branch ทั้งหมด:**
-
-```bash
-git branch -r
-```
-
-**ผลลัพธ์ที่คาดหวัง:**
-```
-  origin/feature-login
-  origin/main
-```
-
-**ใช้ Pipeline กรอง remote branch:**
-
-```bash
-git branch -r | grep "feature"
-```
-
-**ผลลัพธ์ที่คาดหวัง:**
-```
-  origin/feature-login
-```
-
----
-
-### 8.4 Push Branch ใหม่ไป Remote
-
-**ไปที่ branch ที่ต้องการ push:**
-
-```bash
-git switch feature-register
-```
-
-**Push ไป remote:**
-
-```bash
-git push -u origin feature-register
-```
-
-**ตรวจสอบ:**
-
-```bash
-git branch -a
-```
-
-**ผลลัพธ์ที่คาดหวัง:**
-```
-  feature-login
-  feature-profile
-* feature-register
-  main
-  security-patch
-  remotes/origin/feature-login
-  remotes/origin/feature-register
-  remotes/origin/main
-```
-
----
-
-### 8.5 เปลี่ยนชื่อ Remote Branch
-
-**ไปที่ branch นั้นก่อน:**
-
-```bash
-git switch feature-register
-```
-
-**ขั้นตอนที่ 1: เปลี่ยนชื่อ local branch:**
-
-```bash
-git branch -m feature-signup
-```
-
-**ขั้นตอนที่ 2: ลบ remote branch เก่า:**
-
-```bash
-git push origin --delete feature-register
-```
-
-**ผลลัพธ์ที่คาดหวัง:**
-```
-To https://github.com/YOUR_USERNAME/git-branch-lab.git
- - [deleted]         feature-register
-```
-
-**ขั้นตอนที่ 3: Push branch ใหม่:**
-
-```bash
-git push -u origin feature-signup
-```
-
-**ดูผลลัพธ์:**
-
-```bash
-git branch -a
-```
-
-**ผลลัพธ์ที่คาดหวัง:**
-```
-  feature-login
-  feature-profile
-* feature-signup
-  main
-  security-patch
-  remotes/origin/feature-login
-  remotes/origin/feature-signup
-  remotes/origin/main
-```
-
----
-
-### 8.6 ลบ Remote Branch
-
-**วิธีที่ 1:**
+### 8.3 ลบ Remote Branch
 
 ```bash
 git push origin --delete feature-login
+git fetch --prune
+git branch -a
 ```
 
 **ผลลัพธ์ที่คาดหวัง:**
 ```
 To https://github.com/YOUR_USERNAME/git-branch-lab.git
  - [deleted]         feature-login
-```
-
-**อัพเดท remote tracking branches:**
-
-```bash
-git fetch --prune
-```
-
-**ตรวจสอบ:**
-
-```bash
-git branch -a
-```
-
-**ผลลัพธ์ที่คาดหวัง:**
-```
   feature-login
   feature-profile
-* feature-signup
-  main
+  feature-register
+* main
   security-patch
-  remotes/origin/feature-signup
   remotes/origin/main
 ```
 
-> 💡 **สังเกต:** `remotes/origin/feature-login` หายไปแล้ว แต่ local `feature-login` ยังอยู่
+---
+
+## 📝 แบบฝึกหัดที่ 9: Git Merge และคำสั่งที่มีประโยชน์
+
+### 🔀 ความรู้พื้นฐาน: Git Merge คืออะไร?
+
+**Git Merge** คือการรวม commits จาก branch หนึ่งเข้ากับอีก branch หนึ่ง เป็นวิธีที่ใช้บ่อยที่สุดในการนำ feature ที่พัฒนาเสร็จแล้วกลับเข้า main branch
+
+```
+Before merge:
+main:     A---B---C
+               \
+feature:        D---E
+
+After merge:
+main:     A---B---C-------F (merge commit)
+               \         /
+feature:        D---E---+
+```
+
+### ประเภทของ Merge
+
+| ประเภท | คำอธิบาย | เมื่อไหร่เกิด |
+|--------|----------|--------------|
+| **Fast-forward** | เลื่อน pointer ไปข้างหน้า ไม่สร้าง merge commit | เมื่อ main ไม่มี commit ใหม่หลังแยก branch |
+| **3-way merge** | สร้าง merge commit ใหม่ | เมื่อทั้งสอง branch มี commit ใหม่ |
+| **Merge conflict** | ต้องแก้ไข conflict ด้วยมือ | เมื่อแก้ไขไฟล์เดียวกันในตำแหน่งเดียวกัน |
 
 ---
 
-## 📝 แบบฝึกหัดที่ 9: คำสั่งที่มีประโยชน์อื่น ๆ
-
-### 9.1 ดู Branch พร้อม Commit ล่าสุด
+### 9.1 เตรียมสถานะ Branch สำหรับ Merge
 
 ```bash
-echo "=== Branches with Latest Commits ==="
+git switch main
 git branch -v
-echo "====================================="
 ```
 
 **ผลลัพธ์ที่คาดหวัง:**
 ```
-=== Branches with Latest Commits ===
-  feature-login   m1n2o3p feat: add login system with tests
-  feature-profile i7j8k9l feat: add project structure with src and tests
-* feature-signup  q4r5s6t feat: add register system with validation
-  main            i7j8k9l feat: add project structure with src and tests
-  security-patch  i7j8k9l feat: add project structure with src and tests
-=====================================
+  feature-login    5d5a623 feat: add login system with tests
+  feature-profile  29a6460 feat: add project structure with src and tests
+  feature-register 72e31c0 feat: add register system with validation
+* main             29a6460 feat: add project structure with src and tests
+  security-patch   29a6460 feat: add project structure with src and tests
+```
+
+```bash
+git log --oneline --graph --all
+```
+
+**ผลลัพธ์ที่คาดหวัง:**
+```
+* 72e31c0 feat: add register system with validation
+| * 5d5a623 feat: add login system with tests
+|/  
+* 29a6460 feat: add project structure with src and tests
+* cfe1851 feat: add main.py entry point
+* 721e631 docs: add README.md with project description
 ```
 
 ---
 
-### 9.2 ดู Branch ที่ Merge แล้ว/ยังไม่ Merge
+### 9.2 Fast-Forward Merge
 
-**Branch ที่ merge เข้า main แล้ว:**
+**Fast-forward merge** เกิดขึ้นเมื่อ branch ปลายทางไม่มี commits ใหม่หลังจากที่แยก branch ออกไป
+
+```bash
+git switch -c feature-quick-fix
+
+cat > src/quick_fix.py << 'EOF'
+"""Quick Fix Module"""
+
+def fix_typo(text):
+    fixes = {'teh': 'the', 'adn': 'and', 'waht': 'what'}
+    for wrong, correct in fixes.items():
+        text = text.replace(wrong, correct)
+    return text
+
+def sanitize_input(text):
+    return text.strip().replace('<', '').replace('>', '')
+EOF
+
+git add .
+git commit -m "fix: add quick fix utilities"
+```
+
+**ผลลัพธ์ที่คาดหวัง:**
+```
+Switched to a new branch 'feature-quick-fix'
+[feature-quick-fix f7eb4f2] fix: add quick fix utilities
+ 1 file changed, 10 insertions(+)
+ create mode 100644 src/quick_fix.py
+```
 
 ```bash
 git switch main
-echo "=== Merged Branches ==="
-git branch --merged main
-echo "======================="
+git merge feature-quick-fix
 ```
 
 **ผลลัพธ์ที่คาดหวัง:**
 ```
 Switched to branch 'main'
-=== Merged Branches ===
+Updating 29a6460..f7eb4f2
+Fast-forward
+ src/quick_fix.py | 10 ++++++++++
+ 1 file changed, 10 insertions(+)
+ create mode 100644 src/quick_fix.py
+```
+
+> 💡 **สังเกต:** Git บอกว่าเป็น "Fast-forward" เพราะ main ไม่มี commit ใหม่หลังจากสร้าง feature-quick-fix
+
+```bash
+git log --oneline -4
+```
+
+**ผลลัพธ์ที่คาดหวัง:**
+```
+f7eb4f2 fix: add quick fix utilities
+29a6460 feat: add project structure with src and tests
+cfe1851 feat: add main.py entry point
+721e631 docs: add README.md with project description
+```
+
+```bash
+# ลบ branch ที่ merge แล้ว
+git branch -d feature-quick-fix
+```
+
+---
+
+### 9.3 3-Way Merge (Merge Commit)
+
+**3-way merge** เกิดขึ้นเมื่อทั้งสอง branch มี commits ใหม่ Git จะสร้าง "merge commit" ใหม่
+
+```bash
+# ดู commits ที่จะ merge เข้ามา
+git log main..feature-login --oneline
+```
+
+**ผลลัพธ์ที่คาดหวัง:**
+```
+5d5a623 feat: add login system with tests
+```
+
+```bash
+git merge feature-login -m "Merge branch 'feature-login' into main"
+```
+
+**ผลลัพธ์ที่คาดหวัง:**
+```
+Merge made by the 'ort' strategy.
+ src/auth/__init__.py |  2 ++
+ src/auth/login.py    | 44 ++++++++++++++++++++++++++++++++++++++++++++
+ tests/test_login.py  | 31 +++++++++++++++++++++++++++++++
+ 3 files changed, 77 insertions(+)
+ create mode 100644 src/auth/__init__.py
+ create mode 100644 src/auth/login.py
+ create mode 100644 tests/test_login.py
+```
+
+```bash
+git log --oneline --graph -8
+```
+
+**ผลลัพธ์ที่คาดหวัง:**
+```
+*   f8fb191 Merge branch 'feature-login' into main
+|\  
+| * 5d5a623 feat: add login system with tests
+* | f7eb4f2 fix: add quick fix utilities
+|/  
+* 29a6460 feat: add project structure with src and tests
+* cfe1851 feat: add main.py entry point
+* 721e631 docs: add README.md with project description
+```
+
+> 💡 **สังเกต:** Git สร้าง merge commit ใหม่ (f8fb191) ที่รวม commits จากทั้งสอง branch
+
+---
+
+### 9.4 Merge พร้อมดู Diff ก่อน
+
+```bash
+# ดูไฟล์ที่จะเปลี่ยนแปลง
+git diff --name-only main..feature-register
+```
+
+**ผลลัพธ์ที่คาดหวัง:**
+```
+src/auth/register.py
+tests/test_register.py
+```
+
+```bash
+# ดูสถิติการเปลี่ยนแปลง
+git diff --stat main..feature-register
+```
+
+**ผลลัพธ์ที่คาดหวัง:**
+```
+ src/auth/register.py   | 52 ++++++++++++++++++++++++++++++++++++++++++++++
+ tests/test_register.py | 31 ++++++++++++++++++++++++++++
+ 2 files changed, 83 insertions(+)
+```
+
+```bash
+git merge feature-register -m "Merge branch 'feature-register' - add registration system"
+```
+
+**ผลลัพธ์ที่คาดหวัง:**
+```
+Merge made by the 'ort' strategy.
+ src/auth/register.py   | 52 ++++++++++++++++++++++++++++++++++++++++++++++
+ tests/test_register.py | 31 ++++++++++++++++++++++++++++
+ 2 files changed, 83 insertions(+)
+ create mode 100644 src/auth/register.py
+ create mode 100644 tests/test_register.py
+```
+
+```bash
+tree src/auth
+```
+
+**ผลลัพธ์ที่คาดหวัง:**
+```
+src/auth
+├── __init__.py
+├── login.py
+└── register.py
+
+0 directories, 3 files
+```
+
+---
+
+### 9.5 การแก้ไข Merge Conflict
+
+**Merge conflict** เกิดขึ้นเมื่อทั้งสอง branch แก้ไขไฟล์เดียวกันในตำแหน่งเดียวกัน
+
+**สร้างสถานการณ์ conflict:**
+
+```bash
+git switch -c feature-update-readme
+
+cat > README.md << 'EOF'
+# My Git Branch Lab
+A comprehensive project for learning Git Branch and Merge
+
+## Objectives
+- Learn how to use Git Branch
+- Practice switching branches
+- Understand Remote Branch
+- Master Git Merge techniques
+
+## Features
+- Login System
+- Registration System
+- Quick Fix Utilities
+
+## Author
+- Student: [Your Name]
+- Updated by: Feature Team
+EOF
+
+git add README.md
+git commit -m "docs: update README with feature list"
+```
+
+**ผลลัพธ์ที่คาดหวัง:**
+```
+Switched to a new branch 'feature-update-readme'
+[feature-update-readme 4d46521] docs: update README with feature list
+ 1 file changed, 8 insertions(+), 2 deletions(-)
+```
+
+```bash
+git switch main
+
+cat > README.md << 'EOF'
+# My Git Branch Lab
+A project for learning Git Branch - Version 2.0
+
+## Objectives
+- Learn how to use Git Branch
+- Practice switching branches
+- Understand Remote Branch
+- Learn Git Merge and Conflict Resolution
+
+## Status
+- Project: Active
+- Version: 2.0
+
+## Author
+- Student: [Your Name]
+- Maintained by: Main Team
+EOF
+
+git add README.md
+git commit -m "docs: update README with version info"
+```
+
+**ผลลัพธ์ที่คาดหวัง:**
+```
+Switched to branch 'main'
+[main 6e61edd] docs: update README with version info
+ 1 file changed, 7 insertions(+), 2 deletions(-)
+```
+
+```bash
+git merge feature-update-readme
+```
+
+**ผลลัพธ์ที่คาดหวัง (Conflict!):**
+```
+Auto-merging README.md
+CONFLICT (content): Merge conflict in README.md
+Automatic merge failed; fix conflicts and then commit the result.
+```
+
+```bash
+git status
+```
+
+**ผลลัพธ์ที่คาดหวัง:**
+```
+On branch main
+You have unmerged paths.
+  (fix conflicts and run "git commit")
+  (use "git merge --abort" to abort the merge)
+
+Unmerged paths:
+  (use "git add <file>..." to mark resolution)
+        both modified:   README.md
+
+no changes added to commit (use "git add" and/or "git commit -a")
+```
+
+```bash
+cat README.md
+```
+
+**ผลลัพธ์ที่คาดหวัง (Conflict Markers):**
+```
+# My Git Branch Lab
+<<<<<<< HEAD
+A project for learning Git Branch - Version 2.0
+=======
+A comprehensive project for learning Git Branch and Merge
+>>>>>>> feature-update-readme
+
+## Objectives
+- Learn how to use Git Branch
+- Practice switching branches
+- Understand Remote Branch
+<<<<<<< HEAD
+- Learn Git Merge and Conflict Resolution
+
+## Status
+- Project: Active
+- Version: 2.0
+
+## Author
+- Student: [Your Name]
+- Maintained by: Main Team
+=======
+- Master Git Merge techniques
+
+## Features
+- Login System
+- Registration System
+- Quick Fix Utilities
+
+## Author
+- Student: [Your Name]
+- Updated by: Feature Team
+>>>>>>> feature-update-readme
+```
+
+> 💡 **อธิบาย Conflict Markers:**
+> - `<<<<<<< HEAD` = เริ่มต้นส่วนของ branch ปัจจุบัน (main)
+> - `=======` = แบ่งระหว่างสอง versions
+> - `>>>>>>> feature-update-readme` = สิ้นสุดส่วนของ branch ที่ merge เข้ามา
+
+---
+
+### 9.6 แก้ไข Conflict
+
+**แก้ไขไฟล์โดยรวมเนื้อหาจากทั้งสองส่วน:**
+
+```bash
+cat > README.md << 'EOF'
+# My Git Branch Lab
+A comprehensive project for learning Git Branch and Merge - Version 2.0
+
+## Objectives
+- Learn how to use Git Branch
+- Practice switching branches
+- Understand Remote Branch
+- Master Git Merge techniques
+- Learn Git Merge and Conflict Resolution
+
+## Features
+- Login System
+- Registration System
+- Quick Fix Utilities
+
+## Status
+- Project: Active
+- Version: 2.0
+
+## Author
+- Student: [Your Name]
+- Maintained by: Main Team & Feature Team
+EOF
+
+git add README.md
+git commit -m "Merge branch 'feature-update-readme' - resolve conflicts"
+```
+
+**ผลลัพธ์ที่คาดหวัง:**
+```
+[main 1ddc2a4] Merge branch 'feature-update-readme' - resolve conflicts
+```
+
+```bash
+git log --oneline --graph -6
+```
+
+**ผลลัพธ์ที่คาดหวัง:**
+```
+*   1ddc2a4 Merge branch 'feature-update-readme' - resolve conflicts
+|\  
+| * 4d46521 docs: update README with feature list
+* | 6e61edd docs: update README with version info
+|/  
+*   ce7f4e9 Merge branch 'feature-register' - add registration system
+...
+```
+
+---
+
+### 9.7 ยกเลิก Merge
+
+**ถ้าต้องการยกเลิก merge ก่อน commit (ระหว่างมี conflict):**
+
+```bash
+git merge --abort
+```
+
+**ถ้าต้องการ undo merge หลัง commit แล้ว:**
+
+```bash
+git reset --hard HEAD~1
+```
+
+> ⚠️ **คำเตือน:** `git reset --hard` จะลบการเปลี่ยนแปลงที่ยังไม่ได้ commit ด้วย ใช้ด้วยความระมัดระวัง!
+
+---
+
+### 9.8 Merge Options ที่มีประโยชน์
+
+| Option | คำอธิบาย | ตัวอย่าง |
+|--------|----------|----------|
+| `-m "message"` | กำหนด commit message | `git merge feature -m "Merge feature"` |
+| `--no-ff` | บังคับสร้าง merge commit (ไม่ fast-forward) | `git merge --no-ff feature` |
+| `--squash` | รวม commits ทั้งหมดเป็น 1 commit | `git merge --squash feature` |
+| `--abort` | ยกเลิก merge ที่มี conflict | `git merge --abort` |
+
+**ตัวอย่าง --no-ff:**
+
+```bash
+git switch -c feature-no-ff
+echo "print('no-ff test')" > src/noff_test.py
+git add .
+git commit -m "feat: add no-ff test file"
+
+git switch main
+git merge --no-ff feature-no-ff -m "Merge feature-no-ff with explicit merge commit"
+```
+
+**ผลลัพธ์ที่คาดหวัง:**
+```
+Merge made by the 'ort' strategy.
+ src/noff_test.py | 1 +
+ 1 file changed, 1 insertion(+)
+ create mode 100644 src/noff_test.py
+```
+
+```bash
+git log --oneline --graph -5
+```
+
+**ผลลัพธ์ที่คาดหวัง:**
+```
+*   0fc3bdf Merge feature-no-ff with explicit merge commit
+|\  
+| * bf0a723 feat: add no-ff test file
+|/  
+*   1ddc2a4 Merge branch 'feature-update-readme' - resolve conflicts
+...
+```
+
+> 💡 **ประโยชน์ของ --no-ff:** ทำให้เห็นประวัติชัดเจนว่ามีการ merge จาก branch ไหน
+
+---
+
+### 9.9 Squash Merge
+
+**Squash merge** รวมทุก commits จาก feature branch เป็น 1 commit ใน main
+
+```bash
+git switch -c feature-multi-commits
+
+echo "# Config 1" > config1.txt
+git add . && git commit -m "add config1"
+
+echo "# Config 2" > config2.txt
+git add . && git commit -m "add config2"
+
+echo "# Config 3" > config3.txt
+git add . && git commit -m "add config3"
+
+git log --oneline -4
+```
+
+**ผลลัพธ์ที่คาดหวัง:**
+```
+832ae2d add config3
+c1436cb add config2
+3552cb6 add config1
+0fc3bdf Merge feature-no-ff with explicit merge commit
+```
+
+```bash
+git switch main
+git merge --squash feature-multi-commits
+```
+
+**ผลลัพธ์ที่คาดหวัง:**
+```
+Updating 0fc3bdf..832ae2d
+Fast-forward
+Squash commit -- not updating HEAD
+ config1.txt | 1 +
+ config2.txt | 1 +
+ config3.txt | 1 +
+ 3 files changed, 3 insertions(+)
+ create mode 100644 config1.txt
+ create mode 100644 config2.txt
+ create mode 100644 config3.txt
+```
+
+```bash
+git status
+```
+
+**ผลลัพธ์ที่คาดหวัง:**
+```
+On branch main
+Changes to be committed:
+  (use "git restore --staged <file>..." to unstage)
+        new file:   config1.txt
+        new file:   config2.txt
+        new file:   config3.txt
+```
+
+> 💡 **สังเกต:** ไฟล์ถูก staged แต่ยังไม่ได้ commit ต้อง commit เอง
+
+```bash
+git commit -m "feat: add all config files (squashed from feature-multi-commits)"
+git log --oneline -3
+```
+
+**ผลลัพธ์ที่คาดหวัง:**
+```
+[main dd8ca5b] feat: add all config files (squashed from feature-multi-commits)
+ 3 files changed, 3 insertions(+)
+ create mode 100644 config1.txt
+ create mode 100644 config2.txt
+ create mode 100644 config3.txt
+
+dd8ca5b feat: add all config files (squashed from feature-multi-commits)
+0fc3bdf Merge feature-no-ff with explicit merge commit
+1ddc2a4 Merge branch 'feature-update-readme' - resolve conflicts
+```
+
+> 💡 **ประโยชน์ของ Squash:** ทำให้ประวัติ main สะอาด ไม่มี commits ย่อยๆ จาก feature branch
+
+---
+
+### 9.10 ดู Branch ที่ Merge แล้ว/ยังไม่ Merge
+
+```bash
+git branch --merged main
+```
+
+**ผลลัพธ์ที่คาดหวัง:**
+```
+  feature-login
+  feature-no-ff
   feature-profile
+  feature-register
+  feature-update-readme
 * main
   security-patch
-=======================
 ```
 
-**Branch ที่ยังไม่ได้ merge:**
-
 ```bash
-echo "=== Unmerged Branches ==="
 git branch --no-merged main
-echo "========================="
 ```
 
 **ผลลัพธ์ที่คาดหวัง:**
 ```
-=== Unmerged Branches ===
-  feature-login
-  feature-signup
-=========================
+  feature-multi-commits
+```
+
+> 💡 **หมายเหตุ:** `feature-multi-commits` ยังไม่ถือว่า merged เพราะใช้ `--squash`
+
+---
+
+### 9.11 ลบ Branch ที่ Merge แล้ว
+
+```bash
+# ลบ branch ที่ merge แล้วทั้งหมด (ยกเว้น main)
+git branch --merged main | grep -v "main" | xargs -r git branch -d
+git branch
+```
+
+**ผลลัพธ์ที่คาดหวัง:**
+```
+Deleted branch feature-login (was 5d5a623).
+Deleted branch feature-no-ff (was bf0a723).
+Deleted branch feature-profile (was 29a6460).
+Deleted branch feature-register (was 72e31c0).
+Deleted branch feature-update-readme (was 4d46521).
+Deleted branch security-patch (was 29a6460).
+
+  feature-multi-commits
+* main
 ```
 
 ---
 
-### 9.3 ดู Branch Tracking
+### 9.12 ดู Branch Tracking
 
 ```bash
-echo "=== Branch Tracking Info ==="
 git branch -vv
-echo "============================"
-```
-
-**ผลลัพธ์ที่คาดหวัง:**
-```
-=== Branch Tracking Info ===
-  feature-login   m1n2o3p feat: add login system with tests
-  feature-profile i7j8k9l feat: add project structure with src and tests
-  feature-signup  q4r5s6t [origin/feature-signup] feat: add register system with validation
-* main            i7j8k9l [origin/main] feat: add project structure with src and tests
-  security-patch  i7j8k9l feat: add project structure with src and tests
-============================
 ```
 
 ---
 
-### 9.4 ดู Log แบบ Graph
-
-**ดู log ทุก branch แบบ graph:**
+### 9.13 ดู Log แบบ Graph
 
 ```bash
-echo "=== Git Branch Graph ==="
-git log --oneline --graph --all
-echo "========================"
+git log --oneline --graph --all | head -15
 ```
 
 **ผลลัพธ์ที่คาดหวัง:**
 ```
-=== Git Branch Graph ===
-* m1n2o3p (feature-login) feat: add login system with tests
-| * q4r5s6t (origin/feature-signup, feature-signup) feat: add register system with validation
+* 832ae2d add config3
+* c1436cb add config2
+* 3552cb6 add config1
+| * dd8ca5b feat: add all config files (squashed from feature-multi-commits)
 |/  
-* i7j8k9l (HEAD -> main, origin/main, security-patch, feature-profile) feat: add project structure with src and tests
-* e4f5g6h feat: add main.py entry point
-* a1b2c3d docs: add README.md with project description
-========================
+*   0fc3bdf Merge feature-no-ff with explicit merge commit
+|\  
+| * bf0a723 feat: add no-ff test file
+|/  
+*   1ddc2a4 Merge branch 'feature-update-readme' - resolve conflicts
+|\  
+| * 4d46521 docs: update README with feature list
+* | 6e61edd docs: update README with version info
+|/  
+...
 ```
 
 ---
 
-### 9.5 ใช้ Pipeline กับ Git Log
-
-**นับจำนวน commit ทั้งหมด:**
+### 9.14 ใช้ Pipeline กับ Git Log
 
 ```bash
-echo "=== Commit Statistics ==="
-echo -n "Total commits in main: "
-git log --oneline | wc -l
-echo ""
-echo -n "Total commits across all branches: "
-git log --oneline --all | wc -l
-echo "========================="
+# นับจำนวน commit ทั้งหมด
+echo "Total commits in main: $(git log --oneline | wc -l)"
+
+# นับจำนวน merge commits
+echo "Total merge commits: $(git log --oneline --merges | wc -l)"
+
+# ค้นหา commit ที่มีคำว่า "Merge"
+git log --oneline | grep -i "merge"
 ```
 
 **ผลลัพธ์ที่คาดหวัง:**
 ```
-=== Commit Statistics ===
-Total commits in main: 3
-Total commits across all branches: 5
-=========================
-```
-
-**ค้นหา commit ที่มีคำว่า "feat":**
-
-```bash
-echo "=== Feature Commits ==="
-git log --oneline --all | grep "feat"
-echo "======================="
-```
-
-**ผลลัพธ์ที่คาดหวัง:**
-```
-=== Feature Commits ===
-m1n2o3p feat: add login system with tests
-q4r5s6t feat: add register system with validation
-i7j8k9l feat: add project structure with src and tests
-e4f5g6h feat: add main.py entry point
-=======================
+Total commits in main: 10
+Total merge commits: 3
+0fc3bdf Merge feature-no-ff with explicit merge commit
+1ddc2a4 Merge branch 'feature-update-readme' - resolve conflicts
+ce7f4e9 Merge branch 'feature-register' - add registration system
+f8fb191 Merge branch 'feature-login' into main
 ```
 
 ---
 
-### 9.6 สร้างไฟล์ .gitignore
+## 📋 สรุปคำสั่ง Git Merge
 
-```bash
-cat > .gitignore << 'EOF'
-# Python
-__pycache__/
-*.py[cod]
-*.so
-.Python
-*.egg-info/
-dist/
-build/
-
-# Virtual environments
-venv/
-.env/
-
-# IDE
-.vscode/
-.idea/
-*.swp
-*.swo
-
-# OS
-.DS_Store
-Thumbs.db
-
-# Logs
-*.log
-logs/
-
-# Testing
-.pytest_cache/
-.coverage
-htmlcov/
-EOF
-echo "Done: created .gitignore"
-```
-
-**Commit ไฟล์ .gitignore:**
-
-```bash
-git add .gitignore
-git commit -m "chore: add .gitignore"
-```
-
-**ผลลัพธ์ที่คาดหวัง:**
-```
-[main y0z1a2b] chore: add .gitignore
- 1 file changed, 25 insertions(+)
- create mode 100644 .gitignore
-```
-
-**ตรวจสอบ log ของ main:**
-
-```bash
-git log --oneline
-```
-
-**ผลลัพธ์ที่คาดหวัง:**
-```
-y0z1a2b (HEAD -> main) chore: add .gitignore
-i7j8k9l (origin/main, security-patch, feature-profile) feat: add project structure with src and tests
-e4f5g6h feat: add main.py entry point
-a1b2c3d docs: add README.md with project description
-```
-
-> 💡 **สังเกต:** ตอนนี้ main มี 4 commits แล้ว!
+| คำสั่ง | คำอธิบาย |
+|--------|----------|
+| `git merge <branch>` | Merge branch เข้า branch ปัจจุบัน |
+| `git merge <branch> -m "msg"` | Merge พร้อมกำหนด commit message |
+| `git merge --no-ff <branch>` | บังคับสร้าง merge commit |
+| `git merge --squash <branch>` | รวม commits ทั้งหมดเป็น 1 |
+| `git merge --abort` | ยกเลิก merge ระหว่างมี conflict |
+| `git diff main..<branch>` | ดูความแตกต่างก่อน merge |
+| `git log main..<branch>` | ดู commits ที่จะ merge เข้ามา |
+| `git branch --merged` | ดู branch ที่ merge แล้ว |
+| `git branch --no-merged` | ดู branch ที่ยังไม่ merge |
 
 ---
 
-### 9.7 ใช้ tree ร่วมกับ .gitignore
-
-**ดูเฉพาะไฟล์ที่ git track:**
-
-```bash
-echo "=== Git Tracked Files ==="
-git ls-files
-echo "========================="
-```
-
-**ผลลัพธ์ที่คาดหวัง:**
-```
-=== Git Tracked Files ===
-.gitignore
-README.md
-main.py
-src/__init__.py
-src/utils.py
-tests/test_utils.py
-=========================
-```
-
----
-
-## 📋 สรุปคำสั่งสำคัญ
+## 📋 สรุปคำสั่งสำคัญทั้งหมด
 
 ### คำสั่ง Linux พื้นฐาน
 
 | คำสั่ง | คำอธิบาย |
 |--------|----------|
 | `cat > file << 'EOF'` | สร้างไฟล์หลายบรรทัด (heredoc) |
-| `cat >> file << 'EOF'` | เพิ่มต่อท้ายไฟล์ (heredoc) |
 | `cat file` | อ่านเนื้อหาไฟล์ |
-| `echo "text" > file` | เขียนบรรทัดเดียว (ทับ) |
-| `echo "text" >> file` | เขียนบรรทัดเดียว (ต่อท้าย) |
 | `tree` | ดูโครงสร้างไฟล์และโฟลเดอร์ |
-| `tree -L 2` | ดูแค่ 2 ระดับ |
 | `cmd1 \| cmd2` | Pipeline: ส่ง output ไปเป็น input |
 | `grep "text"` | กรองบรรทัดที่มีข้อความ |
 | `wc -l` | นับจำนวนบรรทัด |
-| `head -n` | เอา n บรรทัดแรก |
-| `tail -n` | เอา n บรรทัดสุดท้าย |
-
-### การตั้งค่า Git
-
-| คำสั่ง | คำอธิบาย |
-|--------|----------|
-| `git config --global init.defaultBranch main` | ตั้งค่า default branch เป็น main |
-| `git branch -m master main` | เปลี่ยนชื่อ branch จาก master เป็น main |
 
 ### การจัดการ Branch
 
@@ -2441,11 +1705,12 @@ tests/test_utils.py
 | `git branch` | ดูรายการ local branch |
 | `git branch -a` | ดูรายการ local และ remote branch |
 | `git branch -v` | ดู branch พร้อม commit ล่าสุด |
-| `git branch <n>` | สร้าง branch ใหม่ |
-| `git branch -d <n>` | ลบ branch (ที่ merge แล้ว) |
-| `git branch -D <n>` | บังคับลบ branch |
-| `git branch -m <new-name>` | เปลี่ยนชื่อ branch ปัจจุบัน |
-| `git branch -m <old> <new>` | เปลี่ยนชื่อ branch อื่น |
+| `git branch <name>` | สร้าง branch ใหม่ |
+| `git branch -d <name>` | ลบ branch (ที่ merge แล้ว) |
+| `git branch -D <name>` | บังคับลบ branch |
+| `git branch -m <new>` | เปลี่ยนชื่อ branch ปัจจุบัน |
+| `git branch --merged` | ดู branch ที่ merge แล้ว |
+| `git branch --no-merged` | ดู branch ที่ยังไม่ merge |
 
 ### การสลับ Branch
 
@@ -2456,12 +1721,19 @@ tests/test_utils.py
 | `git checkout <branch>` | สลับไป branch (วิธีเก่า) |
 | `git checkout -b <branch>` | สร้างและสลับไป branch ใหม่ |
 
+### Git Merge
+
+| คำสั่ง | คำอธิบาย |
+|--------|----------|
+| `git merge <branch>` | Merge branch เข้า branch ปัจจุบัน |
+| `git merge --no-ff <branch>` | Merge แบบสร้าง merge commit เสมอ |
+| `git merge --squash <branch>` | Merge แบบรวม commits เป็น 1 |
+| `git merge --abort` | ยกเลิก merge ที่มี conflict |
+
 ### Remote Branch
 
 | คำสั่ง | คำอธิบาย |
 |--------|----------|
-| `git branch -r` | ดู remote branch |
-| `git fetch origin` | ดึงข้อมูล remote |
 | `git push -u origin <branch>` | Push branch ไป remote |
 | `git push origin --delete <branch>` | ลบ remote branch |
 | `git fetch --prune` | ลบ remote tracking ที่ไม่มีอยู่แล้ว |
@@ -2474,15 +1746,15 @@ tests/test_utils.py
 - [GitHub Git Cheat Sheet](https://education.github.com/git-cheat-sheet-education.pdf)
 - [Learn Git Branching (Interactive)](https://learngitbranching.js.org/)
 - [Atlassian Git Tutorials](https://www.atlassian.com/git/tutorials)
-- [Linux Pipe Tutorial](https://www.geeksforgeeks.org/piping-in-unix-or-linux/)
+- [Git Merge Documentation](https://git-scm.com/docs/git-merge)
 
 ---
 
 ## ✅ Checklist ก่อนจบ LAB
 
+### พื้นฐาน Branch
 - [ ] ตั้งค่า `git config --global init.defaultBranch main` แล้ว
-- [ ] เข้าใจความแตกต่างระหว่าง `master` และ `main`
-- [ ] **main มี 3 commits ก่อนสร้าง branch ใหม่**
+- [ ] main มี 3 commits ก่อนสร้าง branch ใหม่
 - [ ] เข้าใจการใช้ Pipeline (`|`) และสามารถใช้งานได้
 - [ ] ใช้ Here Document (`cat > file << 'EOF'`) สร้างไฟล์ได้
 - [ ] ใช้ `tree` ตรวจสอบโครงสร้างโปรเจกต์ได้
@@ -2493,8 +1765,22 @@ tests/test_utils.py
 - [ ] ลบ branch ได้ทั้ง local และ remote
 - [ ] Push และ track remote branch ได้
 - [ ] ใช้ `git log --graph` ดูโครงสร้าง branch ได้
-- [ ] ใช้ Pipeline กับคำสั่ง git ได้ (เช่น `git branch | grep "feature"`)
+
+### Git Merge
+- [ ] **เข้าใจความแตกต่างระหว่าง Fast-Forward และ 3-Way Merge**
+- [ ] **ใช้ `git merge` รวม branch ได้**
+- [ ] **แก้ไข Merge Conflict ได้**
+- [ ] **ใช้ `git merge --no-ff` ได้**
+- [ ] **ใช้ `git merge --squash` ได้**
+- [ ] **ใช้ `git merge --abort` ยกเลิก merge ได้**
+- [ ] **ใช้ `git diff main..<branch>` ดูการเปลี่ยนแปลงก่อน merge**
+- [ ] **ใช้ `git branch --merged` ตรวจสอบ branch ที่ merge แล้ว**
+- [ ] **ลบ branch ที่ merge แล้วได้อย่างปลอดภัย**
 
 ---
 
+## 🎉 ยินดีด้วย!
 
+คุณได้เรียนรู้การจัดการ Git Branch และ Merge เรียบร้อยแล้ว!
+
+---
