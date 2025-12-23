@@ -126,7 +126,7 @@ git status
 
 **4.1 เพิ่ม remote origin:**
 
-> 📝 **หมายเหตุ:** เปลี่ยน URL เป็นของคุณเอง
+> 📝 **หมายเหตุ:** สำคัญ! ห้าม copy-paste URL นี้ ต้องเปลี่ยนเป็นของคุณเอง
 
 ```bash
 git branch -M main
