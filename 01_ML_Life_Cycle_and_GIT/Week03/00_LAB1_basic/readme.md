@@ -2495,47 +2495,7 @@ tests/test_utils.py
 - [ ] ใช้ `git log --graph` ดูโครงสร้าง branch ได้
 - [ ] ใช้ Pipeline กับคำสั่ง git ได้ (เช่น `git branch | grep "feature"`)
 
----
+---.
 
-## 📊 สรุป Commit History ที่ควรได้
-
-หลังจากทำ LAB จนจบ ควรมี commits ดังนี้:
-
-### ใน main (4 commits):
-```
-y0z1a2b chore: add .gitignore
-i7j8k9l feat: add project structure with src and tests
-e4f5g6h feat: add main.py entry point
-a1b2c3d docs: add README.md with project description
-```
-
-### ใน feature-login (4 commits):
-```
-m1n2o3p feat: add login system with tests
-i7j8k9l feat: add project structure with src and tests
-e4f5g6h feat: add main.py entry point
-a1b2c3d docs: add README.md with project description
-```
-
-### ใน feature-signup (4 commits):
-```
-q4r5s6t feat: add register system with validation
-i7j8k9l feat: add project structure with src and tests
-e4f5g6h feat: add main.py entry point
-a1b2c3d docs: add README.md with project description
-```
-
-### Branch Graph:
-```
-* y0z1a2b (main) chore: add .gitignore
-|
-| * m1n2o3p (feature-login) feat: add login system with tests
-|/
-| * q4r5s6t (feature-signup) feat: add register system with validation
-|/
-* i7j8k9l feat: add project structure with src and tests
-* e4f5g6h feat: add main.py entry point
-* a1b2c3d docs: add README.md with project description
-```
 
 ---
