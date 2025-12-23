@@ -237,6 +237,7 @@ git status
 > 📝 **หมายเหตุ:** เปลี่ยน URL เป็นของคุณเอง
 
 ```bash
+git branch -M main
 git remote add origin https://github.com/username/sklearn-mlops-lab.git
 ```
 
