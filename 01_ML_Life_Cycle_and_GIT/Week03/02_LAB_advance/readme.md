@@ -65,8 +65,9 @@ Command 1  |  Command 2  |  Command 3
 
 ### ตัวอย่าง Pipeline สำหรับ ML Projects
 
+#### ตัวอย่างที่ 1: นับไฟล์ Python
+
 ```bash
-# Example 1: Count Python files
 ls *.py | wc -l
 ```
 
@@ -82,8 +83,9 @@ wc -l           →  Count lines
                    Result: 3
 ```
 
+#### ตัวอย่างที่ 2: หา experiment branches
+
 ```bash
-# Example 2: Find experiment branches
 git branch | grep "experiment"
 ```
 
@@ -102,13 +104,15 @@ grep "experiment" →  Filter lines containing "experiment"
                         experiment/svm
 ```
 
+#### ตัวอย่างที่ 3: ดู commits ที่เกี่ยวกับ model
+
 ```bash
-# Example 3: View commits related to model
 git log --oneline | grep -i "model" | head -5
 ```
 
+#### ตัวอย่างที่ 4: นับ experiment branches
+
 ```bash
-# Example 4: Count experiment branches
 git branch | grep "experiment" | wc -l
 ```
 
@@ -158,16 +162,27 @@ EOF
 
 ### ขั้นตอนที่ 1: ตั้งค่า Git (ถ้ายังไม่เคยตั้ง)
 
+**1.1 ตั้งค่า username:**
+
 ```bash
-# Set username
 git config --global user.name "Your Name"
+```
 
-# Set email
+**1.2 ตั้งค่า email:**
+
+```bash
 git config --global user.email "your.email@example.com"
+```
 
-# Verify settings
+**1.3 ตรวจสอบการตั้งค่า:**
+
+```bash
 git config --list
 ```
+
+> ⏸️ **ตรวจสอบ:** ควรเห็นชื่อและ email ที่ตั้งไว้ในรายการ
+
+---
 
 ### ขั้นตอนที่ 2: สร้าง Remote Repository
 
@@ -183,32 +198,51 @@ git config --list
 - GitHub: `https://github.com/username/sklearn-mlops-lab.git`
 - GitLab: `https://gitlab.com/username/sklearn-mlops-lab.git`
 
+---
+
 ### ขั้นตอนที่ 3: สร้างโปรเจกต์ ML สำหรับฝึก
 
+**3.1 สร้างโฟลเดอร์ใหม่:**
+
 ```bash
-# Create new folder
 mkdir sklearn-mlops-lab
+```
+
+**3.2 เข้าไปในโฟลเดอร์:**
+
+```bash
 cd sklearn-mlops-lab
+```
 
-# Initialize Git repository
+**3.3 Initialize Git repository:**
+
+```bash
 git init
+```
 
-# Check status
+> ⏸️ **ตรวจสอบ:** ควรเห็นข้อความ `Initialized empty Git repository in /path/to/sklearn-mlops-lab/.git/`
+
+**3.4 ตรวจสอบ status:**
+
+```bash
 git status
 ```
 
-**ผลลัพธ์ที่คาดหวัง:**
-```
-Initialized empty Git repository in /path/to/sklearn-mlops-lab/.git/
-```
+---
 
 ### ขั้นตอนที่ 4: เชื่อมต่อ Remote Repository
 
-```bash
-# Add remote origin (replace with your repository URL)
-git remote add origin https://github.com/username/sklearn-mlops-lab.git
+**4.1 เพิ่ม remote origin:**
 
-# Verify remote
+> 📝 **หมายเหตุ:** เปลี่ยน URL เป็นของคุณเอง
+
+```bash
+git remote add origin https://github.com/username/sklearn-mlops-lab.git
+```
+
+**4.2 ตรวจสอบ remote:**
+
+```bash
 git remote -v
 ```
 
@@ -221,21 +255,35 @@ origin  https://github.com/username/sklearn-mlops-lab.git (push)
 > 💡 **หมายเหตุ:** ถ้าใช้ SSH key ให้ใช้ URL แบบ SSH แทน:
 > `git remote add origin git@github.com:username/sklearn-mlops-lab.git`
 
+---
+
 ### ขั้นตอนที่ 5: ตรวจสอบ Python และ Scikit-Learn
 
+**5.1 ตรวจสอบ Python version:**
+
 ```bash
-# Check Python version
 python3 --version
+```
 
-# Check pip
+**5.2 ตรวจสอบ pip:**
+
+```bash
 pip3 --version
+```
 
-# Install scikit-learn (if not installed)
+**5.3 ติดตั้ง packages ที่จำเป็น:**
+
+```bash
 pip3 install scikit-learn pandas numpy joblib
+```
 
-# Verify installation
+**5.4 ตรวจสอบการติดตั้ง:**
+
+```bash
 python3 -c "import sklearn; print(f'sklearn version: {sklearn.__version__}')"
 ```
+
+> ⏸️ **ตรวจสอบ:** ควรเห็น version ของ sklearn เช่น `sklearn version: 1.3.0`
 
 ---
 
@@ -270,28 +318,47 @@ A project for learning MLOps with Scikit-Learn and Git
 EOF
 ```
 
+**ตรวจสอบไฟล์ที่สร้าง:**
+
 ```bash
-# Verify created file
 cat README.md
 ```
 
+> ⏸️ **ตรวจสอบ:** ควรเห็นเนื้อหา README ที่เพิ่งสร้าง
+
+---
+
 ### 0.2 สร้างโครงสร้างโฟลเดอร์
 
+**สร้างโฟลเดอร์ data:**
+
 ```bash
-# Create all folders
 mkdir -p data/raw data/processed
-mkdir -p models
-mkdir -p src/data src/features src/models src/utils
-mkdir -p notebooks
-mkdir -p configs
-mkdir -p results
-mkdir -p tests
 ```
+
+**สร้างโฟลเดอร์ models:**
+
+```bash
+mkdir -p models
+```
+
+**สร้างโฟลเดอร์ src และ sub-packages:**
+
+```bash
+mkdir -p src/data src/features src/models src/utils
+```
+
+**สร้างโฟลเดอร์อื่นๆ:**
+
+```bash
+mkdir -p notebooks configs results tests
+```
+
+---
 
 ### 0.3 ใช้ tree ดูโครงสร้างโปรเจกต์
 
 ```bash
-# View folder structure
 tree
 ```
 
@@ -315,6 +382,8 @@ tree
 
 13 directories, 1 file
 ```
+
+---
 
 ### 0.4 สร้างไฟล์ requirements.txt
 
@@ -340,6 +409,14 @@ PyYAML>=6.0
 pytest>=7.4.0
 EOF
 ```
+
+**ตรวจสอบไฟล์:**
+
+```bash
+cat requirements.txt
+```
+
+---
 
 ### 0.5 สร้างไฟล์ .gitignore สำหรับ ML Projects
 
@@ -398,22 +475,51 @@ logs/
 EOF
 ```
 
+---
+
 ### 0.6 สร้างไฟล์ __init__.py สำหรับ packages
 
+**สร้างใน src:**
+
 ```bash
-# Create __init__.py in all packages
 touch src/__init__.py
+```
+
+**สร้างใน src/data:**
+
+```bash
 touch src/data/__init__.py
+```
+
+**สร้างใน src/features:**
+
+```bash
 touch src/features/__init__.py
+```
+
+**สร้างใน src/models:**
+
+```bash
 touch src/models/__init__.py
+```
+
+**สร้างใน src/utils:**
+
+```bash
 touch src/utils/__init__.py
+```
+
+**สร้างใน tests:**
+
+```bash
 touch tests/__init__.py
 ```
+
+---
 
 ### 0.7 ดูโครงสร้างโปรเจกต์ที่สมบูรณ์
 
 ```bash
-# View structure with files
 tree -a -I '.git'
 ```
 
@@ -443,6 +549,8 @@ tree -a -I '.git'
 └── tests
     └── __init__.py
 ```
+
+> ⏸️ **Checkpoint:** ตรวจสอบว่าโครงสร้างตรงกับที่คาดหวังหรือไม่
 
 ---
 
@@ -535,10 +643,11 @@ if __name__ == "__main__":
 EOF
 ```
 
+---
+
 ### 1.2 ทดสอบ Data Loading Module
 
 ```bash
-# Run module
 python3 src/data/load_data.py
 ```
 
@@ -561,22 +670,39 @@ python3 src/data/load_data.py
 4                5.0               3.6                1.4               0.2       0
 ```
 
+> ⏸️ **Checkpoint:** ตรวจสอบว่า output ตรงกับที่คาดหวังหรือไม่
+
+---
+
 ### 1.3 Commit Initial Structure และ Push ไป Remote
 
+**ขั้นตอนที่ 1 - ตรวจสอบ status:**
+
 ```bash
-# Check status
 git status
+```
 
-# Add all files
+**ขั้นตอนที่ 2 - เพิ่มไฟล์ทั้งหมด:**
+
+```bash
 git add .
+```
 
-# First commit
+**ขั้นตอนที่ 3 - Commit:**
+
+```bash
 git commit -m "Initial commit: Create ML project structure with data loading module"
+```
 
-# View log
+**ขั้นตอนที่ 4 - ดู log:**
+
+```bash
 git log --oneline
+```
 
-# Push to remote (first time - set upstream)
+**ขั้นตอนที่ 5 - Push ไป remote (ครั้งแรก):**
+
+```bash
 git push -u origin main
 ```
 
@@ -601,11 +727,15 @@ Branch 'main' set up to track remote branch 'main' from 'origin'.
 
 ### 2.1 สร้าง Branch สำหรับ Feature Engineering
 
-```bash
-# Create and switch to new branch
-git switch -c feature/preprocessing
+**สร้างและสลับไป branch ใหม่:**
 
-# Verify current branch
+```bash
+git switch -c feature/preprocessing
+```
+
+**ตรวจสอบ branch ปัจจุบัน:**
+
+```bash
 git branch
 ```
 
@@ -614,6 +744,10 @@ git branch
 * feature/preprocessing
   main
 ```
+
+> ⏸️ **ตรวจสอบ:** เครื่องหมาย `*` ควรอยู่หน้า `feature/preprocessing`
+
+---
 
 ### 2.2 สร้างไฟล์ preprocessing.py
 
@@ -754,10 +888,11 @@ if __name__ == "__main__":
 EOF
 ```
 
+---
+
 ### 2.3 ทดสอบ Preprocessing Module
 
 ```bash
-# Run module
 python3 src/features/preprocessing.py
 ```
 
@@ -795,10 +930,13 @@ Testing MinMaxScaler
 📈 MinMax X_train range: [0.00, 1.00]
 ```
 
+> ⏸️ **Checkpoint:** ตรวจสอบว่า Scaled X_train mean ใกล้ 0 และ MinMax range คือ [0, 1]
+
+---
+
 ### 2.4 ใช้ tree ดูโครงสร้างที่เปลี่ยนแปลง
 
 ```bash
-# View only src/features
 tree src/features
 ```
 
@@ -811,20 +949,35 @@ src/features
 0 directories, 2 files
 ```
 
+---
+
 ### 2.5 Commit และ Push Branch ไป Remote
 
+**ขั้นตอนที่ 1 - ตรวจสอบ status:**
+
 ```bash
-# Check status
 git status
+```
 
-# Commit
+**ขั้นตอนที่ 2 - Add และ Commit:**
+
+```bash
 git add .
+```
+
+```bash
 git commit -m "feat: Add feature preprocessing module with scalers"
+```
 
-# View log
+**ขั้นตอนที่ 3 - ดู log:**
+
+```bash
 git log --oneline
+```
 
-# Push feature branch to remote
+**ขั้นตอนที่ 4 - Push feature branch ไป remote:**
+
+```bash
 git push -u origin feature/preprocessing
 ```
 
@@ -840,10 +993,11 @@ To https://github.com/username/sklearn-mlops-lab.git
 Branch 'feature/preprocessing' set up to track remote branch 'feature/preprocessing' from 'origin'.
 ```
 
+---
+
 ### 2.6 ดู refs ของ Git
 
 ```bash
-# See where Git stores branches
 tree .git/refs/heads
 ```
 
@@ -863,17 +1017,29 @@ tree .git/refs/heads
 
 ### 3.1 กลับไป main และสร้าง branch ใหม่
 
+**กลับไป main:**
+
 ```bash
-# Go back to main
 git switch main
+```
 
-# View structure - notice preprocessing.py is gone
+**ตรวจสอบว่า preprocessing.py หายไป:**
+
+```bash
 tree src/features
+```
 
-# Create new branch for experiment
+> 💡 **สังเกต:** ไฟล์ `preprocessing.py` หายไปเพราะอยู่ใน branch อื่น
+
+**สร้าง branch ใหม่สำหรับ experiment:**
+
+```bash
 git switch -c experiment/logistic-regression
+```
 
-# Check all branches
+**ตรวจสอบ branches ทั้งหมด:**
+
+```bash
 git branch
 ```
 
@@ -883,6 +1049,8 @@ git branch
   feature/preprocessing
   main
 ```
+
+---
 
 ### 3.2 สร้างไฟล์ train.py
 
@@ -1029,10 +1197,11 @@ if __name__ == "__main__":
 EOF
 ```
 
+---
+
 ### 3.3 ทดสอบ Training Module
 
 ```bash
-# Run module
 python3 src/models/train.py
 ```
 
@@ -1079,23 +1248,41 @@ weighted avg       0.97      0.97      0.97        30
 ✓ Model saved to: models/logistic_regression_20241215_143022.joblib
 ```
 
+> ⏸️ **Checkpoint:** ตรวจสอบว่า Test Accuracy สูงกว่า 0.90
+
+---
+
 ### 3.4 ใช้ tree ดูโครงสร้าง
 
 ```bash
-# View entire structure
 tree -I '__pycache__'
 ```
 
+---
+
 ### 3.5 Commit และ Push
+
+**Add files:**
 
 ```bash
 git add .
+```
+
+**Commit:**
+
+```bash
 git commit -m "experiment: Add Logistic Regression trainer with evaluation"
+```
 
-# Push experiment branch to remote
+**Push experiment branch:**
+
+```bash
 git push -u origin experiment/logistic-regression
+```
 
-# View log for all branches
+**ดู log ทุก branches:**
+
+```bash
 git log --oneline --graph --all
 ```
 
@@ -1111,13 +1298,19 @@ To https://github.com/username/sklearn-mlops-lab.git
 
 ### 4.1 สร้าง Branch สำหรับ Random Forest
 
-```bash
-# Go back to main
-git switch main
+**กลับไป main:**
 
-# Create new branch
+```bash
+git switch main
+```
+
+**สร้าง branch ใหม่:**
+
+```bash
 git switch -c experiment/random-forest
 ```
+
+---
 
 ### 4.2 แก้ไข train.py เพื่อเพิ่ม Random Forest
 
@@ -1300,32 +1493,55 @@ if __name__ == "__main__":
 EOF
 ```
 
+---
+
 ### 4.3 ทดสอบ Random Forest
 
 ```bash
 python3 src/models/train.py
 ```
 
+---
+
 ### 4.4 Commit และ Push
+
+**Add files:**
 
 ```bash
 git add .
-git commit -m "experiment: Test Random Forest with various hyperparameters"
+```
 
-# Push experiment branch to remote
+**Commit:**
+
+```bash
+git commit -m "experiment: Test Random Forest with various hyperparameters"
+```
+
+**Push:**
+
+```bash
 git push -u origin experiment/random-forest
 ```
 
+---
+
 ### 4.5 ดู branches ทั้งหมด
 
+**ดูทุก branches พร้อมรายละเอียด:**
+
 ```bash
-# View all branches
 git branch -v
+```
 
-# Use Pipeline to count experiment branches
+**ใช้ Pipeline นับ experiment branches:**
+
+```bash
 git branch | grep "experiment" | wc -l
+```
 
-# View log for all branches
+**ดู log แบบ graph:**
+
+```bash
 git log --oneline --graph --all --decorate
 ```
 
@@ -1345,11 +1561,19 @@ git log --oneline --graph --all --decorate
 
 ### 5.1 สร้าง Config Branch
 
+**กลับไป main:**
+
 ```bash
-# Create new branch from main
 git switch main
+```
+
+**สร้าง branch ใหม่:**
+
+```bash
 git switch -c feature/config-system
 ```
+
+---
 
 ### 5.2 สร้าง Config File ด้วย YAML
 
@@ -1398,6 +1622,14 @@ output:
   log_file: logs/training.log
 EOF
 ```
+
+**ตรวจสอบไฟล์:**
+
+```bash
+cat configs/experiment_config.yaml
+```
+
+---
 
 ### 5.3 สร้าง Config Reader
 
@@ -1481,15 +1713,23 @@ if __name__ == "__main__":
 EOF
 ```
 
+---
+
 ### 5.4 ติดตั้ง PyYAML และทดสอบ
 
-```bash
-# Install PyYAML (if not installed)
-pip3 install pyyaml
+**ติดตั้ง PyYAML:**
 
-# Test
+```bash
+pip3 install pyyaml
+```
+
+**ทดสอบ config module:**
+
+```bash
 python3 src/utils/config.py
 ```
+
+---
 
 ### 5.5 ใช้ tree ดูโครงสร้าง configs
 
@@ -1497,13 +1737,25 @@ python3 src/utils/config.py
 tree configs
 ```
 
+---
+
 ### 5.6 Commit และ Push
+
+**Add files:**
 
 ```bash
 git add .
-git commit -m "feat: Add configuration system with YAML support"
+```
 
-# Push feature branch to remote
+**Commit:**
+
+```bash
+git commit -m "feat: Add configuration system with YAML support"
+```
+
+**Push:**
+
+```bash
 git push -u origin feature/config-system
 ```
 
@@ -1513,30 +1765,49 @@ git push -u origin feature/config-system
 
 ### 6.1 Merge Feature/Preprocessing เข้า Main
 
+**สลับไป main:**
+
 ```bash
-# Go to main
 git switch main
+```
 
-# View status before merge
-git log --oneline --graph --all
+**ดู status ก่อน merge:**
 
-# Merge feature/preprocessing
-git merge feature/preprocessing -m "Merge: Add preprocessing module to main"
-
-# View status after merge
+```bash
 git log --oneline --graph --all
 ```
 
-### 6.2 Merge Feature/Config-System และ Push
+**Merge feature/preprocessing:**
 
 ```bash
-# Merge config system
-git merge feature/config-system -m "Merge: Add config system to main"
+git merge feature/preprocessing -m "Merge: Add preprocessing module to main"
+```
 
-# View log
+**ดู status หลัง merge:**
+
+```bash
 git log --oneline --graph --all
+```
 
-# Push merged main to remote
+---
+
+### 6.2 Merge Feature/Config-System และ Push
+
+**Merge config system:**
+
+```bash
+git merge feature/config-system -m "Merge: Add config system to main"
+```
+
+**ดู log:**
+
+```bash
+git log --oneline --graph --all
+```
+
+**Push merged main ไป remote:**
+
+```bash
 git push origin main
 ```
 
@@ -1546,10 +1817,11 @@ To https://github.com/username/sklearn-mlops-lab.git
    abc1234..def5678  main -> main
 ```
 
+---
+
 ### 6.3 ดูโครงสร้างหลัง Merge
 
 ```bash
-# View entire structure
 tree -I '__pycache__|*.pyc|models'
 ```
 
@@ -1582,19 +1854,31 @@ tree -I '__pycache__|*.pyc|models'
     └── __init__.py
 ```
 
+---
+
 ### 6.4 ใช้ Pipeline ตรวจสอบผลลัพธ์
 
+**นับไฟล์ Python ทั้งหมด:**
+
 ```bash
-# Count all Python files
 find . -name "*.py" | wc -l
+```
 
-# View only files that are not __init__.py
+**ดูเฉพาะไฟล์ที่ไม่ใช่ __init__.py:**
+
+```bash
 find . -name "*.py" | grep -v "__init__"
+```
 
-# Count all commits
+**นับจำนวน commits:**
+
+```bash
 git log --oneline | wc -l
+```
 
-# View merged branches
+**ดู branches ที่ merge แล้ว:**
+
+```bash
 git branch --merged main
 ```
 
@@ -1690,23 +1974,33 @@ if __name__ == "__main__":
 EOF
 ```
 
+---
+
 ### 7.2 ทดสอบ Pipeline
 
 ```bash
-# Run pipeline
 python3 run_experiment.py
-
-# Run with different config (if available)
-# python3 run_experiment.py --config configs/another_config.yaml
 ```
+
+---
 
 ### 7.3 Commit และ Push
 
+**Add files:**
+
 ```bash
 git add .
-git commit -m "feat: Add main experiment pipeline script"
+```
 
-# Push to remote
+**Commit:**
+
+```bash
+git commit -m "feat: Add main experiment pipeline script"
+```
+
+**Push:**
+
+```bash
 git push origin main
 ```
 
@@ -1716,29 +2010,51 @@ git push origin main
 
 ### 8.1 ดู Branches ที่ Merge แล้ว
 
-```bash
-# View branches merged into main
-git branch --merged main
+**ดู branches ที่ merge เข้า main แล้ว:**
 
-# View branches not yet merged
+```bash
+git branch --merged main
+```
+
+**ดู branches ที่ยังไม่ merge:**
+
+```bash
 git branch --no-merged main
 ```
 
+---
+
 ### 8.2 ลบ Branch ที่ Merge แล้ว (Local และ Remote)
 
+**ลบ local feature branches:**
+
 ```bash
-# Delete local merged feature branches
 git branch -d feature/preprocessing
+```
+
+```bash
 git branch -d feature/config-system
+```
 
-# Delete remote branches
+**ลบ remote branches:**
+
+```bash
 git push origin --delete feature/preprocessing
+```
+
+```bash
 git push origin --delete feature/config-system
+```
 
-# Verify local branches
+**ตรวจสอบ local branches:**
+
+```bash
 git branch
+```
 
-# Verify remote branches
+**ตรวจสอบ remote branches:**
+
+```bash
 git branch -r
 ```
 
@@ -1751,14 +2067,25 @@ To https://github.com/username/sklearn-mlops-lab.git
  - [deleted]         feature/config-system
 ```
 
+---
+
 ### 8.3 เปลี่ยนชื่อ Branch
 
-```bash
-# Rename experiment branches
-git branch -m experiment/logistic-regression experiment/lr-baseline
-git branch -m experiment/random-forest experiment/rf-baseline
+**เปลี่ยนชื่อ experiment/logistic-regression:**
 
-# View result
+```bash
+git branch -m experiment/logistic-regression experiment/lr-baseline
+```
+
+**เปลี่ยนชื่อ experiment/random-forest:**
+
+```bash
+git branch -m experiment/random-forest experiment/rf-baseline
+```
+
+**ตรวจสอบผลลัพธ์:**
+
+```bash
 git branch -v
 ```
 
@@ -1933,6 +2260,8 @@ if __name__ == "__main__":
 EOF
 ```
 
+---
+
 ### 9.2 ทดสอบ Logger
 
 ```bash
@@ -1959,26 +2288,47 @@ rf-200trees          random_forest   1.0000       0.9670
    baseline-lr - Test Accuracy: 0.9670
 ```
 
+---
+
 ### 9.3 ดูไฟล์ผลลัพธ์
 
+**ดู CSV ที่สร้าง:**
+
 ```bash
-# View created CSV
 cat results/experiments.csv
+```
 
-# Use Pipeline to analyze
+**ใช้ Pipeline ดู 5 บรรทัดแรก:**
+
+```bash
 cat results/experiments.csv | head -5
+```
 
-# Count experiments
+**นับจำนวน experiments:**
+
+```bash
 cat results/experiments.csv | wc -l
 ```
 
+---
+
 ### 9.4 Commit และ Push
+
+**Add files:**
 
 ```bash
 git add .
-git commit -m "feat: Add experiment results logger"
+```
 
-# Push to remote
+**Commit:**
+
+```bash
+git commit -m "feat: Add experiment results logger"
+```
+
+**Push:**
+
+```bash
 git push origin main
 ```
 
@@ -2027,48 +2377,87 @@ tree -I '__pycache__|*.pyc|.git'
     └── __init__.py
 ```
 
+---
+
 ### 10.2 ดู Git Log ทั้งหมด
 
+**ดู log แบบ graph:**
+
 ```bash
-# View log as graph
 git log --oneline --graph --all --decorate
+```
 
-# Use Pipeline to count "feat" commits
+**ใช้ Pipeline นับ "feat" commits:**
+
+```bash
 git log --oneline | grep "feat" | wc -l
+```
 
-# View commits containing "experiment"
+**ดู commits ที่มี "experiment":**
+
+```bash
 git log --oneline | grep -i "experiment"
 ```
 
+---
+
 ### 10.3 สรุป Branches (Local และ Remote)
 
+**ดู local branches:**
+
 ```bash
-# View all local branches
 git branch -v
+```
 
-# View all remote branches
+**ดู remote branches:**
+
+```bash
 git branch -r
+```
 
-# View all branches (local + remote)
+**ดูทุก branches (local + remote):**
+
+```bash
 git branch -a -v
+```
 
-# Use Pipeline to count branches
+**ใช้ Pipeline นับ branches:**
+
+```bash
 echo "Total local branches: $(git branch | wc -l)"
+```
+
+```bash
 echo "Total remote branches: $(git branch -r | wc -l)"
+```
+
+```bash
 echo "Experiment branches: $(git branch | grep experiment | wc -l)"
+```
+
+```bash
 echo "Feature branches: $(git branch | grep feature | wc -l)"
 ```
 
+---
+
 ### 10.4 Push All Branches ไป Remote (Optional)
 
+**Push ทุก branches พร้อมกัน:**
+
 ```bash
-# Push all branches to remote at once
 git push --all origin
+```
 
-# Push all tags to remote
+**Push ทุก tags:**
+
+```bash
 git push --tags origin
+```
 
-# View what's on remote
+**ดูรายละเอียด remote:**
+
+```bash
 git remote show origin
 ```
 
@@ -2192,8 +2581,6 @@ git remote show origin
 - [ ] จัดการ Remote Branches (สร้าง, ลบ, ดู) ได้
 
 ---
-
-
 
 ## 📚 แหล่งเรียนรู้เพิ่มเติม
 
