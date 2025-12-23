@@ -31,7 +31,7 @@
    /             
 main---E---F---G
               ↑
-          เส้นหลัก
+          main line
 ```
 
 ### ประเภทของ Branch
@@ -51,9 +51,9 @@ main---E---F---G
 - เตรียมพร้อมสำหรับการ merge ในอนาคต
 
 ```
-main:    A---B---C  (3 commits ก่อนสร้าง branch)
+main:    A---B---C  (3 commits before creating branch)
                  \
-feature:          D---E  (commits ใหม่ใน branch)
+feature:          D---E  (new commits in branch)
 ```
 
 ---
@@ -65,11 +65,11 @@ feature:          D---E  (commits ใหม่ใน branch)
 **Pipeline** คือการส่งผลลัพธ์จากคำสั่งหนึ่งไปเป็น input ของอีกคำสั่งหนึ่ง โดยใช้เครื่องหมาย `|` (pipe)
 
 ```
-คำสั่งที่ 1  |  คำสั่งที่ 2  |  คำสั่งที่ 3
+command 1  |  command 2  |  command 3
     ↓              ↓              ↓
   output    →    input     →   output
             →              →    input
-                           →   output (สุดท้าย)
+                           →   output (final)
 ```
 
 ### ตัวอย่างการใช้ Pipeline
@@ -82,14 +82,14 @@ ls | wc -l
 
 **อธิบายทีละขั้นตอน:**
 ```
-ls              →  แสดงรายชื่อไฟล์ทั้งหมด
+ls              →  list all files
                    file1.txt
                    file2.txt
                    file3.txt
         |
         ↓
-wc -l           →  นับจำนวนบรรทัด (line count)
-                   ผลลัพธ์: 3
+wc -l           →  count lines
+                   result: 3
 ```
 
 **ตัวอย่างที่ 2: ค้นหาไฟล์ .py**
@@ -124,15 +124,15 @@ git branch | wc -l
 **Here Document** คือวิธีการเขียนข้อความหลายบรรทัดลงไฟล์โดยไม่ต้องกด Ctrl+D
 
 ```bash
-cat > ชื่อไฟล์ << 'EOF'
-เนื้อหาบรรทัดที่ 1
-เนื้อหาบรรทัดที่ 2
-เนื้อหาบรรทัดที่ 3
+cat > filename << 'EOF'
+content line 1
+content line 2
+content line 3
 EOF
 ```
 
 **อธิบาย:**
-- `cat > ชื่อไฟล์` = สร้างไฟล์ใหม่
+- `cat > filename` = สร้างไฟล์ใหม่
 - `<< 'EOF'` = เริ่มต้น Here Document (EOF = End Of File, ใช้คำอื่นก็ได้)
 - `EOF` = สิ้นสุด Here Document
 
@@ -153,37 +153,37 @@ EOF
 **1.1 ตั้งค่าชื่อผู้ใช้:**
 
 ```bash
-git config --global user.name "ชื่อของคุณ"
-echo "✓ ตั้งค่า user.name เรียบร้อย"
+git config --global user.name "Your Name"
+echo "Done: user.name configured"
 ```
 
 **ผลลัพธ์ที่คาดหวัง:**
 ```
-✓ ตั้งค่า user.name เรียบร้อย
+Done: user.name configured
 ```
 
 **1.2 ตั้งค่าอีเมล:**
 
 ```bash
 git config --global user.email "your.email@example.com"
-echo "✓ ตั้งค่า user.email เรียบร้อย"
+echo "Done: user.email configured"
 ```
 
 **ผลลัพธ์ที่คาดหวัง:**
 ```
-✓ ตั้งค่า user.email เรียบร้อย
+Done: user.email configured
 ```
 
 **1.3 ⭐ ตั้งค่าให้ใช้ main เป็น default branch (สำคัญ!):**
 
 ```bash
 git config --global init.defaultBranch main
-echo "✓ ตั้งค่า default branch เป็น main เรียบร้อย"
+echo "Done: default branch set to main"
 ```
 
 **ผลลัพธ์ที่คาดหวัง:**
 ```
-✓ ตั้งค่า default branch เป็น main เรียบร้อย
+Done: default branch set to main
 ```
 
 > 💡 **หมายเหตุ:** การตั้ง `init.defaultBranch main` จะทำให้ทุกครั้งที่สร้าง repository ใหม่ด้วย `git init` จะใช้ชื่อ `main` แทน `master`
@@ -196,7 +196,7 @@ git config --list | grep -E "user\.|init\."
 
 **ผลลัพธ์ที่คาดหวัง:**
 ```
-user.name=ชื่อของคุณ
+user.name=Your Name
 user.email=your.email@example.com
 init.defaultbranch=main
 ```
@@ -209,13 +209,13 @@ init.defaultbranch=main
 
 ```bash
 mkdir git-branch-lab && cd git-branch-lab
-echo "📁 สร้างโฟลเดอร์และเข้าไปเรียบร้อย"
+echo "Created folder and entered successfully"
 pwd
 ```
 
 **ผลลัพธ์ที่คาดหวัง:**
 ```
-📁 สร้างโฟลเดอร์และเข้าไปเรียบร้อย
+Created folder and entered successfully
 /path/to/git-branch-lab
 ```
 
@@ -254,9 +254,9 @@ nothing to commit (create/copy files and use "git add" to track)
 **2.1.1 ตรวจสอบชื่อ branch ปัจจุบัน:**
 
 ```bash
-echo "=== ตรวจสอบ branch ปัจจุบัน ==="
-git branch --show-current || echo "(ยังไม่มี commit)"
-echo "=== จบการตรวจสอบ ==="
+echo "=== Checking current branch ==="
+git branch --show-current || echo "(no commits yet)"
+echo "=== End of check ==="
 ```
 
 > 💡 **หมายเหตุ:** ก่อนมี commit แรก คำสั่ง `git branch` จะไม่แสดงอะไร เป็นเรื่องปกติ
@@ -348,7 +348,7 @@ git log --oneline
 a1b2c3d (HEAD -> main) docs: add README.md with project description
 ```
 
-> ✅ **Commit 1/3 ใน main สำเร็จ!**
+> ✅ **Commit 1/3 in main successful!**
 
 ---
 
@@ -419,7 +419,7 @@ e4f5g6h (HEAD -> main) feat: add main.py entry point
 a1b2c3d docs: add README.md with project description
 ```
 
-> ✅ **Commit 2/3 ใน main สำเร็จ!**
+> ✅ **Commit 2/3 in main successful!**
 
 ---
 
@@ -537,7 +537,7 @@ e4f5g6h feat: add main.py entry point
 a1b2c3d docs: add README.md with project description
 ```
 
-> ✅ **Commit 3/3 ใน main สำเร็จ! พร้อมสร้าง Branch ใหม่แล้ว!**
+> ✅ **Commit 3/3 in main successful! Ready to create new Branch!**
 
 ---
 
@@ -556,18 +556,18 @@ tree | grep ".py" | wc -l
 
 **อธิบายทีละขั้นตอน:**
 ```
-tree            →  แสดงโครงสร้างไฟล์ทั้งหมด
+tree            →  show all file structure
         |
         ↓
-grep ".py"      →  กรองเฉพาะบรรทัดที่มี ".py"
+grep ".py"      →  filter lines containing ".py"
                    ├── main.py
                    ├── __init__.py
                    └── utils.py
                    └── test_utils.py
         |
         ↓
-wc -l           →  นับจำนวนบรรทัด
-                   ผลลัพธ์: 4
+wc -l           →  count lines
+                   result: 4
 ```
 
 ---
@@ -592,21 +592,21 @@ wc -l           →  นับจำนวนบรรทัด
 **ตรวจสอบจำนวน commits:**
 
 ```bash
-echo "=== สรุป Commits ใน main ==="
-echo -n "จำนวน commits: "
+echo "=== Summary: Commits in main ==="
+echo -n "Total commits: "
 git log --oneline | wc -l
 echo ""
-echo "รายการ commits:"
+echo "Commit list:"
 git log --oneline
 echo "================================"
 ```
 
 **ผลลัพธ์ที่คาดหวัง:**
 ```
-=== สรุป Commits ใน main ===
-จำนวน commits: 3
+=== Summary: Commits in main ===
+Total commits: 3
 
-รายการ commits:
+Commit list:
 i7j8k9l (HEAD -> main) feat: add project structure with src and tests
 e4f5g6h feat: add main.py entry point
 a1b2c3d docs: add README.md with project description
@@ -616,14 +616,14 @@ a1b2c3d docs: add README.md with project description
 **ตรวจสอบโครงสร้างโปรเจกต์:**
 
 ```bash
-echo "=== โครงสร้างโปรเจกต์ ==="
+echo "=== Project Structure ==="
 tree
 echo "=========================="
 ```
 
 **ผลลัพธ์ที่คาดหวัง:**
 ```
-=== โครงสร้างโปรเจกต์ ===
+=== Project Structure ===
 .
 ├── README.md
 ├── main.py
@@ -637,7 +637,7 @@ echo "=========================="
 ==========================
 ```
 
-> 🎉 **main มี 3 commits แล้ว! พร้อมสำหรับการสร้าง Branch ใหม่!**
+> 🎉 **main has 3 commits! Ready to create new Branch!**
 
 ---
 
@@ -687,13 +687,13 @@ echo "============================="
 
 ```bash
 git branch feature-login
-echo "✓ สร้าง branch 'feature-login' เรียบร้อย"
+echo "Done: created branch 'feature-login'"
 git branch
 ```
 
 **ผลลัพธ์ที่คาดหวัง:**
 ```
-✓ สร้าง branch 'feature-login' เรียบร้อย
+Done: created branch 'feature-login'
   feature-login
 * main
 ```
@@ -710,12 +710,12 @@ git branch
 git branch feature-register
 git branch bugfix-navbar
 git branch hotfix-security
-echo "✓ สร้าง branches เพิ่มเติมเรียบร้อย"
+echo "Done: created additional branches"
 ```
 
 **ผลลัพธ์ที่คาดหวัง:**
 ```
-✓ สร้าง branches เพิ่มเติมเรียบร้อย
+Done: created additional branches
 ```
 
 **ดูรายการ branch ทั้งหมด:**
@@ -767,16 +767,16 @@ echo "=================================="
 **นับจำนวน branch ทั้งหมด:**
 
 ```bash
-echo "=== นับจำนวน Branch ==="
-echo -n "จำนวน branch ทั้งหมด: "
+echo "=== Count Branches ==="
+echo -n "Total branches: "
 git branch | wc -l
 echo "======================="
 ```
 
 **ผลลัพธ์ที่คาดหวัง:**
 ```
-=== นับจำนวน Branch ===
-จำนวน branch ทั้งหมด: 5
+=== Count Branches ===
+Total branches: 5
 =======================
 ```
 
@@ -806,14 +806,14 @@ echo "========================"
 
 ```bash
 git switch feature-login
-echo "✓ สลับ branch เรียบร้อย"
+echo "Done: switched branch"
 git branch
 ```
 
 **ผลลัพธ์ที่คาดหวัง:**
 ```
 Switched to branch 'feature-login'
-✓ สลับ branch เรียบร้อย
+Done: switched branch
   bugfix-navbar
 * feature-login
   feature-register
@@ -829,14 +829,14 @@ Switched to branch 'feature-login'
 
 ```bash
 git checkout main
-echo "✓ checkout สำเร็จ"
+echo "Done: checkout successful"
 git branch
 ```
 
 **ผลลัพธ์ที่คาดหวัง:**
 ```
 Switched to branch 'main'
-✓ checkout สำเร็จ
+Done: checkout successful
   bugfix-navbar
   feature-login
   feature-register
@@ -852,14 +852,14 @@ Switched to branch 'main'
 
 ```bash
 git switch -c feature-dashboard
-echo "✓ สร้างและสลับไป branch ใหม่เรียบร้อย"
+echo "Done: created and switched to new branch"
 git branch
 ```
 
 **ผลลัพธ์ที่คาดหวัง:**
 ```
 Switched to a new branch 'feature-dashboard'
-✓ สร้างและสลับไป branch ใหม่เรียบร้อย
+Done: created and switched to new branch
   bugfix-navbar
 * feature-dashboard
   feature-login
@@ -875,7 +875,7 @@ Switched to a new branch 'feature-dashboard'
 ```bash
 git switch main
 git checkout -b feature-profile
-echo "✓ checkout -b สำเร็จ"
+echo "Done: checkout -b successful"
 git branch
 ```
 
@@ -883,7 +883,7 @@ git branch
 ```
 Switched to branch 'main'
 Switched to a new branch 'feature-profile'
-✓ checkout -b สำเร็จ
+Done: checkout -b successful
   bugfix-navbar
   feature-dashboard
   feature-login
@@ -1034,32 +1034,32 @@ def test_login_success():
     """Test successful login"""
     result = login("testuser", "password123")
     assert result == True
-    print("✓ test_login_success passed")
+    print("test_login_success passed")
 
 def test_login_empty_username():
     """Test login with empty username"""
     result = login("", "password123")
     assert result == False
-    print("✓ test_login_empty_username passed")
+    print("test_login_empty_username passed")
 
 def test_validate_user_short():
     """Test username too short"""
     valid, msg = validate_user("ab")
     assert valid == False
-    print("✓ test_validate_user_short passed")
+    print("test_validate_user_short passed")
 
 def test_validate_user_valid():
     """Test valid username"""
     valid, msg = validate_user("testuser")
     assert valid == True
-    print("✓ test_validate_user_valid passed")
+    print("test_validate_user_valid passed")
 
 def test_user_class():
     """Test User class"""
     user = User("john", "secret")
     assert user.username == "john"
     assert user.is_logged_in == False
-    print("✓ test_user_class passed")
+    print("test_user_class passed")
 
 if __name__ == "__main__":
     test_login_success()
@@ -1067,7 +1067,7 @@ if __name__ == "__main__":
     test_validate_user_short()
     test_validate_user_valid()
     test_user_class()
-    print("\n🎉 All login tests passed!")
+    print("\nAll login tests passed!")
 EOF
 ```
 
@@ -1386,7 +1386,7 @@ def register(username, email, password):
         'is_active': True
     }
     
-    print(f"✓ Registration successful: {username}")
+    print(f"Registration successful: {username}")
     return user
 EOF
 ```
@@ -1413,32 +1413,32 @@ def test_validate_email_valid():
     """Test valid email"""
     valid, msg = validate_email("test@example.com")
     assert valid == True
-    print("✓ test_validate_email_valid passed")
+    print("test_validate_email_valid passed")
 
 def test_validate_email_invalid():
     """Test invalid email"""
     valid, msg = validate_email("invalid-email")
     assert valid == False
-    print("✓ test_validate_email_invalid passed")
+    print("test_validate_email_invalid passed")
 
 def test_validate_password_weak():
     """Test weak password"""
     valid, msgs = validate_password("short")
     assert valid == False
-    print("✓ test_validate_password_weak passed")
+    print("test_validate_password_weak passed")
 
 def test_validate_password_strong():
     """Test strong password"""
     valid, msgs = validate_password("StrongPass123")
     assert valid == True
-    print("✓ test_validate_password_strong passed")
+    print("test_validate_password_strong passed")
 
 def test_register_success():
     """Test successful registration"""
     user = register("newuser", "new@example.com", "SecurePass123")
     assert user['username'] == "newuser"
     assert user['is_active'] == True
-    print("✓ test_register_success passed")
+    print("test_register_success passed")
 
 def test_register_invalid_email():
     """Test registration with invalid email"""
@@ -1446,7 +1446,7 @@ def test_register_invalid_email():
         register("user", "bad-email", "Pass123456")
         assert False, "Should have raised error"
     except RegistrationError:
-        print("✓ test_register_invalid_email passed")
+        print("test_register_invalid_email passed")
 
 if __name__ == "__main__":
     test_validate_email_valid()
@@ -1455,7 +1455,7 @@ if __name__ == "__main__":
     test_validate_password_strong()
     test_register_success()
     test_register_invalid_email()
-    print("\n🎉 All register tests passed!")
+    print("\nAll register tests passed!")
 EOF
 ```
 
@@ -1614,7 +1614,7 @@ HEAD is now at a1b2c3d docs: add README.md with project description
               ↓
 A---B---C---D
 ↑
-HEAD (detached - ชี้ไปที่ commit โดยตรง ไม่ผ่าน branch)
+HEAD (detached - points directly to commit, not through branch)
 ```
 
 **ดูสถานะใน Detached HEAD:**
@@ -1679,14 +1679,14 @@ A project for learning Git Branch
 
 ```bash
 git switch main
-echo "✓ กลับมาที่ main เรียบร้อย"
+echo "Done: returned to main"
 git status
 ```
 
 **ผลลัพธ์ที่คาดหวัง:**
 ```
 Switched to branch 'main'
-✓ กลับมาที่ main เรียบร้อย
+Done: returned to main
 On branch main
 nothing to commit, working tree clean
 ```
@@ -1724,14 +1724,14 @@ tree
 ```bash
 git switch bugfix-navbar
 git branch -m fix-navbar
-echo "✓ เปลี่ยนชื่อ branch เรียบร้อย"
+echo "Done: branch renamed"
 git branch
 ```
 
 **ผลลัพธ์ที่คาดหวัง:**
 ```
 Switched to branch 'bugfix-navbar'
-✓ เปลี่ยนชื่อ branch เรียบร้อย
+Done: branch renamed
   feature-dashboard
   feature-login
   feature-profile
@@ -1750,14 +1750,14 @@ Switched to branch 'bugfix-navbar'
 ```bash
 git switch main
 git branch -m hotfix-security security-patch
-echo "✓ เปลี่ยนชื่อ hotfix-security -> security-patch"
+echo "Done: renamed hotfix-security -> security-patch"
 git branch
 ```
 
 **ผลลัพธ์ที่คาดหวัง:**
 ```
 Switched to branch 'main'
-✓ เปลี่ยนชื่อ hotfix-security -> security-patch
+Done: renamed hotfix-security -> security-patch
   feature-dashboard
   feature-login
   feature-profile
@@ -1777,14 +1777,14 @@ Switched to branch 'main'
 
 ```bash
 git branch -d fix-navbar
-echo "--- Branches หลังจากลบ ---"
+echo "--- Branches after deletion ---"
 git branch
 ```
 
 **ผลลัพธ์ที่คาดหวัง:**
 ```
 Deleted branch fix-navbar (was i7j8k9l).
---- Branches หลังจากลบ ---
+--- Branches after deletion ---
   feature-dashboard
   feature-login
   feature-profile
@@ -1801,14 +1801,14 @@ Deleted branch fix-navbar (was i7j8k9l).
 
 ```bash
 git switch feature-dashboard
-echo "✓ สลับไป feature-dashboard"
+echo "Done: switched to feature-dashboard"
 tree src
 ```
 
 **ผลลัพธ์ที่คาดหวัง:**
 ```
 Switched to branch 'feature-dashboard'
-✓ สลับไป feature-dashboard
+Done: switched to feature-dashboard
 src
 ├── __init__.py
 └── utils.py
@@ -1827,11 +1827,11 @@ Dashboard page for displaying summary data
 
 def show_dashboard():
     """Display main dashboard"""
-    print("╔════════════════════════════╗")
-    print("║       DASHBOARD            ║")
-    print("╠════════════════════════════╣")
-    print("║  Welcome to the dashboard! ║")
-    print("╚════════════════════════════╝")
+    print("================================")
+    print("          DASHBOARD             ")
+    print("================================")
+    print("  Welcome to the dashboard!     ")
+    print("================================")
 
 def get_stats():
     """Get statistics data"""
@@ -1845,20 +1845,20 @@ def get_stats():
 def display_stats():
     """Display statistics"""
     stats = get_stats()
-    print("\n📊 Statistics:")
+    print("\nStatistics:")
     for key, value in stats.items():
-        print(f"  • {key}: {value}")
+        print(f"  - {key}: {value}")
 
 if __name__ == "__main__":
     show_dashboard()
     display_stats()
 EOF
-echo "✓ สร้างไฟล์ dashboard.py เรียบร้อย"
+echo "Done: created dashboard.py"
 ```
 
 **ผลลัพธ์ที่คาดหวัง:**
 ```
-✓ สร้างไฟล์ dashboard.py เรียบร้อย
+Done: created dashboard.py
 ```
 
 ---
@@ -1913,14 +1913,14 @@ If you are sure you want to delete it, run 'git branch -D feature-dashboard'.
 
 ```bash
 git branch -D feature-dashboard
-echo "--- Branches หลังจาก force delete ---"
+echo "--- Branches after force delete ---"
 git branch
 ```
 
 **ผลลัพธ์ที่คาดหวัง:**
 ```
 Deleted branch feature-dashboard (was u7v8w9x).
---- Branches หลังจาก force delete ---
+--- Branches after force delete ---
   feature-login
   feature-profile
   feature-register
@@ -2277,10 +2277,10 @@ echo "========================"
 
 ```bash
 echo "=== Commit Statistics ==="
-echo -n "จำนวน commit ทั้งหมดใน main: "
+echo -n "Total commits in main: "
 git log --oneline | wc -l
 echo ""
-echo -n "จำนวน commit ทั้งหมดทุก branch: "
+echo -n "Total commits across all branches: "
 git log --oneline --all | wc -l
 echo "========================="
 ```
@@ -2288,8 +2288,8 @@ echo "========================="
 **ผลลัพธ์ที่คาดหวัง:**
 ```
 === Commit Statistics ===
-จำนวน commit ทั้งหมดใน main: 3
-จำนวน commit ทั้งหมดทุก branch: 5
+Total commits in main: 3
+Total commits across all branches: 5
 =========================
 ```
 
@@ -2349,7 +2349,7 @@ logs/
 .coverage
 htmlcov/
 EOF
-echo "✓ สร้างไฟล์ .gitignore เรียบร้อย"
+echo "Done: created .gitignore"
 ```
 
 **Commit ไฟล์ .gitignore:**
