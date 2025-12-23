@@ -739,7 +739,7 @@ cfe1851 feat: add main.py entry point
 ### 5.2 เข้าสู่สถานะ Detached HEAD
 
 ```bash
-# checkout ไปที่ commit แรก (ใช้ hash จริงจาก log ของคุณ)
+# checkout ไปที่ commit แรก (*** สำคัญ ใช้ hash จริงจาก log ของคุณ ห้าม copy ตรง ๆ ***)
 git checkout 721e631
 ```
 
