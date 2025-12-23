@@ -249,16 +249,15 @@ cat > README.md << 'EOF'
 A project for learning MLOps with Scikit-Learn and Git
 
 ## 📁 Project Structure
-```
-sklearn-mlops-lab/
-├── data/           # Training data
-├── models/         # Trained models
-├── src/            # Source code
-├── notebooks/      # Jupyter notebooks
-├── configs/        # Configuration files
-├── results/        # Experiment results
-└── tests/          # Unit tests
-```
+
+    sklearn-mlops-lab/
+    ├── data/           # Training data
+    ├── models/         # Trained models
+    ├── src/            # Source code
+    ├── notebooks/      # Jupyter notebooks
+    ├── configs/        # Configuration files
+    ├── results/        # Experiment results
+    └── tests/          # Unit tests
 
 ## 🎯 Goals
 - Learn Git Branch workflow with ML Projects
