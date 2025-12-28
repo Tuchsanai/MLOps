@@ -41,6 +41,13 @@ This ensures your image can be pulled and used on any machine without rebuilding
 docker run -d -p 8081:8888 --name mlops-container tuchsanai/mlops_2568_2:latest
 ```
 
+#### or without port map
+
+```bash
+docker run -d  --name mlops-container tuchsanai/mlops_2568_2:latest
+```
+
+
 * `-d`: Run in detached mode (background)
 * `-p 8081:8888`: Map container port 8888 to local port 8081
 * `--name mlops-container`: Assigns a custom container name
