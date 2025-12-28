@@ -24,13 +24,6 @@ source .venv/bin/activate
 python -m pip install --upgrade pip
 ```
 
-**Windows (PowerShell):**
-
-```powershell
-python -m venv .venv
-.\.venv\Scripts\Activate.ps1
-python -m pip install --upgrade pip
-```
 
 ### 1.2 Install packages
 
