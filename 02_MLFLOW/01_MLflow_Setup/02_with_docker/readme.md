@@ -43,29 +43,8 @@ mkdir -p mlflow-lab
 cd mlflow-lab
 ```
 
-2.  Inside this folder, we need two subfolders (`mlruns_db` and `mlartifacts`). Run the following script to check if they exist, and create them if they are missing:
 
-<!-- end list -->
-
-```bash
-# Check for mlruns_db
-if [ ! -d "mlruns_db" ]; then
-    mkdir mlruns_db
-    echo "✅ Created 'mlruns_db' folder."
-else
-    echo "ℹ️  'mlruns_db' folder already exists."
-fi
-
-# Check for mlartifacts
-if [ ! -d "mlartifacts" ]; then
-    mkdir mlartifacts
-    echo "✅ Created 'mlartifacts' folder."
-else
-    echo "ℹ️  'mlartifacts' folder already exists."
-fi
-```
-
-3.  **Verify the folder structure**
+2.  **Verify the folder structure**
     Run the list command to confirm the folders are created:
 
 <!-- end list -->
