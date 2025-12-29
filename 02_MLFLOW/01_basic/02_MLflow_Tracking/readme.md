@@ -73,29 +73,14 @@ with mlflow.start_run(run_name="resnet50-experiment"):
     mlflow.log_param("learning_rate", 0.001)
     mlflow.log_metric("accuracy", 0.95)
 
-# แบบที่ 2: เปิด-ปิดเอง (ใช้ในกรณีพิเศษ)
-run = mlflow.start_run(run_name="manual-run")
-try:
-    mlflow.log_param("batch_size", 32)
-finally:
-    mlflow.end_run()
 
-# แบบที่ 3: Nested Runs (สำหรับ Hyperparameter Tuning)
+# แบบที่ 2: Nested Runs (สำหรับ Hyperparameter Tuning)
 with mlflow.start_run(run_name="parent-run"):
     for lr in [0.001, 0.01, 0.1]:
         with mlflow.start_run(run_name=f"child-lr-{lr}", nested=True):
             mlflow.log_param("learning_rate", lr)
 ```
 
-**Run Lifecycle States:**
-```
-┌─────────┐     ┌─────────┐     ┌──────────┐
-│ RUNNING │────▶│ FINISHED│     │  FAILED  │
-└─────────┘     └─────────┘     └──────────┘
-     │                               ▲
-     └───────────────────────────────┘
-            (เมื่อเกิด exception)
-```
 
 #### 3️⃣ Parameters (พารามิเตอร์)
 
