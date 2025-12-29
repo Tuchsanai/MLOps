@@ -1,6 +1,32 @@
-# 📚 MLflow Tracking Lab
+# 📖 คู่มือ MLflow Tracking พื้นฐาน
 
-> เอกสารประกอบการเรียนรู้ MLflow Tracking สำหรับการจัดการ Machine Learning Experiments
+## 📋 สารบัญ
+
+- [ภาพรวม](#ภาพรวม)
+- [Pre-requisite](#️-pre-requisite-เตรียมความพร้อมก่อนเริ่ม-lab)
+- [ส่วนที่ 1: การเชื่อมต่อ MLflow Server](#ส่วนที่-1-การเชื่อมต่อ-mlflow-server)
+- [ส่วนที่ 2: การสร้าง Experiment](#ส่วนที่-2-การสร้าง-experiment)
+- [ส่วนที่ 3: การสร้าง Run และบันทึก Parameters](#ส่วนที่-3-การสร้าง-run-และบันทึก-parameters)
+- [ส่วนที่ 4: การบันทึก Metrics](#ส่วนที่-4-การบันทึก-metrics)
+- [ส่วนที่ 5: การบันทึก Artifacts](#ส่วนที่-5-การบันทึก-artifacts)
+- [ส่วนที่ 6: การบันทึก Model](#ส่วนที่-6-การบันทึก-model)
+- [ส่วนที่ 7: Nested Runs](#ส่วนที่-7-nested-runs)
+- [ส่วนที่ 8: การดูข้อมูลจาก MLflow UI](#ส่วนที่-8-การดูข้อมูลจาก-mlflow-ui)
+- [สรุปและ Best Practices](#สรุปและ-best-practices)
+
+---
+
+## ภาพรวม
+
+Lab นี้สอนการใช้งาน **MLflow Tracking** ซึ่งเป็นเครื่องมือสำคัญใน MLOps สำหรับติดตามและจัดการการทดลอง Machine Learning โดยครอบคลุมองค์ประกอบหลัก 5 ส่วน:
+
+| องค์ประกอบ | คำอธิบาย | ตัวอย่าง |
+|------------|----------|----------|
+| **Experiment** | กลุ่มของการทดลองที่เกี่ยวข้องกัน | `fraud-detection`, `customer-churn` |
+| **Run** | การทดลองแต่ละครั้ง | แต่ละครั้งที่ train model |
+| **Parameters** | ค่าที่ตั้งก่อนเริ่มทดลอง (Input) | `learning_rate=0.001`, `epochs=100` |
+| **Metrics** | ค่าที่วัดได้จากการทดลอง (Output) | `accuracy=0.92`, `loss=0.15` |
+| **Artifacts** | ไฟล์ที่สร้างจากการทดลอง | `model.pkl`, `confusion_matrix.png` |
 
 ---
 
@@ -18,1116 +44,869 @@
 
 ---
 
-## 🚀 ขั้นตอนการเตรียม Lab Environment
+## ส่วนที่ 1: การเชื่อมต่อ MLflow Server
 
-### ขั้นตอนที่ 1: สร้างโฟลเดอร์สำหรับ Lab
+### แนวคิด
 
-```bash
-# สร้างโฟลเดอร์ Lab แยกจาก mlflowserver-lab
-mkdir -p mlflow-tracking-lab
+ก่อนใช้งาน MLflow Tracking ต้องกำหนด **Tracking URI** เพื่อบอกว่าจะเก็บข้อมูลการทดลองไว้ที่ไหน
 
-# เข้าไปในโฟลเดอร์
-cd mlflow-tracking-lab
-```
+### ฟังก์ชันสำคัญ
 
-### ขั้นตอนที่ 2: สร้าง Virtual Environment
+| ฟังก์ชัน | คำอธิบาย |
+|----------|----------|
+| `mlflow.set_tracking_uri(uri)` | กำหนด URL ของ MLflow Server |
+| `mlflow.get_tracking_uri()` | ตรวจสอบ URL ที่กำหนดไว้ |
 
-```bash
-# สร้าง Virtual Environment
-python -m venv .venv
-
-# เปิดใช้งาน Virtual Environment
-source .venv/bin/activate
-
-# อัพเดท pip
-python -m pip install --upgrade pip
-```
-
-### ขั้นตอนที่ 3: ติดตั้ง Dependencies
-
-```bash
-# ติดตั้ง MLflow และ Libraries ที่จำเป็น
-pip install mlflow scikit-learn pandas numpy matplotlib seaborn
-```
-
-### ขั้นตอนที่ 4: ตรวจสอบการติดตั้ง
-
-```bash
-# ตรวจสอบเวอร์ชัน MLflow
-mlflow --version
-
-# ตรวจสอบ Python packages
-pip list | grep -E "mlflow|scikit-learn|pandas"
-```
-
-### ขั้นตอนที่ 5: ตั้งค่า Tracking URI
-
-```bash
-# ตั้งค่า Environment Variable เพื่อเชื่อมต่อกับ MLflow Server
-export MLFLOW_TRACKING_URI=http://127.0.0.1:8080
-```
-
-> 💡 **Tip**: เพิ่มบรรทัดนี้ใน `.bashrc` หรือ `.zshrc` เพื่อไม่ต้องตั้งค่าทุกครั้ง
-
----
-
-## 🗂️ โครงสร้างโฟลเดอร์ Lab
-
-```
-mlflow-tracking-lab/
-├── README.md                    # ไฟล์นี้
-├── .venv/                       # Virtual Environment
-├── experiments/                 # โฟลเดอร์เก็บไฟล์ทดลอง
-│   ├── lab1_basic_tracking.py
-│   ├── lab2_training_loop.py
-│   ├── lab3_sklearn_autolog.py
-│   ├── lab4_hyperparameter.py
-│   ├── lab5_custom_artifacts.py
-│   └── lab6_query_runs.py
-└── outputs/                     # โฟลเดอร์เก็บ output ชั่วคราว
-```
-
-สร้างโครงสร้างโฟลเดอร์:
-
-```bash
-mkdir -p experiments outputs
-```
-
----
-
-## 📝 Lab 1: Basic Tracking
-
-### 🎯 วัตถุประสงค์
-
-Lab นี้เป็นพื้นฐานสำคัญที่สุดของ MLflow Tracking โดยมีเป้าหมายให้ผู้เรียนเข้าใจแนวคิดหลัก 3 ประการ:
-
-- **Parameters**: ค่าคงที่ที่กำหนดก่อนการทดลอง เช่น hyperparameters ของ model
-- **Metrics**: ค่าที่วัดได้จากการทดลอง เช่น accuracy, loss
-- **Artifacts**: ไฟล์ที่สร้างขึ้นระหว่างการทดลอง เช่น model file, กราฟ, config
-
-### 📖 ทฤษฎีที่เกี่ยวข้อง
-
-การบันทึกข้อมูลใน MLflow มี 3 ขั้นตอนหลัก:
-
-```
-1. เริ่ม Run      →  2. บันทึกข้อมูล  →  3. จบ Run
-   start_run()       log_param()         end_run()
-                     log_metric()        (อัตโนมัติถ้าใช้ with)
-                     log_artifact()
-```
-
-**ความสำคัญของ Lab นี้:**
-
-การบันทึกข้อมูลอย่างเป็นระบบเป็นรากฐานของ MLOps ที่ดี เมื่อทำงานกับ ML projects ในองค์กร การมี tracking ที่ดีจะช่วยให้สามารถย้อนกลับไปดูผลการทดลองเก่า เปรียบเทียบ experiments และทำ reproducibility ได้ ใน Lab นี้จะได้ลองใช้ `mlflow.start_run()` เพื่อเริ่มต้น experiment session จากนั้นจะได้ฝึกบันทึก parameters ด้วย `log_param()` และ `log_params()` รวมถึงบันทึก metrics ด้วย `log_metric()` และ `log_metrics()` และสุดท้ายจะได้เรียนรู้การบันทึก artifacts ด้วย `log_artifact()` พร้อมทั้งเพิ่ม tags สำหรับการจัดหมวดหมู่
-
-**สิ่งที่จะได้เรียนรู้:**
-
-- วิธีการเชื่อมต่อกับ MLflow Server ผ่าน `set_tracking_uri()`
-- การสร้างและเลือก Experiment ด้วย `set_experiment()`
-- การใช้ context manager (`with` statement) เพื่อจัดการ Run อัตโนมัติ
-- ความแตกต่างระหว่าง Parameters, Metrics, Artifacts และ Tags
-
-### 💻 โค้ดทดลอง
-
-สร้างไฟล์ `experiments/lab1_basic_tracking.py`:
+### ตัวอย่างโค้ด
 
 ```python
-"""
-Lab 1: Basic MLflow Tracking
-============================
-เรียนรู้การบันทึก Parameters, Metrics และ Artifacts พื้นฐาน
-"""
-
 import mlflow
-import os
 
-# ตั้งค่า Tracking URI (เชื่อมต่อกับ MLflow Server)
+# กำหนด Tracking URI ไปยัง MLflow Server
 mlflow.set_tracking_uri("http://127.0.0.1:8080")
 
+# ตรวจสอบว่าเชื่อมต่อถูกต้อง
+print(f"MLflow Tracking URI: {mlflow.get_tracking_uri()}")
+```
+
+### ผลลัพธ์ที่คาดหวัง
+
+```
+✅ MLflow Tracking URI: http://127.0.0.1:8080
+```
+
+### ทางเลือกอื่นสำหรับ Tracking URI
+
+| ประเภท | ตัวอย่าง URI | คำอธิบาย |
+|--------|--------------|----------|
+| Local File | `file:///path/to/mlruns` | เก็บในโฟลเดอร์ local |
+| Remote Server | `http://server:5000` | เก็บบน MLflow Server |
+| Databricks | `databricks` | เก็บบน Databricks |
+| SQLite | `sqlite:///mlflow.db` | เก็บใน SQLite database |
+
+---
+
+## ส่วนที่ 2: การสร้าง Experiment
+
+### แนวคิด
+
+**Experiment** คือกลุ่มของ Runs ที่เกี่ยวข้องกัน เปรียบเสมือน "โปรเจกต์" หรือ "หัวข้อการทดลอง"
+
+```
+Experiment: fraud-detection-project
+├── Run 1: baseline-model
+├── Run 2: lstm-v1
+├── Run 3: lstm-v2-tuned
+└── Run 4: transformer-model
+```
+
+### หลักการตั้งชื่อ Experiment
+
+| ✅ ชื่อที่ดี | ❌ ชื่อที่ควรหลีกเลี่ยง |
+|-------------|------------------------|
+| `fraud-detection-lstm` | `test` |
+| `customer-churn-prediction` | `experiment1` |
+| `image-classification-resnet` | `my_model` |
+
+### ฟังก์ชันสำคัญ
+
+| ฟังก์ชัน | คำอธิบาย |
+|----------|----------|
+| `mlflow.set_experiment(name)` | สร้างหรือเลือก Experiment |
+| `mlflow.get_experiment_by_name(name)` | ดึงข้อมูล Experiment |
+
+### ตัวอย่างโค้ด
+
+```python
 # สร้างหรือเลือก Experiment
-# ถ้า Experiment นี้ยังไม่มี จะสร้างใหม่อัตโนมัติ
-mlflow.set_experiment("lab1-basic-tracking")
+experiment_name = "mlflow-tracking-lab"
+mlflow.set_experiment(experiment_name)
 
-print("=" * 50)
-print("Lab 1: Basic MLflow Tracking")
-print("=" * 50)
+# ดูข้อมูล Experiment
+experiment = mlflow.get_experiment_by_name(experiment_name)
+print(f"Experiment Name: {experiment.name}")
+print(f"Experiment ID: {experiment.experiment_id}")
+print(f"Artifact Location: {experiment.artifact_location}")
+print(f"Lifecycle Stage: {experiment.lifecycle_stage}")
+```
 
-# เริ่ม Run ใหม่
-# ใช้ with statement เพื่อให้ปิด Run อัตโนมัติ
-with mlflow.start_run(run_name="my-first-run"):
+### ผลลัพธ์ที่คาดหวัง
+
+```
+📁 Experiment Name: mlflow-tracking-lab
+🆔 Experiment ID: 1
+📂 Artifact Location: mlflow-artifacts:/1
+🔄 Lifecycle Stage: active
+```
+
+### คุณสมบัติของ Experiment Object
+
+| คุณสมบัติ | คำอธิบาย |
+|-----------|----------|
+| `name` | ชื่อ Experiment |
+| `experiment_id` | ID เฉพาะของ Experiment |
+| `artifact_location` | ที่เก็บ Artifacts |
+| `lifecycle_stage` | สถานะ (`active` หรือ `deleted`) |
+| `tags` | Tags ที่กำหนด |
+
+---
+
+## ส่วนที่ 3: การสร้าง Run และบันทึก Parameters
+
+### แนวคิด
+
+**Run** คือการทดลองแต่ละครั้ง เป็นหน่วยพื้นฐานที่สุดของ MLflow Tracking
+
+**Parameters** คือค่าที่เราตั้งก่อนเริ่มการทดลอง (Input Configuration) ซึ่งเป็นค่าคงที่ตลอดการทดลอง
+
+### ประเภทของ Parameters
+
+| ประเภท | ตัวอย่าง |
+|--------|----------|
+| Model Hyperparameters | `learning_rate`, `batch_size`, `epochs` |
+| Data Parameters | `train_split`, `image_size` |
+| Architecture | `model_type`, `num_layers`, `hidden_units` |
+| Training Config | `optimizer`, `loss_function` |
+
+### ฟังก์ชันสำคัญ
+
+| ฟังก์ชัน | คำอธิบาย |
+|----------|----------|
+| `mlflow.start_run(run_name)` | เริ่มต้น Run ใหม่ |
+| `mlflow.log_param(key, value)` | บันทึก Parameter ทีละค่า |
+| `mlflow.log_params(dict)` | บันทึกหลาย Parameters พร้อมกัน |
+| `mlflow.active_run()` | ดึงข้อมูล Run ที่กำลังทำงานอยู่ |
+
+### ตัวอย่างโค้ด
+
+```python
+# ตั้งค่า Experiment
+mlflow.set_experiment("mlflow-tracking-lab")
+
+# สร้าง Run และบันทึก Parameters
+with mlflow.start_run(run_name="demo-parameters"):
     
-    # ดู Run ID ปัจจุบัน
+    # วิธีที่ 1: บันทึกทีละค่า
+    mlflow.log_param("learning_rate", 0.001)
+    mlflow.log_param("batch_size", 32)
+    mlflow.log_param("epochs", 100)
+    
+    # วิธีที่ 2: บันทึกหลายค่าพร้อมกัน (แนะนำ)
+    mlflow.log_params({
+        "optimizer": "adam",
+        "dropout": 0.5,
+        "hidden_units": 256,
+        "activation": "relu",
+        "model_type": "MLP"
+    })
+    
+    # ดู Run ID
     run_id = mlflow.active_run().info.run_id
-    print(f"\n📌 Run ID: {run_id}")
+    print(f"Run ID: {run_id}")
+```
+
+### ผลลัพธ์ที่คาดหวัง
+
+```
+✅ สร้าง Run สำเร็จ!
+🆔 Run ID: abc123def456...
+📝 บันทึก Parameters: learning_rate, batch_size, epochs, optimizer, dropout, hidden_units, activation, model_type
+```
+
+### Context Manager (`with` statement)
+
+การใช้ `with mlflow.start_run()` มีข้อดีคือ:
+- Run จะถูกปิดอัตโนมัติเมื่อออกจาก block
+- ป้องกันการลืมปิด Run
+- จัดการ error ได้ดีกว่า
+
+---
+
+## ส่วนที่ 4: การบันทึก Metrics
+
+### แนวคิด
+
+**Metrics** คือค่าที่วัดได้จากการทดลอง (Output/Results) สามารถบันทึกได้หลายครั้งพร้อม step number
+
+### ความแตกต่างระหว่าง Parameters และ Metrics
+
+| คุณสมบัติ | Parameters | Metrics |
+|-----------|------------|---------|
+| เวลาบันทึก | ก่อนเริ่มทดลอง | ระหว่าง/หลังทดลอง |
+| จำนวนค่า | ค่าเดียวต่อชื่อ | หลายค่าได้ (ต่าง step) |
+| การเปลี่ยนแปลง | คงที่ | เปลี่ยนได้ตามเวลา |
+| วัตถุประสงค์ | บอกว่าทำอะไร (Input) | บอกว่าได้ผลอย่างไร (Output) |
+
+### ฟังก์ชันสำคัญ
+
+| ฟังก์ชัน | คำอธิบาย |
+|----------|----------|
+| `mlflow.log_metric(key, value, step)` | บันทึก Metric ค่าเดียว |
+| `mlflow.log_metrics(dict, step)` | บันทึกหลาย Metrics พร้อมกัน |
+
+### ตัวอย่างโค้ด
+
+```python
+import random
+
+with mlflow.start_run(run_name="demo-metrics"):
     
-    # -------------------------------------------------
-    # 1. บันทึก Parameters (ค่าที่ตั้งก่อนทดลอง)
-    # -------------------------------------------------
-    print("\n1️⃣ บันทึก Parameters...")
-    
-    # บันทึกทีละค่า
-    mlflow.log_param("model_type", "RandomForest")
-    mlflow.log_param("n_estimators", 100)
-    mlflow.log_param("max_depth", 10)
-    
-    # บันทึกหลายค่าพร้อมกัน
+    # บันทึก Parameters ก่อน
     mlflow.log_params({
         "learning_rate": 0.01,
-        "random_state": 42
+        "epochs": 10,
+        "batch_size": 64
     })
     
-    print("   ✅ บันทึก Parameters เสร็จสิ้น")
-    
-    # -------------------------------------------------
-    # 2. บันทึก Metrics (ค่าที่วัดได้จากการทดลอง)
-    # -------------------------------------------------
-    print("\n2️⃣ บันทึก Metrics...")
-    
-    # บันทึก Metrics ค่าเดียว
-    mlflow.log_metric("accuracy", 0.92)
-    mlflow.log_metric("precision", 0.89)
-    mlflow.log_metric("recall", 0.94)
-    mlflow.log_metric("f1_score", 0.91)
-    
-    # บันทึกหลายค่าพร้อมกัน
-    mlflow.log_metrics({
-        "train_loss": 0.15,
-        "val_loss": 0.22
-    })
-    
-    print("   ✅ บันทึก Metrics เสร็จสิ้น")
-    
-    # -------------------------------------------------
-    # 3. บันทึก Artifacts (ไฟล์ที่สร้างจากการทดลอง)
-    # -------------------------------------------------
-    print("\n3️⃣ บันทึก Artifacts...")
-    
-    # สร้างไฟล์ตัวอย่างเพื่อบันทึกเป็น Artifact
-    os.makedirs("outputs", exist_ok=True)
-    
-    # สร้างไฟล์ข้อความ
-    with open("outputs/model_info.txt", "w") as f:
-        f.write("Model: RandomForest\n")
-        f.write("Version: 1.0\n")
-        f.write("Accuracy: 0.92\n")
-    
-    # สร้างไฟล์ JSON
-    import json
-    config = {
-        "model_type": "RandomForest",
-        "hyperparameters": {
-            "n_estimators": 100,
-            "max_depth": 10
-        }
-    }
-    with open("outputs/config.json", "w") as f:
-        json.dump(config, f, indent=2)
-    
-    # บันทึกไฟล์เดี่ยว
-    mlflow.log_artifact("outputs/model_info.txt")
-    mlflow.log_artifact("outputs/config.json")
-    
-    print("   ✅ บันทึก Artifacts เสร็จสิ้น")
-    
-    # -------------------------------------------------
-    # 4. เพิ่ม Tags (ข้อมูลเพิ่มเติมสำหรับการค้นหา)
-    # -------------------------------------------------
-    print("\n4️⃣ บันทึก Tags...")
-    
-    mlflow.set_tag("developer", "student")
-    mlflow.set_tag("experiment_type", "baseline")
-    mlflow.set_tag("dataset", "iris")
-    
-    print("   ✅ บันทึก Tags เสร็จสิ้น")
-
-print("\n" + "=" * 50)
-print("🎉 Lab 1 เสร็จสิ้น!")
-print("=" * 50)
-print(f"\n📊 ดูผลลัพธ์ได้ที่: http://127.0.0.1:8080")
-print(f"   → เลือก Experiment: lab1-basic-tracking")
-print(f"   → คลิกที่ Run: my-first-run")
-```
-
-### ▶️ วิธีรัน
-
-```bash
-cd mlflow-tracking-lab
-source .venv/bin/activate
-python experiments/lab1_basic_tracking.py
-```
-
-### ✅ ผลลัพธ์ที่คาดหวัง
-
-1. เปิด MLflow UI ที่ http://127.0.0.1:8080
-2. เลือก Experiment "lab1-basic-tracking"
-3. คลิกที่ Run "my-first-run"
-4. ตรวจสอบ:
-   - **Parameters**: model_type, n_estimators, max_depth, etc.
-   - **Metrics**: accuracy, precision, recall, f1_score, etc.
-   - **Artifacts**: model_info.txt, config.json
-   - **Tags**: developer, experiment_type, dataset
-
----
-
-## 📝 Lab 2: Training Loop Tracking
-
-### 🎯 วัตถุประสงค์
-
-Lab นี้จะสอนการบันทึก metrics ที่เปลี่ยนแปลงตามเวลา ซึ่งเป็นสิ่งสำคัญมากในการ train neural networks หรือ iterative models
-
-### 📖 ทฤษฎีที่เกี่ยวข้อง
-
-การบันทึก Metrics ตามเวลา:
-
-```python
-# step คือลำดับของการบันทึก (เช่น epoch number)
-mlflow.log_metric("loss", value, step=epoch)
-
-# MLflow จะสร้างกราฟอัตโนมัติเมื่อมีหลาย step
-```
-
-```
-Loss Curve ที่จะได้:
-
-    Loss
-    1.0 ┤●
-        │ ╲
-    0.8 ┤  ●
-        │   ╲
-    0.6 ┤    ●
-        │     ╲
-    0.4 ┤      ●
-        │       ╲●
-    0.2 ┤         ╲●●
-        │            ╲●●●
-    0.0 ┼───────────────────
-        0  2  4  6  8  10  Epoch
-```
-
-**ความสำคัญของ Lab นี้:**
-
-ในการ train deep learning models การติดตาม loss และ accuracy ทุก epoch เป็นสิ่งจำเป็น Lab นี้จะสอนการใช้ parameter `step` ใน `log_metric()` เพื่อสร้าง time-series data ซึ่งช่วยให้สามารถวิเคราะห์ learning curves, ตรวจจับ overfitting และเปรียบเทียบการ converge ของ models ต่างๆ ได้
-
-**สิ่งที่จะได้เรียนรู้:**
-
-- การบันทึก metrics แบบ time-series ด้วย `step` parameter
-- การจำลอง training loop และบันทึก train/validation metrics
-- การสร้าง visualization (Loss Curve, Accuracy Curve) และบันทึกเป็น artifacts
-- การดู Charts ใน MLflow UI
-
-### 💻 โค้ดทดลอง
-
-สร้างไฟล์ `experiments/lab2_training_loop.py`:
-
-```python
-"""
-Lab 2: Training Loop Tracking
-=============================
-เรียนรู้การบันทึก Metrics ระหว่างการ Training
-"""
-
-import mlflow
-import numpy as np
-import matplotlib.pyplot as plt
-import os
-
-# ตั้งค่า MLflow
-mlflow.set_tracking_uri("http://127.0.0.1:8080")
-mlflow.set_experiment("lab2-training-loop")
-
-print("=" * 50)
-print("Lab 2: Training Loop Tracking")
-print("=" * 50)
-
-# -------------------------------------------------
-# จำลองการ Training Model
-# -------------------------------------------------
-def simulate_training(epochs, initial_loss=1.0, learning_rate=0.1):
-    """
-    จำลอง Loss ที่ลดลงระหว่างการ Training
-    """
-    losses = []
-    val_losses = []
-    
-    for epoch in range(epochs):
-        # จำลอง Training Loss (ลดลงเรื่อยๆ)
-        train_loss = initial_loss * np.exp(-learning_rate * epoch)
-        train_loss += np.random.normal(0, 0.02)  # เพิ่ม noise เล็กน้อย
-        train_loss = max(0.01, train_loss)  # ไม่ให้ติดลบ
+    # จำลองการ Training และบันทึก Metrics ทุก epoch
+    for epoch in range(10):
+        # จำลองค่า loss และ accuracy
+        train_loss = 1.0 - (epoch * 0.08) + random.uniform(-0.05, 0.05)
+        val_loss = 1.0 - (epoch * 0.07) + random.uniform(-0.05, 0.05)
+        train_acc = 0.5 + (epoch * 0.04) + random.uniform(-0.02, 0.02)
+        val_acc = 0.5 + (epoch * 0.035) + random.uniform(-0.02, 0.02)
         
-        # จำลอง Validation Loss (ลดลงช้ากว่า Train)
-        val_loss = initial_loss * np.exp(-learning_rate * 0.8 * epoch)
-        val_loss += np.random.normal(0, 0.03)
-        val_loss = max(0.02, val_loss)
-        
-        losses.append(train_loss)
-        val_losses.append(val_loss)
-    
-    return losses, val_losses
-
-# Parameters
-EPOCHS = 50
-LEARNING_RATE = 0.1
-INITIAL_LOSS = 1.0
-
-# เริ่ม Run
-with mlflow.start_run(run_name="training-simulation"):
-    
-    # บันทึก Parameters
-    print("\n📋 บันทึก Parameters...")
-    mlflow.log_params({
-        "epochs": EPOCHS,
-        "learning_rate": LEARNING_RATE,
-        "initial_loss": INITIAL_LOSS,
-        "optimizer": "SGD",
-        "batch_size": 32
-    })
-    
-    # จำลองการ Training
-    print(f"\n🏃 เริ่ม Training จำลอง {EPOCHS} epochs...")
-    train_losses, val_losses = simulate_training(
-        EPOCHS, INITIAL_LOSS, LEARNING_RATE
-    )
-    
-    # บันทึก Metrics ทุก Epoch
-    print("\n📊 บันทึก Metrics...")
-    for epoch in range(EPOCHS):
-        # บันทึก Loss พร้อม step
-        mlflow.log_metric("train_loss", train_losses[epoch], step=epoch)
-        mlflow.log_metric("val_loss", val_losses[epoch], step=epoch)
-        
-        # บันทึก Accuracy จำลอง (เพิ่มขึ้นเรื่อยๆ)
-        train_acc = 0.5 + 0.45 * (1 - np.exp(-0.1 * epoch))
-        val_acc = 0.5 + 0.40 * (1 - np.exp(-0.1 * epoch))
-        
-        mlflow.log_metric("train_accuracy", train_acc, step=epoch)
-        mlflow.log_metric("val_accuracy", val_acc, step=epoch)
-        
-        # แสดง Progress ทุก 10 epochs
-        if (epoch + 1) % 10 == 0:
-            print(f"   Epoch {epoch+1}/{EPOCHS}: "
-                  f"train_loss={train_losses[epoch]:.4f}, "
-                  f"val_loss={val_losses[epoch]:.4f}")
+        # บันทึก Metrics พร้อม step
+        mlflow.log_metrics({
+            "train_loss": train_loss,
+            "val_loss": val_loss,
+            "train_accuracy": train_acc,
+            "val_accuracy": val_acc
+        }, step=epoch)
     
     # บันทึก Final Metrics
     mlflow.log_metrics({
-        "final_train_loss": train_losses[-1],
-        "final_val_loss": val_losses[-1],
-        "final_train_accuracy": train_acc,
-        "final_val_accuracy": val_acc,
-        "best_val_loss": min(val_losses),
-        "best_epoch": val_losses.index(min(val_losses))
+        "final_accuracy": val_acc,
+        "final_loss": val_loss
     })
-    
-    # -------------------------------------------------
-    # สร้างกราฟ Loss Curve และบันทึกเป็น Artifact
-    # -------------------------------------------------
-    print("\n📈 สร้างกราฟ Loss Curve...")
-    os.makedirs("outputs", exist_ok=True)
-    
-    fig, axes = plt.subplots(1, 2, figsize=(14, 5))
-    
-    # กราฟ Loss
-    axes[0].plot(train_losses, label='Training Loss', color='blue')
-    axes[0].plot(val_losses, label='Validation Loss', color='orange')
-    axes[0].set_xlabel('Epoch')
-    axes[0].set_ylabel('Loss')
-    axes[0].set_title('Loss Curve')
-    axes[0].legend()
-    axes[0].grid(True, alpha=0.3)
-    
-    # กราฟ Accuracy
-    train_accs = [0.5 + 0.45 * (1 - np.exp(-0.1 * e)) for e in range(EPOCHS)]
-    val_accs = [0.5 + 0.40 * (1 - np.exp(-0.1 * e)) for e in range(EPOCHS)]
-    
-    axes[1].plot(train_accs, label='Training Accuracy', color='blue')
-    axes[1].plot(val_accs, label='Validation Accuracy', color='orange')
-    axes[1].set_xlabel('Epoch')
-    axes[1].set_ylabel('Accuracy')
-    axes[1].set_title('Accuracy Curve')
-    axes[1].legend()
-    axes[1].grid(True, alpha=0.3)
-    
-    plt.tight_layout()
-    plt.savefig("outputs/training_curves.png", dpi=150)
-    plt.close()
-    
-    # บันทึกกราฟเป็น Artifact
-    mlflow.log_artifact("outputs/training_curves.png")
-    print("   ✅ บันทึกกราฟ training_curves.png")
-
-print("\n" + "=" * 50)
-print("🎉 Lab 2 เสร็จสิ้น!")
-print("=" * 50)
-print(f"\n📊 ดูผลลัพธ์ได้ที่: http://127.0.0.1:8080")
-print(f"   → เลือก Experiment: lab2-training-loop")
-print(f"   → คลิกที่ Run แล้วไปที่ tab 'Charts'")
-print(f"   → จะเห็น Loss Curve และ Accuracy Curve")
 ```
 
-### ▶️ วิธีรัน
+### การใช้ Step Parameter
 
-```bash
-python experiments/lab2_training_loop.py
+```python
+# บันทึก metric พร้อม step (เช่น epoch number)
+for epoch in range(100):
+    loss = train_one_epoch()
+    mlflow.log_metric("loss", loss, step=epoch)
 ```
 
-### ✅ ผลลัพธ์ที่คาดหวัง
-
-1. เปิด MLflow UI
-2. เลือก Experiment "lab2-training-loop"
-3. คลิกที่ Run แล้วไปที่ tab **"Charts"**
-4. จะเห็นกราฟ:
-   - train_loss และ val_loss ลดลงตาม epoch
-   - train_accuracy และ val_accuracy เพิ่มขึ้นตาม epoch
+Step ทำให้ MLflow สามารถสร้างกราฟแสดงการเปลี่ยนแปลงของ metric ตามเวลาได้
 
 ---
 
-## 📝 Lab 3: Scikit-learn Autolog
+## ส่วนที่ 5: การบันทึก Artifacts
 
-### 🎯 วัตถุประสงค์
+### แนวคิด
 
-Lab นี้แนะนำ **Autolog** ฟีเจอร์ที่ช่วยลดภาระการเขียน logging code โดย MLflow จะบันทึกข้อมูลสำคัญให้อัตโนมัติ
+**Artifacts** คือไฟล์ที่สร้างจากการทดลอง MLflow จะเก็บไว้ใน Artifact Store
 
-### 📖 ทฤษฎีที่เกี่ยวข้อง
+### ประเภทของ Artifacts
 
-**Autolog** คือฟีเจอร์ของ MLflow ที่บันทึกข้อมูลอัตโนมัติ:
+| ประเภท | ตัวอย่างไฟล์ |
+|--------|-------------|
+| Models | `model.pkl`, `model.h5`, `model.pt` |
+| Visualizations | `confusion_matrix.png`, `loss_curve.png` |
+| Data | `predictions.csv`, `feature_importance.json` |
+| Reports | `report.html`, `summary.pdf` |
+| Configs | `config.yaml`, `hyperparams.json` |
 
-```
-┌─────────────────────────────────────────────────────────────────┐
-│                    mlflow.sklearn.autolog()                     │
-│                                                                 │
-│  บันทึกอัตโนมัติ:                                               │
-│  ┌─────────────┐  ┌─────────────┐  ┌─────────────────────────┐  │
-│  │ Parameters  │  │   Metrics   │  │       Artifacts         │  │
-│  │             │  │             │  │                         │  │
-│  │ • All model │  │ • accuracy  │  │ • Trained model         │  │
-│  │   params    │  │ • f1_score  │  │ • Feature names         │  │
-│  │ • Fit time  │  │ • precision │  │ • Confusion matrix      │  │
-│  │             │  │ • recall    │  │ • Training data stats   │  │
-│  └─────────────┘  └─────────────┘  └─────────────────────────┘  │
-│                                                                 │
-│  รองรับ Frameworks:                                             │
-│  sklearn, pytorch, tensorflow, keras, xgboost, lightgbm, ...   │
-└─────────────────────────────────────────────────────────────────┘
-```
+### ฟังก์ชันสำคัญ
 
-**ความสำคัญของ Lab นี้:**
+| ฟังก์ชัน | คำอธิบาย |
+|----------|----------|
+| `mlflow.log_artifact(local_path, artifact_path)` | บันทึกไฟล์เดี่ยว |
+| `mlflow.log_artifacts(local_dir, artifact_path)` | บันทึกทั้งโฟลเดอร์ |
+| `mlflow.log_figure(fig, artifact_file)` | บันทึก matplotlib figure |
+| `mlflow.log_dict(dict, artifact_file)` | บันทึก dictionary เป็น JSON |
+| `mlflow.log_text(text, artifact_file)` | บันทึก text |
 
-ในการทำงานจริง การเขียน logging code ทุกครั้งอาจทำให้ code รกและเสียเวลา Autolog ช่วยแก้ปัญหานี้โดยอัตโนมัติบันทึก hyperparameters ทั้งหมดของ model, performance metrics มาตรฐาน, trained model พร้อม signature และ input examples ไปจนถึง training metadata เช่น fit time
-
-Lab นี้จะสาธิตการใช้ Autolog กับหลาย models และ datasets เพื่อให้เห็นประโยชน์ของการทำ experiment comparison
-
-**สิ่งที่จะได้เรียนรู้:**
-
-- การเปิดใช้ `mlflow.sklearn.autolog()` และ options ต่างๆ
-- การ train หลาย models และเปรียบเทียบผลใน MLflow UI
-- ความเข้าใจว่า Autolog บันทึกอะไรบ้างโดยอัตโนมัติ
-- การใช้ Compare feature ใน MLflow UI
-
-### 💻 โค้ดทดลอง
-
-สร้างไฟล์ `experiments/lab3_sklearn_autolog.py`:
+### ตัวอย่างโค้ด
 
 ```python
-"""
-Lab 3: Scikit-learn Autolog
-===========================
-เรียนรู้การใช้ mlflow.sklearn.autolog()
-"""
+import matplotlib.pyplot as plt
+import os
 
-import mlflow
-import mlflow.sklearn
-from sklearn.datasets import load_iris, load_wine
+os.makedirs("outputs", exist_ok=True)
+
+with mlflow.start_run(run_name="demo-artifacts"):
+    
+    # บันทึก Parameters และ Metrics
+    mlflow.log_params({"model": "demo", "epochs": 10})
+    mlflow.log_metric("accuracy", 0.92)
+    
+    # ----- Artifact 1: บันทึก Figure จาก matplotlib -----
+    fig, axes = plt.subplots(1, 2, figsize=(12, 4))
+    
+    epochs = range(1, 11)
+    train_loss = [1.0, 0.8, 0.65, 0.52, 0.42, 0.35, 0.30, 0.26, 0.23, 0.20]
+    val_loss = [1.1, 0.9, 0.75, 0.62, 0.55, 0.50, 0.47, 0.45, 0.44, 0.43]
+    
+    axes[0].plot(epochs, train_loss, 'b-', label='Train Loss')
+    axes[0].plot(epochs, val_loss, 'r-', label='Validation Loss')
+    axes[0].set_xlabel('Epoch')
+    axes[0].set_ylabel('Loss')
+    axes[0].set_title('Training & Validation Loss')
+    axes[0].legend()
+    axes[0].grid(True)
+    
+    plt.tight_layout()
+    
+    # บันทึก figure โดยตรง
+    mlflow.log_figure(fig, artifact_file="plots/training_curves.png")
+    plt.close(fig)
+    
+    # ----- Artifact 2: บันทึก Dictionary เป็น JSON -----
+    config = {
+        "model_architecture": "CNN",
+        "input_shape": [224, 224, 3],
+        "num_classes": 10
+    }
+    mlflow.log_dict(config, artifact_file="config/model_config.json")
+    
+    # ----- Artifact 3: บันทึก Text -----
+    model_info = """Model: CNN Classifier v1.0
+Created: 2024
+Author: MLflow Lab
+"""
+    mlflow.log_text(model_info, artifact_file="models/model_info.txt")
+    
+    # ----- Artifact 4: บันทึกไฟล์จาก Local -----
+    with open("outputs/predictions.csv", "w") as f:
+        f.write("id,true_label,predicted_label,confidence\n")
+        f.write("1,cat,cat,0.95\n")
+    
+    mlflow.log_artifact("outputs/predictions.csv", artifact_path="data")
+```
+
+### โครงสร้าง Artifacts ที่ได้
+
+```
+artifacts/
+├── plots/
+│   └── training_curves.png
+├── config/
+│   └── model_config.json
+├── models/
+│   └── model_info.txt
+└── data/
+    └── predictions.csv
+```
+
+---
+
+## ส่วนที่ 6: การบันทึก Model
+
+### แนวคิด
+
+**Model Logging** ช่วยบันทึก Model พร้อมข้อมูลที่จำเป็นสำหรับ Deployment:
+- Model weights และ architecture
+- Dependencies และ environment
+- Input/Output signature
+- ตัวอย่าง input
+
+### MLflow Model Flavors
+
+| Flavor | Library | ฟังก์ชัน |
+|--------|---------|----------|
+| `mlflow.sklearn` | Scikit-learn | `log_model()`, `load_model()` |
+| `mlflow.pytorch` | PyTorch | `log_model()`, `load_model()` |
+| `mlflow.tensorflow` | TensorFlow/Keras | `log_model()`, `load_model()` |
+| `mlflow.xgboost` | XGBoost | `log_model()`, `load_model()` |
+| `mlflow.pyfunc` | Generic Python | `log_model()`, `load_model()` |
+
+### 6.1 บันทึก Scikit-learn Model
+
+```python
+from sklearn.datasets import load_iris
 from sklearn.model_selection import train_test_split
 from sklearn.ensemble import RandomForestClassifier
-from sklearn.linear_model import LogisticRegression
 from sklearn.metrics import accuracy_score
-import warnings
-warnings.filterwarnings('ignore')
+from mlflow.models import infer_signature
 
-# ตั้งค่า MLflow
-mlflow.set_tracking_uri("http://127.0.0.1:8080")
-mlflow.set_experiment("lab3-sklearn-autolog")
-
-print("=" * 50)
-print("Lab 3: Scikit-learn Autolog")
-print("=" * 50)
-
-# -------------------------------------------------
-# Part 1: ทดลองกับ Iris Dataset
-# -------------------------------------------------
-print("\n📊 Part 1: Iris Dataset with RandomForest")
-print("-" * 40)
-
-# โหลดข้อมูล
+# เตรียมข้อมูล
 iris = load_iris()
 X_train, X_test, y_train, y_test = train_test_split(
     iris.data, iris.target, test_size=0.2, random_state=42
 )
 
-# เปิด Autolog
-mlflow.sklearn.autolog(
-    log_input_examples=True,
-    log_model_signatures=True,
-    log_models=True
-)
-
-# Training - MLflow จะบันทึกทุกอย่างอัตโนมัติ!
-with mlflow.start_run(run_name="iris-randomforest"):
-    print("\n🌲 Training RandomForest...")
+with mlflow.start_run(run_name="sklearn-model-demo"):
     
-    rf_model = RandomForestClassifier(
-        n_estimators=100,
-        max_depth=5,
+    # กำหนด hyperparameters
+    n_estimators = 100
+    max_depth = 5
+    
+    # บันทึก Parameters
+    mlflow.log_params({
+        "n_estimators": n_estimators,
+        "max_depth": max_depth,
+        "model_type": "RandomForestClassifier"
+    })
+    
+    # Train Model
+    model = RandomForestClassifier(
+        n_estimators=n_estimators,
+        max_depth=max_depth,
         random_state=42
     )
-    rf_model.fit(X_train, y_train)
-    
-    predictions = rf_model.predict(X_test)
-    accuracy = accuracy_score(y_test, predictions)
-    
-    mlflow.log_metric("test_accuracy", accuracy)
-    mlflow.set_tag("dataset", "iris")
-    mlflow.set_tag("model_type", "RandomForest")
-    
-    print(f"   ✅ Test Accuracy: {accuracy:.4f}")
-
-# -------------------------------------------------
-# Part 2: ทดลองกับ Wine Dataset
-# -------------------------------------------------
-print("\n📊 Part 2: Wine Dataset with LogisticRegression")
-print("-" * 40)
-
-wine = load_wine()
-X_train, X_test, y_train, y_test = train_test_split(
-    wine.data, wine.target, test_size=0.2, random_state=42
-)
-
-with mlflow.start_run(run_name="wine-logistic"):
-    print("\n📈 Training Logistic Regression...")
-    
-    lr_model = LogisticRegression(max_iter=1000, C=1.0, random_state=42)
-    lr_model.fit(X_train, y_train)
-    
-    predictions = lr_model.predict(X_test)
-    accuracy = accuracy_score(y_test, predictions)
-    
-    mlflow.log_metric("test_accuracy", accuracy)
-    mlflow.set_tag("dataset", "wine")
-    mlflow.set_tag("model_type", "LogisticRegression")
-    
-    print(f"   ✅ Test Accuracy: {accuracy:.4f}")
-
-# -------------------------------------------------
-# Part 3: เปรียบเทียบหลาย Models
-# -------------------------------------------------
-print("\n📊 Part 3: Model Comparison on Iris")
-print("-" * 40)
-
-X_train, X_test, y_train, y_test = train_test_split(
-    iris.data, iris.target, test_size=0.2, random_state=42
-)
-
-from sklearn.tree import DecisionTreeClassifier
-from sklearn.svm import SVC
-from sklearn.neighbors import KNeighborsClassifier
-
-models = [
-    ("DecisionTree", DecisionTreeClassifier(max_depth=5, random_state=42)),
-    ("SVM", SVC(kernel='rbf', random_state=42)),
-    ("KNN", KNeighborsClassifier(n_neighbors=5))
-]
-
-for model_name, model in models:
-    with mlflow.start_run(run_name=f"iris-{model_name.lower()}"):
-        print(f"\n🔄 Training {model_name}...")
-        
-        model.fit(X_train, y_train)
-        predictions = model.predict(X_test)
-        accuracy = accuracy_score(y_test, predictions)
-        
-        mlflow.log_metric("test_accuracy", accuracy)
-        mlflow.set_tag("dataset", "iris")
-        mlflow.set_tag("model_type", model_name)
-        
-        print(f"   ✅ {model_name} Accuracy: {accuracy:.4f}")
-
-mlflow.sklearn.autolog(disable=True)
-
-print("\n" + "=" * 50)
-print("🎉 Lab 3 เสร็จสิ้น!")
-print("=" * 50)
-print(f"\n📊 ดูผลลัพธ์ได้ที่: http://127.0.0.1:8080")
-print(f"   → เลือก Experiment: lab3-sklearn-autolog")
-print(f"   → เปรียบเทียบ Runs ได้โดยติ๊กเลือกหลาย Runs")
-print(f"   → คลิก 'Compare' เพื่อดูการเปรียบเทียบ")
-```
-
-### ▶️ วิธีรัน
-
-```bash
-python experiments/lab3_sklearn_autolog.py
-```
-
-### ✅ ผลลัพธ์ที่คาดหวัง
-
-1. เปิด MLflow UI
-2. เลือก Experiment "lab3-sklearn-autolog"
-3. จะเห็น 5 Runs พร้อม Parameters และ Metrics ที่บันทึกอัตโนมัติ
-
----
-
-## 📝 Lab 4: Hyperparameter Comparison
-
-### 🎯 วัตถุประสงค์
-
-Lab นี้สาธิตการทำ **Hyperparameter Tuning** อย่างเป็นระบบ โดยใช้ MLflow บันทึกทุกการทดลองและเปรียบเทียบผล
-
-### 📖 ทฤษฎีที่เกี่ยวข้อง
-
-**ความสำคัญของ Lab นี้:**
-
-Hyperparameter tuning เป็นขั้นตอนสำคัญในการพัฒนา ML models การมี tracking system ที่ดีช่วยให้สามารถทดลอง parameter combinations จำนวนมากอย่างเป็นระบบ, เปรียบเทียบผลลัพธ์ได้ง่าย, ค้นหา best configuration และทำ reproducibility สำหรับ best model
-
-Lab นี้จะสร้าง Grid Search แบบ manual และบันทึกทุก combination โดยในตอนท้ายจะได้เรียนรู้การใช้ MLflow UI ในการเปรียบเทียบและหา best hyperparameters
-
-**สิ่งที่จะได้เรียนรู้:**
-
-- การออกแบบ hyperparameter search space
-- การบันทึก experiments จำนวนมากอย่างเป็นระบบ
-- การใช้ tags เพื่อ mark best runs
-- การใช้ MLflow UI สำหรับ filtering และ sorting
-
-### 💻 โค้ดทดลอง
-
-สร้างไฟล์ `experiments/lab4_hyperparameter.py`:
-
-```python
-"""
-Lab 4: Hyperparameter Comparison
-================================
-เรียนรู้การทดลอง Hyperparameters หลายค่าและเปรียบเทียบผล
-"""
-
-import mlflow
-from sklearn.datasets import load_breast_cancer
-from sklearn.model_selection import train_test_split, cross_val_score
-from sklearn.ensemble import RandomForestClassifier
-from sklearn.metrics import accuracy_score, precision_score, recall_score, f1_score
-import warnings
-warnings.filterwarnings('ignore')
-
-mlflow.set_tracking_uri("http://127.0.0.1:8080")
-mlflow.set_experiment("lab4-hyperparameter-tuning")
-
-print("=" * 50)
-print("Lab 4: Hyperparameter Comparison")
-print("=" * 50)
-
-# โหลดข้อมูล
-data = load_breast_cancer()
-X_train, X_test, y_train, y_test = train_test_split(
-    data.data, data.target, test_size=0.2, random_state=42
-)
-
-# กำหนด Hyperparameter Search Space
-param_grid = {
-    'n_estimators': [50, 100, 200],
-    'max_depth': [3, 5, 10, None],
-    'min_samples_split': [2, 5, 10]
-}
-
-total_experiments = (len(param_grid['n_estimators']) * 
-                    len(param_grid['max_depth']) * 
-                    len(param_grid['min_samples_split']))
-
-print(f"\n📋 Total experiments: {total_experiments}")
-
-best_accuracy = 0
-best_params = None
-experiment_count = 0
-
-for n_est in param_grid['n_estimators']:
-    for max_d in param_grid['max_depth']:
-        for min_split in param_grid['min_samples_split']:
-            experiment_count += 1
-            
-            max_d_str = str(max_d) if max_d is not None else "None"
-            run_name = f"rf_nest{n_est}_depth{max_d_str}_split{min_split}"
-            
-            with mlflow.start_run(run_name=run_name):
-                mlflow.log_params({
-                    "n_estimators": n_est,
-                    "max_depth": max_d if max_d is not None else "unlimited",
-                    "min_samples_split": min_split,
-                    "random_state": 42
-                })
-                
-                model = RandomForestClassifier(
-                    n_estimators=n_est,
-                    max_depth=max_d,
-                    min_samples_split=min_split,
-                    random_state=42,
-                    n_jobs=-1
-                )
-                model.fit(X_train, y_train)
-                
-                predictions = model.predict(X_test)
-                
-                accuracy = accuracy_score(y_test, predictions)
-                precision = precision_score(y_test, predictions)
-                recall = recall_score(y_test, predictions)
-                f1 = f1_score(y_test, predictions)
-                
-                cv_scores = cross_val_score(model, X_train, y_train, cv=5)
-                
-                mlflow.log_metrics({
-                    "accuracy": accuracy,
-                    "precision": precision,
-                    "recall": recall,
-                    "f1_score": f1,
-                    "cv_mean": cv_scores.mean(),
-                    "cv_std": cv_scores.std()
-                })
-                
-                if accuracy > best_accuracy:
-                    best_accuracy = accuracy
-                    best_params = {
-                        "n_estimators": n_est,
-                        "max_depth": max_d,
-                        "min_samples_split": min_split
-                    }
-                    mlflow.set_tag("is_best", "true")
-                else:
-                    mlflow.set_tag("is_best", "false")
-                
-                print(f"   [{experiment_count}/{total_experiments}] "
-                      f"{run_name}: accuracy={accuracy:.4f}")
-
-print("\n" + "=" * 50)
-print(f"🏆 Best Accuracy: {best_accuracy:.4f}")
-print(f"   Best Params: {best_params}")
-print("=" * 50)
-```
-
-### ▶️ วิธีรัน
-
-```bash
-python experiments/lab4_hyperparameter.py
-```
-
-### ✅ ผลลัพธ์ที่คาดหวัง
-
-1. เปิด MLflow UI
-2. เลือก Experiment "lab4-hyperparameter-tuning"
-3. จะเห็น 36 Runs (3 × 4 × 3 combinations)
-4. ใช้ Filter หา runs ที่มี `is_best = true`
-5. Sort by accuracy เพื่อดู rankings
-
----
-
-## 📝 Lab 5: Custom Artifacts
-
-### 🎯 วัตถุประสงค์
-
-Lab นี้สอนการสร้างและบันทึก **Custom Artifacts** ที่มีประโยชน์ในการวิเคราะห์ model performance อย่างละเอียด
-
-### 📖 ทฤษฎีที่เกี่ยวข้อง
-
-**ความสำคัญของ Lab นี้:**
-
-นอกจาก metrics ตัวเลขแล้ว การวิเคราะห์ model ยังต้องการ visualizations และข้อมูลเชิงลึก เช่น Confusion Matrix ที่แสดงรายละเอียดการ predict ถูก/ผิดแต่ละ class, ROC Curve ที่แสดง trade-off ระหว่าง sensitivity และ specificity, Feature Importance ที่บอกว่า features ใดสำคัญต่อ model และ Classification Report ที่ให้รายละเอียด metrics แยกตาม class
-
-Lab นี้จะสอนการสร้าง artifacts เหล่านี้และบันทึกลง MLflow
-
-**สิ่งที่จะได้เรียนรู้:**
-
-- การสร้าง Confusion Matrix และบันทึกเป็น image artifact
-- การสร้าง ROC Curve พร้อม AUC
-- การ extract และ visualize Feature Importance
-- การจัดการไฟล์ artifacts หลายประเภท (PNG, CSV, JSON)
-
-### 💻 โค้ดทดลอง
-
-สร้างไฟล์ `experiments/lab5_custom_artifacts.py`:
-
-```python
-"""
-Lab 5: Custom Artifacts
-=======================
-เรียนรู้การสร้างและบันทึก Custom Artifacts
-"""
-
-import mlflow
-from sklearn.datasets import load_breast_cancer
-from sklearn.model_selection import train_test_split
-from sklearn.ensemble import RandomForestClassifier
-from sklearn.metrics import (
-    accuracy_score, confusion_matrix, classification_report,
-    roc_curve, auc
-)
-import matplotlib.pyplot as plt
-import seaborn as sns
-import pandas as pd
-import json
-import os
-import warnings
-warnings.filterwarnings('ignore')
-
-mlflow.set_tracking_uri("http://127.0.0.1:8080")
-mlflow.set_experiment("lab5-custom-artifacts")
-
-os.makedirs("outputs", exist_ok=True)
-
-data = load_breast_cancer()
-X_train, X_test, y_train, y_test = train_test_split(
-    data.data, data.target, test_size=0.2, random_state=42
-)
-
-with mlflow.start_run(run_name="detailed-analysis"):
-    
-    params = {"n_estimators": 100, "max_depth": 10, "random_state": 42}
-    mlflow.log_params(params)
-    
-    model = RandomForestClassifier(**params, n_jobs=-1)
     model.fit(X_train, y_train)
     
-    predictions = model.predict(X_test)
-    predictions_proba = model.predict_proba(X_test)[:, 1]
-    
-    accuracy = accuracy_score(y_test, predictions)
+    # คำนวณ Metrics
+    y_pred = model.predict(X_test)
+    accuracy = accuracy_score(y_test, y_pred)
     mlflow.log_metric("accuracy", accuracy)
     
-    # 1. Confusion Matrix
-    cm = confusion_matrix(y_test, predictions)
-    plt.figure(figsize=(8, 6))
-    sns.heatmap(cm, annot=True, fmt='d', cmap='Blues',
-                xticklabels=['Malignant', 'Benign'],
-                yticklabels=['Malignant', 'Benign'])
-    plt.title('Confusion Matrix')
-    plt.ylabel('Actual')
-    plt.xlabel('Predicted')
-    plt.savefig("outputs/confusion_matrix.png", dpi=150)
-    plt.close()
-    mlflow.log_artifact("outputs/confusion_matrix.png")
+    # สร้าง Signature
+    signature = infer_signature(X_train, model.predict(X_train))
     
-    # 2. ROC Curve
-    fpr, tpr, _ = roc_curve(y_test, predictions_proba)
-    roc_auc = auc(fpr, tpr)
-    
-    plt.figure(figsize=(8, 6))
-    plt.plot(fpr, tpr, color='darkorange', lw=2,
-             label=f'ROC curve (AUC = {roc_auc:.4f})')
-    plt.plot([0, 1], [0, 1], color='navy', lw=2, linestyle='--')
-    plt.xlabel('False Positive Rate')
-    plt.ylabel('True Positive Rate')
-    plt.title('ROC Curve')
-    plt.legend()
-    plt.savefig("outputs/roc_curve.png", dpi=150)
-    plt.close()
-    mlflow.log_metric("roc_auc", roc_auc)
-    mlflow.log_artifact("outputs/roc_curve.png")
-    
-    # 3. Feature Importance
-    feature_importance = pd.DataFrame({
-        'feature': data.feature_names,
-        'importance': model.feature_importances_
-    }).sort_values('importance', ascending=False)
-    
-    feature_importance.to_csv("outputs/feature_importance.csv", index=False)
-    mlflow.log_artifact("outputs/feature_importance.csv")
-    
-    plt.figure(figsize=(10, 8))
-    top_features = feature_importance.head(15)
-    plt.barh(range(len(top_features)), top_features['importance'])
-    plt.yticks(range(len(top_features)), top_features['feature'])
-    plt.xlabel('Importance')
-    plt.title('Top 15 Feature Importance')
-    plt.gca().invert_yaxis()
-    plt.savefig("outputs/feature_importance.png", dpi=150)
-    plt.close()
-    mlflow.log_artifact("outputs/feature_importance.png")
-    
-    print(f"✅ Accuracy: {accuracy:.4f}")
-    print(f"✅ ROC AUC: {roc_auc:.4f}")
-
-print("\n🎉 Lab 5 เสร็จสิ้น!")
-print("📊 ดู Artifacts ได้ที่ MLflow UI → Artifacts tab")
-```
-
-### ▶️ วิธีรัน
-
-```bash
-python experiments/lab5_custom_artifacts.py
-```
-
-### ✅ ผลลัพธ์ที่คาดหวัง
-
-1. เปิด MLflow UI
-2. เลือก Experiment "lab5-custom-artifacts"
-3. คลิกที่ Run "detailed-analysis"
-4. ไปที่ tab **"Artifacts"** จะเห็น:
-   - confusion_matrix.png
-   - roc_curve.png
-   - feature_importance.png
-   - feature_importance.csv
-
----
-
-## 📝 Lab 6: Query & Search Runs
-
-### 🎯 วัตถุประสงค์
-
-Lab นี้สอนการใช้ **MLflow Python API** เพื่อค้นหา วิเคราะห์ และเปรียบเทียบ Runs แบบ programmatic
-
-### 📖 ทฤษฎีที่เกี่ยวข้อง
-
-**ความสำคัญของ Lab นี้:**
-
-เมื่อมี experiments จำนวนมาก การใช้ UI อาจไม่สะดวก MLflow API ช่วยให้สามารถ automate การค้นหา best models, สร้าง reports อัตโนมัติ, integrate กับ CI/CD pipelines และวิเคราะห์ trends ข้าม experiments
-
-Lab นี้จะสอนการใช้ `MlflowClient` และ `mlflow.search_runs()` เพื่อทำงานเหล่านี้
-
-**สิ่งที่จะได้เรียนรู้:**
-
-- การใช้ `MlflowClient` สำหรับ experiment management
-- การค้นหา runs ด้วย filter expressions
-- การ sort และ limit results
-- การวิเคราะห์ statistics จาก runs
-
-### 💻 โค้ดทดลอง
-
-สร้างไฟล์ `experiments/lab6_query_runs.py`:
-
-```python
-"""
-Lab 6: Query & Search Runs
-==========================
-เรียนรู้การใช้ MLflow API ค้นหาและเปรียบเทียบ Runs
-"""
-
-import mlflow
-from mlflow.tracking import MlflowClient
-import pandas as pd
-
-mlflow.set_tracking_uri("http://127.0.0.1:8080")
-
-print("=" * 50)
-print("Lab 6: Query & Search Runs")
-print("=" * 50)
-
-client = MlflowClient()
-
-# 1. List Experiments
-print("\n📋 1. List All Experiments")
-experiments = client.search_experiments()
-for exp in experiments:
-    print(f"   ID: {exp.experiment_id} | Name: {exp.name}")
-
-# 2. Get Experiment by Name
-print("\n🔍 2. Get Experiment by Name")
-exp_name = "lab4-hyperparameter-tuning"
-experiment = client.get_experiment_by_name(exp_name)
-
-if experiment:
-    exp_id = experiment.experiment_id
-    print(f"   Found: {experiment.name} (ID: {exp_id})")
-    
-    # 3. Search Runs
-    print("\n🔎 3. Search Runs with accuracy > 0.95")
-    runs_high_acc = mlflow.search_runs(
-        experiment_ids=[exp_id],
-        filter_string="metrics.accuracy > 0.95",
-        order_by=["metrics.accuracy DESC"]
-    )
-    print(f"   พบ {len(runs_high_acc)} runs")
-    
-    # 4. Top 5 Runs
-    print("\n📊 4. Top 5 Runs by Accuracy")
-    top_runs = mlflow.search_runs(
-        experiment_ids=[exp_id],
-        order_by=["metrics.accuracy DESC"],
-        max_results=5
+    # บันทึก Model
+    mlflow.sklearn.log_model(
+        sk_model=model,
+        artifact_path="model",
+        signature=signature,
+        input_example=X_train[:3]
     )
     
-    if len(top_runs) > 0:
-        cols = ['run_id', 'params.n_estimators', 'metrics.accuracy']
-        available = [c for c in cols if c in top_runs.columns]
-        print(top_runs[available].to_string(index=False))
-    
-    # 5. Statistics
-    print("\n📈 5. Accuracy Statistics")
-    all_runs = mlflow.search_runs(experiment_ids=[exp_id])
-    if 'metrics.accuracy' in all_runs.columns:
-        print(f"   Mean: {all_runs['metrics.accuracy'].mean():.4f}")
-        print(f"   Max:  {all_runs['metrics.accuracy'].max():.4f}")
-        print(f"   Min:  {all_runs['metrics.accuracy'].min():.4f}")
-else:
-    print(f"   ❌ Experiment '{exp_name}' not found. กรุณารัน Lab 4 ก่อน")
-
-print("\n🎉 Lab 6 เสร็จสิ้น!")
+    sklearn_run_id = mlflow.active_run().info.run_id
 ```
 
-### ▶️ วิธีรัน
-
-```bash
-python experiments/lab6_query_runs.py
-```
-
-### ✅ ผลลัพธ์ที่คาดหวัง
-
-1. แสดงรายการ Experiments ทั้งหมด
-2. แสดง runs ที่มี accuracy > 0.95
-3. แสดง Top 5 runs เรียงตาม accuracy
-4. แสดง statistics ของ accuracy ทั้งหมด
-
----
-
-## 📚 สรุป
-
-### 🎯 สิ่งที่ได้เรียนรู้
-
-| Lab | หัวข้อ | สิ่งที่เรียนรู้ |
-|-----|--------|----------------|
-| 1 | Basic Tracking | log_param, log_metric, log_artifact |
-| 2 | Training Loop | บันทึก Metrics ตาม step/epoch |
-| 3 | Sklearn Autolog | autolog() บันทึกอัตโนมัติ |
-| 4 | Hyperparameter | Grid Search + เปรียบเทียบผล |
-| 5 | Custom Artifacts | Confusion Matrix, ROC, Feature Importance |
-| 6 | Query Runs | ค้นหาและวิเคราะห์ Runs ด้วย API |
-
-### 📌 คำสั่งสำคัญที่ควรจำ
+### 6.2 โหลด Model กลับมาใช้งาน
 
 ```python
-# ตั้งค่าเชื่อมต่อ Server
-mlflow.set_tracking_uri("http://127.0.0.1:8080")
+# โหลด Model
+model_uri = f"runs:/{sklearn_run_id}/model"
 
-# เลือก Experiment
-mlflow.set_experiment("my-experiment")
+# วิธีที่ 1: โหลดเป็น sklearn model
+loaded_model = mlflow.sklearn.load_model(model_uri)
 
-# เริ่ม Run
-with mlflow.start_run(run_name="my-run"):
-    mlflow.log_param("key", value)
-    mlflow.log_metric("accuracy", 0.95)
-    mlflow.log_metric("loss", 0.1, step=epoch)
-    mlflow.log_artifact("file.png")
-    mlflow.set_tag("key", "value")
+# วิธีที่ 2: โหลดเป็น pyfunc (generic)
+pyfunc_model = mlflow.pyfunc.load_model(model_uri)
 
-# Autolog
+# ทดสอบทำนาย
+predictions = loaded_model.predict(X_test[:5])
+```
+
+### รูปแบบ Model URI
+
+| รูปแบบ | ตัวอย่าง | คำอธิบาย |
+|--------|----------|----------|
+| Runs | `runs:/<run_id>/model` | โหลดจาก Run ID |
+| Models | `models:/<name>/<version>` | โหลดจาก Model Registry |
+| Local Path | `/path/to/model` | โหลดจาก local path |
+
+### 6.3 บันทึก PyTorch Model
+
+```python
+import torch
+import torch.nn as nn
+
+class SimpleNN(nn.Module):
+    def __init__(self, input_size, hidden_size, num_classes):
+        super(SimpleNN, self).__init__()
+        self.fc1 = nn.Linear(input_size, hidden_size)
+        self.relu = nn.ReLU()
+        self.fc2 = nn.Linear(hidden_size, num_classes)
+    
+    def forward(self, x):
+        out = self.fc1(x)
+        out = self.relu(out)
+        out = self.fc2(out)
+        return out
+
+with mlflow.start_run(run_name="pytorch-model-demo"):
+    
+    # สร้างและ train model...
+    pytorch_model = SimpleNN(input_size=4, hidden_size=16, num_classes=3)
+    
+    # บันทึก PyTorch Model
+    mlflow.pytorch.log_model(
+        pytorch_model=pytorch_model,
+        artifact_path="pytorch_model",
+        signature=signature,
+        input_example=X_train[:3]
+    )
+```
+
+### 6.4 Autolog
+
+**Autolog** บันทึก Parameters, Metrics และ Model อัตโนมัติ
+
+```python
+from sklearn.linear_model import LogisticRegression
+
+# เปิด Autolog
 mlflow.sklearn.autolog()
 
-# ค้นหา Runs
+with mlflow.start_run(run_name="autolog-demo"):
+    # แค่ train model ตามปกติ
+    model = LogisticRegression(max_iter=200)
+    model.fit(X_train, y_train)
+    # MLflow จะบันทึกทุกอย่างอัตโนมัติ!
+
+# ปิด Autolog
+mlflow.sklearn.autolog(disable=True)
+```
+
+---
+
+## ส่วนที่ 7: Nested Runs
+
+### แนวคิด
+
+**Nested Runs** ใช้จัดกลุ่มการทดลองที่เกี่ยวข้องกัน เหมาะสำหรับ:
+- Hyperparameter Tuning
+- Cross-Validation
+- Ensemble Models
+
+### โครงสร้าง Nested Runs
+
+```
+Parent Run: hyperparameter-tuning
+├── Child Run 1: lr=0.001 → accuracy=0.85
+├── Child Run 2: lr=0.01  → accuracy=0.92 ⭐ Best
+└── Child Run 3: lr=0.1   → accuracy=0.70
+```
+
+### ตัวอย่างโค้ด
+
+```python
+learning_rates = [0.001, 0.01, 0.1]
+
+with mlflow.start_run(run_name="hyperparameter-tuning"):
+    
+    mlflow.log_param("experiment_type", "learning_rate_search")
+    mlflow.log_param("search_space", str(learning_rates))
+    
+    best_accuracy = 0
+    best_lr = None
+    
+    for lr in learning_rates:
+        # สร้าง Child Run (nested=True)
+        with mlflow.start_run(run_name=f"lr-{lr}", nested=True):
+            mlflow.log_param("learning_rate", lr)
+            
+            # Train และคำนวณ accuracy
+            accuracy = train_and_evaluate(lr)
+            
+            mlflow.log_metric("accuracy", accuracy)
+            
+            if accuracy > best_accuracy:
+                best_accuracy = accuracy
+                best_lr = lr
+    
+    # บันทึกผลลัพธ์ที่ดีที่สุดใน Parent Run
+    mlflow.log_metric("best_accuracy", best_accuracy)
+    mlflow.log_param("best_learning_rate", best_lr)
+```
+
+### ข้อดีของ Nested Runs
+
+| ข้อดี | คำอธิบาย |
+|-------|----------|
+| จัดระเบียบ | จัดกลุ่มการทดลองที่เกี่ยวข้องไว้ด้วยกัน |
+| เปรียบเทียบง่าย | เห็นผลการทดลองทั้งหมดในที่เดียว |
+| สรุปผล | Parent Run เก็บผลลัพธ์ที่ดีที่สุด |
+| UI ชัดเจน | แสดงเป็น tree structure ใน MLflow UI |
+
+---
+
+## ส่วนที่ 8: การดูข้อมูลจาก MLflow UI
+
+หลังจากบันทึกข้อมูลการทดลองแล้ว เราสามารถดูและวิเคราะห์ผลลัพธ์ผ่าน MLflow UI ซึ่งเป็น Web Interface ที่ใช้งานง่าย
+
+### 8.1 การเข้าถึง MLflow UI
+
+เปิด Browser แล้วไปที่: [http://127.0.0.1:8080](http://127.0.0.1:8080)
+
+![MLflow UI Homepage](./img/mlflow-ui-home.png)
+
+### 8.2 ส่วนประกอบหลักของ MLflow UI
+
+#### 📁 Experiments Sidebar (แถบด้านซ้าย)
+
+แสดงรายการ Experiments ทั้งหมด สามารถคลิกเลือกเพื่อดู Runs ภายใน
+
+![Experiments List](./img/mlflow-experiments.png)
+
+#### 📋 Runs Table (ตารางกลาง)
+
+แสดงรายการ Runs ทั้งหมดใน Experiment ที่เลือก พร้อมข้อมูล:
+- **Run Name**: ชื่อ Run
+- **Created**: วันเวลาที่สร้าง
+- **Duration**: ระยะเวลาที่ใช้
+- **Parameters**: ค่า Parameters ที่บันทึก
+- **Metrics**: ค่า Metrics ที่บันทึก
+
+![Runs Table](./img/mlflow-runs-table.png)
+
+### 8.3 การดูรายละเอียด Run
+
+คลิกที่ Run Name เพื่อดูรายละเอียด จะเห็นหน้าที่แบ่งเป็น Tabs:
+
+#### Tab: Overview
+แสดงข้อมูลทั่วไปของ Run
+
+![Run Overview](./img/mlflow-run-overview.png)
+
+#### Tab: Parameters
+แสดง Parameters ทั้งหมดที่บันทึก
+
+```
+learning_rate: 0.01
+batch_size: 64
+epochs: 10
+optimizer: adam
+model_type: MLP
+```
+
+#### Tab: Metrics
+แสดง Metrics พร้อมกราฟแสดงการเปลี่ยนแปลงตาม step
+
+![Metrics Graph](./img/mlflow-metrics-graph.png)
+
+#### Tab: Artifacts
+แสดงไฟล์ที่บันทึกไว้ สามารถ Preview หรือ Download ได้
+
+![Artifacts View](./img/mlflow-artifacts.png)
+
+### 8.4 การเปรียบเทียบหลาย Runs
+
+#### วิธีการเปรียบเทียบ:
+
+1. **เลือก Runs**: คลิก checkbox หน้า Runs ที่ต้องการเปรียบเทียบ
+2. **คลิก Compare**: กดปุ่ม "Compare" ที่ด้านบน
+
+![Compare Runs Button](./img/mlflow-compare-button.png)
+
+#### หน้า Compare View:
+
+แสดงการเปรียบเทียบแบบ side-by-side:
+- **Parameters Comparison**: เปรียบเทียบค่า Parameters
+- **Metrics Comparison**: เปรียบเทียบค่า Metrics พร้อมกราฟ
+
+![Compare View](./img/mlflow-compare-view.png)
+
+### 8.5 การค้นหาและ Filter Runs
+
+#### Filter ผ่าน UI:
+
+ใช้ Search box ด้านบนตารางเพื่อ filter Runs
+
+**ตัวอย่าง Filter Syntax:**
+
+| Filter | ความหมาย |
+|--------|----------|
+| `metrics.accuracy > 0.9` | Runs ที่มี accuracy มากกว่า 0.9 |
+| `params.learning_rate = "0.01"` | Runs ที่ใช้ learning_rate = 0.01 |
+| `params.model_type = "MLP"` | Runs ที่ใช้ model_type = MLP |
+| `status = "FINISHED"` | Runs ที่ทำงานเสร็จแล้ว |
+
+![Search Filter](./img/mlflow-search-filter.png)
+
+#### Filter ผ่าน Python:
+
+```python
+# ค้นหา Runs ใน Experiment
 runs = mlflow.search_runs(
-    experiment_ids=["1"],
-    filter_string="metrics.accuracy > 0.9"
+    experiment_names=["mlflow-tracking-lab"],
+    order_by=["start_time DESC"],
+    max_results=10
+)
+
+print("📋 Recent Runs:")
+print("=" * 80)
+for _, row in runs.iterrows():
+    run_name = row.get("tags.mlflow.runName", "N/A")
+    status = row["status"]
+    start_time = row["start_time"]
+    
+    # ดึง metrics (ถ้ามี)
+    accuracy = row.get("metrics.accuracy", "N/A")
+    
+    print(f"  Run: {run_name:<25} | Status: {status:<10} | Accuracy: {accuracy}")
+```
+
+### 8.6 การดู Nested Runs
+
+Nested Runs จะแสดงเป็นโครงสร้าง tree ใน UI:
+
+```
+📁 hyperparameter-tuning (Parent Run)
+├── 📄 lr-0.001 (Child Run) - accuracy: 0.85
+├── 📄 lr-0.01 (Child Run)  - accuracy: 0.92 ⭐
+└── 📄 lr-0.1 (Child Run)   - accuracy: 0.70
+```
+
+![Nested Runs](./img/mlflow-nested-runs.png)
+
+คลิกที่ Parent Run จะเห็น Child Runs ทั้งหมด
+
+### 8.7 การ Download Artifacts
+
+#### วิธี Download:
+
+1. เข้าไปที่หน้า Run Detail
+2. คลิก Tab "Artifacts"
+3. เลือกไฟล์ที่ต้องการ
+4. คลิกปุ่ม Download
+
+![Download Artifacts](./img/mlflow-download.png)
+
+#### Download ผ่าน Python:
+
+```python
+import mlflow
+
+# Download artifacts ทั้งหมดจาก Run
+run_id = "your-run-id-here"
+local_path = mlflow.artifacts.download_artifacts(
+    run_id=run_id,
+    artifact_path="",  # "" = download ทั้งหมด
+    dst_path="./downloaded_artifacts"
+)
+print(f"Downloaded to: {local_path}")
+
+# Download เฉพาะไฟล์
+model_path = mlflow.artifacts.download_artifacts(
+    run_id=run_id,
+    artifact_path="model",
+    dst_path="./my_model"
 )
 ```
 
-### 🔗 แหล่งเรียนรู้เพิ่มเติม
+### 8.8 การจัดการ Tags
+
+Tags ช่วยจัดกลุ่มและค้นหา Runs ได้ง่ายขึ้น
+
+#### เพิ่ม Tags ผ่าน Python:
+
+```python
+with mlflow.start_run(run_name="tagged-run"):
+    # บันทึก Tags
+    mlflow.set_tag("team", "data-science")
+    mlflow.set_tag("version", "v1.0")
+    mlflow.set_tag("environment", "development")
+    
+    # บันทึกหลาย Tags พร้อมกัน
+    mlflow.set_tags({
+        "dataset": "iris",
+        "framework": "sklearn"
+    })
+```
+
+#### ค้นหาด้วย Tags:
+
+```python
+runs = mlflow.search_runs(
+    experiment_names=["mlflow-tracking-lab"],
+    filter_string="tags.team = 'data-science'"
+)
+```
+
+### 8.9 ตัวอย่างโค้ดสำหรับวิเคราะห์ผลการทดลอง
+
+```python
+import mlflow
+import pandas as pd
+
+# ค้นหา Runs ทั้งหมดใน Experiment
+runs = mlflow.search_runs(
+    experiment_names=["mlflow-tracking-lab"],
+    order_by=["metrics.accuracy DESC"],
+    max_results=20
+)
+
+# แสดงสรุปผลการทดลอง
+print("🏆 Top 5 Runs by Accuracy:")
+print("=" * 80)
+
+top_runs = runs.head(5)
+for idx, row in top_runs.iterrows():
+    run_name = row.get("tags.mlflow.runName", "N/A")
+    accuracy = row.get("metrics.accuracy", 0)
+    lr = row.get("params.learning_rate", "N/A")
+    
+    print(f"  {run_name:<30} | Accuracy: {accuracy:.4f} | LR: {lr}")
+
+# วิเคราะห์ความสัมพันธ์ระหว่าง Parameters และ Metrics
+print("\n📊 Analysis:")
+if "params.learning_rate" in runs.columns and "metrics.accuracy" in runs.columns:
+    # แปลง learning_rate เป็น float
+    runs["lr_float"] = pd.to_numeric(runs["params.learning_rate"], errors="coerce")
+    
+    # หา learning_rate ที่ให้ accuracy สูงสุด
+    best_idx = runs["metrics.accuracy"].idxmax()
+    best_lr = runs.loc[best_idx, "params.learning_rate"]
+    best_acc = runs.loc[best_idx, "metrics.accuracy"]
+    
+    print(f"  Best Learning Rate: {best_lr}")
+    print(f"  Best Accuracy: {best_acc:.4f}")
+
+print(f"\n🔗 ดูรายละเอียดเพิ่มเติมได้ที่: http://127.0.0.1:8080")
+```
+
+### 8.10 สรุปความสามารถ MLflow UI
+
+| ฟีเจอร์ | คำอธิบาย | วิธีใช้งาน |
+|---------|----------|-----------|
+| **View Experiments** | ดูรายการ Experiments | คลิกที่ sidebar ซ้าย |
+| **View Runs** | ดูรายการ Runs | คลิกที่ Experiment |
+| **Run Details** | ดูรายละเอียด Run | คลิกที่ Run Name |
+| **Compare Runs** | เปรียบเทียบหลาย Runs | เลือก Runs แล้วกด Compare |
+| **View Metrics Graph** | ดูกราฟ Metrics | Tab Metrics ใน Run Detail |
+| **Download Artifacts** | ดาวน์โหลดไฟล์ | Tab Artifacts แล้วกด Download |
+| **Search & Filter** | ค้นหา Runs | ใช้ Search box |
+| **View Nested Runs** | ดู Parent-Child Runs | คลิกที่ Parent Run |
+
+---
+
+## สรุปและ Best Practices
+
+### สรุปองค์ประกอบหลัก
+
+| องค์ประกอบ | ฟังก์ชันหลัก |
+|------------|--------------|
+| **Experiment** | `mlflow.set_experiment()` |
+| **Run** | `mlflow.start_run()` |
+| **Parameters** | `mlflow.log_param()`, `mlflow.log_params()` |
+| **Metrics** | `mlflow.log_metric()`, `mlflow.log_metrics()` |
+| **Artifacts** | `mlflow.log_artifact()`, `mlflow.log_figure()` |
+| **Model** | `mlflow.<flavor>.log_model()` |
+
+### Best Practices
+
+#### 1. การตั้งชื่อ
+- ✅ ใช้ชื่อที่สื่อความหมาย: `fraud-detection-lstm-v2`
+- ❌ หลีกเลี่ยงชื่อทั่วไป: `test`, `experiment1`
+
+#### 2. การบันทึก Parameters
+- บันทึกทุกค่าที่มีผลต่อผลลัพธ์
+- ใช้ `log_params()` สำหรับหลายค่าพร้อมกัน
+
+#### 3. การบันทึก Metrics
+- บันทึกพร้อม `step` เพื่อติดตามการเปลี่ยนแปลง
+- บันทึกทั้ง training และ validation metrics
+
+#### 4. การบันทึก Artifacts
+- บันทึก plots, configs และ models
+- จัดโครงสร้างโฟลเดอร์ให้ชัดเจน
+
+#### 5. การบันทึก Model
+- ใช้ `signature` และ `input_example`
+- พิจารณาใช้ `autolog()` สำหรับความสะดวก
+
+#### 6. การจัดระเบียบ
+- ใช้ Nested Runs สำหรับ Hyperparameter Tuning
+- ใช้ Tags เพื่อจัดกลุ่ม Runs
+
+---
+
+## 🔗 แหล่งข้อมูลเพิ่มเติม
 
 - [MLflow Documentation](https://mlflow.org/docs/latest/index.html)
 - [MLflow Tracking Guide](https://mlflow.org/docs/latest/tracking.html)
-- [MLflow Python API](https://mlflow.org/docs/latest/python_api/index.html)
+- [MLflow Model Registry](https://mlflow.org/docs/latest/model-registry.html)
+- [MLflow Projects](https://mlflow.org/docs/latest/projects.html)
 
 ---
 
+*เอกสารนี้จัดทำขึ้นสำหรับ MLflow Tracking Lab*
