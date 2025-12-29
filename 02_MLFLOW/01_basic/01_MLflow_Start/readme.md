@@ -103,7 +103,7 @@ python -c "import mlflow; print('MLflow version:', mlflow.__version__)"
 #### 📌 แบบที่ 1: In-Memory (สำหรับทดลองใช้งานเร็ว)
 
 ```bash
-mlflow server --host 127.0.0.1 --port 8080
+nohup mlflow server --host 127.0.0.1 --port 8080 > mlflow.log 2>&1 &
 ```
 
 **ข้อดี:** เริ่มต้นได้เร็ว ไม่ต้องตั้งค่าอะไรเพิ่ม  
@@ -125,11 +125,11 @@ Uvicorn running on http://127.0.0.1:8080 (Press CTRL+C to quit)
 mkdir -p mlruns_db mlartifacts
 
 # 3.2 เปิด Server พร้อม SQLite Backend
-mlflow server \
+nohup mlflow server \
   --host 127.0.0.1 --port 8080 \
   --backend-store-uri sqlite:///mlruns_db/mlflow.db \
   --artifacts-destination ./mlartifacts \
-  --serve-artifacts
+  --serve-artifacts > mlflow.log 2>&1 &
 ```
 
 **🗂️ อธิบายโครงสร้างไฟล์:**
