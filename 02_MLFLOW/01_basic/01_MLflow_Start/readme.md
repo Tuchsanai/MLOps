@@ -124,9 +124,9 @@ Uvicorn running on http://127.0.0.1:8080 (Press CTRL+C to quit)
 # 3.1 สร้างโฟลเดอร์เก็บข้อมูล
 mkdir -p mlruns_db mlartifacts
 
-# 3.2 เปิด Server พร้อม SQLite Backend
+# 3.2 เปิด Server ให้เข้าถึงได้จากทุก IP
 nohup mlflow server \
-  --host 127.0.0.1 --port 8080 \
+  --host 0.0.0.0 --port 8080 \
   --backend-store-uri sqlite:///mlruns_db/mlflow.db \
   --artifacts-destination ./mlartifacts \
   --serve-artifacts > mlflow.log 2>&1 &
