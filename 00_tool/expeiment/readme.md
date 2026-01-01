@@ -1,7 +1,7 @@
 
 
 ```
-docker run -d -p 8081:8888 --name mlflow-container tuchsanai/mlops_mlflow_2568_2:latest 
+docker run -d -p 8888:8888  -p 8080:8080 --name mlflow-container tuchsanai/mlops_mlflow_2568_2:latest 
 ```
 
 
