@@ -1,5 +1,11 @@
 
 
+```
+docker run -d -p 8081:8888 --name mlflow-container tuchsanai/mlops_mlflow_2568_2:latest 
+```
+
+
+
 # Linux Delete existing dev branch (local and remote)
 
 ```
