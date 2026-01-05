@@ -1,48 +1,51 @@
-# 🧪 Lab: การลงทะเบียนโมเดล (Model Registration) ด้วย MLflow
+# 🏛️ MLflow Model Registry: คู่มือทฤษฎีและแบบฝึกหัดปฏิบัติ
 
-## 📋 ภาพรวม
-
-ใน Lab นี้ นักศึกษาจะได้เรียนรู้วิธีการจัดการโมเดล Machine Learning อย่างเป็นระบบด้วย **MLflow Model Registry** ซึ่งเป็นเครื่องมือสำคัญในการทำ MLOps
-
----
-
-## 🎯 วัตถุประสงค์การเรียนรู้
-
-เมื่อจบ Lab นี้ นักศึกษาจะสามารถ:
-
-1. เข้าใจแนวคิดของ Model Registry และความสำคัญใน MLOps
-2. ลงทะเบียนโมเดลเข้าสู่ MLflow Model Registry
-3. จัดการเวอร์ชันของโมเดล (Model Versioning)
-4. เปลี่ยนสถานะของโมเดล (Model Stage Transitions)
-5. โหลดโมเดลจาก Registry มาใช้งาน
+> **วิชา:** MLOps (Machine Learning Operations)  
+> **หัวข้อ:** Model Registry และ Model Lifecycle Management  
+> **ระดับ:** ปริญญาตรี/บัณฑิตศึกษา
 
 ---
 
-## 📚 ความรู้พื้นฐานที่ต้องมี
+## 📋 สารบัญ
 
-- Python เบื้องต้น
-- การใช้งาน Command Line / Terminal
-- ความเข้าใจเรื่อง Virtual Environment
-- ผ่าน Lab การติดตั้งและใช้งาน MLflow เบื้องต้นมาแล้ว
-
----
-
-## 📦 ข้อกำหนดเบื้องต้น (Prerequisites)
-
-| รายการ | รายละเอียด |
-|--------|------------|
-| Python | เวอร์ชัน 3.9 - 3.12 |
-| pip | ตัวจัดการ Package ของ Python |
-| ระบบปฏิบัติการ | Linux หรือ macOS |
-| Port ที่ต้องใช้ | 8080 (สำหรับ MLflow Tracking Server และ UI) |
+1. [บทนำ: ทำไมต้องมี Model Registry?](#1-บทนำ-ทำไมต้องมี-model-registry)
+2. [Machine Learning Lifecycle](#2-machine-learning-lifecycle)
+3. [ปัญหาที่เกิดขึ้นเมื่อไม่มี Model Registry](#3-ปัญหาที่เกิดขึ้นเมื่อไม่มี-model-registry)
+4. [Model Registry คืออะไร?](#4-model-registry-คืออะไร)
+5. [องค์ประกอบหลักของ Model Registry](#5-องค์ประกอบหลักของ-model-registry)
+6. [Model Stages และ Aliases](#6-model-stages-และ-aliases)
+7. [ความสัมพันธ์ระหว่าง Components ใน MLflow](#7-ความสัมพันธ์ระหว่าง-components-ใน-mlflow)
+8. [Best Practices](#8-best-practices)
+9. [คำอธิบายแบบฝึกหัด](#9-คำอธิบายแบบฝึกหัด)
+10. [แหล่งข้อมูลเพิ่มเติม](#10-แหล่งข้อมูลเพิ่มเติม)
 
 ---
 
-## 📚 ทฤษฎีพื้นฐาน
+## 1. บทนำ: ทำไมต้องมี Model Registry?
 
-### 🔄 Machine Learning Lifecycle คืออะไร?
+### 1.1 บริบทของ Machine Learning ในองค์กร
 
-ก่อนที่เราจะเข้าใจ Model Registry เราต้องเข้าใจ **Machine Learning Lifecycle** ก่อน
+ในยุคปัจจุบัน องค์กรต่างๆ นำ Machine Learning มาใช้งานอย่างแพร่หลาย ตั้งแต่การแนะนำสินค้า (Recommendation Systems) ไปจนถึงการตรวจจับการฉ้อโกง (Fraud Detection) แต่ความท้าทายที่สำคัญคือ **การจัดการ Model ที่มีจำนวนมากและเปลี่ยนแปลงบ่อย**
+
+### 1.2 ความท้าทายในการพัฒนา ML
+
+| ความท้าทาย | คำอธิบาย |
+|------------|----------|
+| **Model Proliferation** | จำนวน Model เพิ่มขึ้นอย่างรวดเร็ว ทำให้ยากต่อการจัดการ |
+| **Reproducibility** | ยากที่จะสร้าง Model เดิมซ้ำได้เหมือนเดิมทุกประการ |
+| **Collaboration** | ทีมงานหลายคนทำงานร่วมกันบน Model เดียวกันได้ยาก |
+| **Deployment Complexity** | การนำ Model ไปใช้งานจริงมีความซับซ้อน |
+| **Governance & Compliance** | ต้องมีการตรวจสอบและอนุมัติก่อนใช้งาน |
+
+### 1.3 Model Registry เป็นคำตอบ
+
+**Model Registry** คือระบบจัดการ Model แบบรวมศูนย์ที่ช่วยแก้ปัญหาเหล่านี้ โดยทำหน้าที่เป็น **"Single Source of Truth"** สำหรับ Model ทั้งหมดในองค์กร
+
+---
+
+## 2. Machine Learning Lifecycle
+
+### 2.1 ภาพรวมของ ML Lifecycle
 
 ```
 ┌─────────────────────────────────────────────────────────────────────────────┐
@@ -65,23 +68,54 @@
 └─────────────────────────────────────────────────────────────────────────────┘
 ```
 
-**แต่ละขั้นตอนมีความสำคัญดังนี้:**
+### 2.2 รายละเอียดแต่ละขั้นตอน
 
-| ขั้นตอน | คำอธิบาย | ปัญหาที่พบบ่อย |
-|---------|----------|---------------|
-| Data Collection | รวบรวมข้อมูลจากแหล่งต่างๆ | ข้อมูลไม่สอดคล้องกัน, ขาดการติดตาม |
-| Model Training | ฝึกโมเดลด้วย Algorithm ต่างๆ | ไม่รู้ว่าใช้ hyperparameters อะไร |
-| Model Evaluation | ประเมินประสิทธิภาพโมเดล | เปรียบเทียบโมเดลยาก |
-| Model Deployment | นำโมเดลไปใช้งานจริง | ไม่รู้ว่าโมเดลไหนใช้งานอยู่ |
+#### 2.2.1 Data Collection & Processing
+
+เป็นขั้นตอนแรกที่รวบรวมและเตรียมข้อมูลสำหรับการฝึก Model โดยมีกิจกรรมหลักดังนี้:
+
+- **Data Ingestion:** รวบรวมข้อมูลจากแหล่งต่างๆ (Database, API, Files)
+- **Data Cleaning:** ทำความสะอาดข้อมูล จัดการ Missing Values
+- **Feature Engineering:** สร้าง Features ใหม่จากข้อมูลดิบ
+- **Data Validation:** ตรวจสอบคุณภาพข้อมูล
+
+#### 2.2.2 Model Training
+
+ขั้นตอนการฝึก Model ด้วย Algorithm ต่างๆ:
+
+- **Algorithm Selection:** เลือก Algorithm ที่เหมาะสม
+- **Hyperparameter Tuning:** ปรับค่า Parameters
+- **Cross-Validation:** ตรวจสอบความถูกต้อง
+- **Experiment Tracking:** บันทึกการทดลอง (MLflow Tracking)
+
+#### 2.2.3 Model Evaluation
+
+ประเมินประสิทธิภาพของ Model:
+
+- **Metrics Calculation:** คำนวณ Accuracy, F1-Score, RMSE ฯลฯ
+- **Model Comparison:** เปรียบเทียบ Model หลายตัว
+- **Bias Detection:** ตรวจสอบ Bias ใน Model
+- **A/B Testing:** ทดสอบเปรียบเทียบกับ Model เดิม
+
+#### 2.2.4 Model Deployment
+
+นำ Model ไปใช้งานจริง:
+
+- **Model Packaging:** เตรียม Model สำหรับ Deploy
+- **API Creation:** สร้าง REST API
+- **Containerization:** สร้าง Docker Image
+- **Scaling:** ขยายระบบรองรับ Load
 
 ---
 
-### 🤔 ปัญหาที่เกิดขึ้นเมื่อไม่มี Model Registry
+## 3. ปัญหาที่เกิดขึ้นเมื่อไม่มี Model Registry
 
-ลองนึกภาพสถานการณ์นี้:
+### 3.1 สถานการณ์จำลอง: โฟลเดอร์ที่วุ่นวาย
+
+ลองนึกภาพโปรเจกต์ ML ที่ไม่มีระบบจัดการ:
 
 ```
-📁 โฟลเดอร์โปรเจกต์ของคุณ (ไม่มี Model Registry)
+📁 โปรเจกต์ ML (ไม่มี Model Registry)
 ├── model_v1.pkl
 ├── model_v2.pkl
 ├── model_v2_fixed.pkl
@@ -89,25 +123,46 @@
 ├── model_v2_fixed_final_REAL.pkl      ← 😱 อันไหนดีที่สุด?
 ├── model_best.pkl
 ├── model_best_new.pkl
-└── model_production_maybe.pkl          ← 😵 งง!
+├── model_production_maybe.pkl          ← 😵 งง!
+├── model_john_test.pkl
+├── model_mary_experiment.pkl
+└── model_DONT_DELETE.pkl               ← 😰 ใครจะกล้าลบ?
 ```
 
-**ปัญหาที่พบบ่อย:**
+### 3.2 ปัญหาที่พบบ่อย
 
-| ปัญหา | ผลกระทบ |
-|-------|---------|
-| 🔍 **หาโมเดลไม่เจอ** | ไม่รู้ว่าโมเดลไหนดีที่สุด ต้องฝึกใหม่ |
-| 📊 **ไม่รู้ Hyperparameters** | จำไม่ได้ว่าใช้ค่าอะไรฝึก |
-| 🔄 **ไม่มี Version Control** | ไม่สามารถย้อนกลับไปใช้โมเดลเก่าได้ |
-| 👥 **ทำงานเป็นทีมยาก** | ไม่รู้ว่าใครแก้ไขอะไร เมื่อไหร่ |
-| 🚀 **Deploy ยาก** | ไม่มั่นใจว่าโมเดลไหนพร้อม Production |
-| 📝 **ไม่มี Audit Trail** | ไม่สามารถตรวจสอบย้อนหลังได้ |
+| ปัญหา | คำอธิบาย | ผลกระทบ |
+|-------|----------|---------|
+| 🔍 **หาโมเดลไม่เจอ** | ไม่รู้ว่าโมเดลไหนดีที่สุด | ต้องฝึกใหม่ เสียเวลาและทรัพยากร |
+| 📊 **ไม่รู้ Hyperparameters** | จำไม่ได้ว่าใช้ค่าอะไรฝึก | ไม่สามารถ Reproduce ได้ |
+| 🔄 **ไม่มี Version Control** | ไม่สามารถย้อนกลับไปใช้โมเดลเก่าได้ | เสี่ยงต่อการสูญเสียงานที่ทำไว้ |
+| 👥 **ทำงานเป็นทีมยาก** | ไม่รู้ว่าใครแก้ไขอะไร เมื่อไหร่ | เกิดความขัดแย้งและความสับสน |
+| 🚀 **Deploy ยาก** | ไม่มั่นใจว่าโมเดลไหนพร้อม Production | เสี่ยงต่อการ Deploy Model ที่ไม่ถูกต้อง |
+| 📝 **ไม่มี Audit Trail** | ไม่สามารถตรวจสอบย้อนหลังได้ | ปัญหาด้าน Compliance และ Governance |
+| 🔗 **ไม่มี Lineage** | ไม่รู้ว่า Model มาจากข้อมูลและการทดลองใด | ยากต่อการ Debug และปรับปรุง |
+
+### 3.3 ผลกระทบทางธุรกิจ
+
+- **เสียเวลา:** ต้องหา Model ที่ถูกต้องนานหลายชั่วโมง
+- **เสียเงิน:** ต้องฝึก Model ใหม่เพราะหาของเดิมไม่เจอ
+- **เสี่ยง:** Deploy Model ผิดตัวทำให้ผลลัพธ์ไม่ดี
+- **Compliance:** ไม่สามารถตอบคำถาม Auditor ได้
 
 ---
 
-### 🏛️ Model Registry คืออะไร?
+## 4. Model Registry คืออะไร?
 
-**Model Registry** คือระบบจัดการโมเดลแบบรวมศูนย์ (Centralized Model Management) ที่ช่วยแก้ปัญหาทั้งหมดข้างต้น
+### 4.1 คำนิยาม
+
+**Model Registry** คือระบบจัดการ Machine Learning Model แบบรวมศูนย์ (Centralized Model Management System) ที่ทำหน้าที่:
+
+1. **จัดเก็บ Model** อย่างเป็นระบบ
+2. **ติดตาม Version** ทั้งหมด
+3. **จัดการ Lifecycle** ของ Model
+4. **บันทึก Metadata** ที่เกี่ยวข้อง
+5. **ควบคุมการเข้าถึง** และการ Deploy
+
+### 4.2 โครงสร้างของ Model Registry
 
 ```
 ┌─────────────────────────────────────────────────────────────────────────────┐
@@ -141,33 +196,115 @@
 │  │      └── Run ID: ghi789...                                          │    │
 │  └─────────────────────────────────────────────────────────────────────┘    │
 │                                                                              │
-│  ┌─────────────────────────────────────────────────────────────────────┐    │
-│  │  📦 Registered Model: "sales-predictor"                              │    │
-│  │  ├── 📋 Description: โมเดลพยากรณ์ยอดขาย                               │    │
-│  │  └── ... (versions)                                                  │    │
-│  └─────────────────────────────────────────────────────────────────────┘    │
-│                                                                              │
 └─────────────────────────────────────────────────────────────────────────────┘
 ```
 
----
+### 4.3 ประโยชน์ของ Model Registry
 
-### 🎯 ประโยชน์ของ Model Registry
-
-| ประโยชน์ | คำอธิบาย | ตัวอย่าง |
-|----------|----------|----------|
+| ประโยชน์ | คำอธิบาย | ตัวอย่างการใช้งาน |
+|----------|----------|-------------------|
 | **🔢 Version Control** | ติดตามทุกเวอร์ชันของโมเดล | ย้อนกลับไปใช้ Version 2 ได้ทันที |
 | **📊 Metadata Tracking** | เก็บข้อมูลที่เกี่ยวข้องทั้งหมด | Parameters, Metrics, Artifacts |
 | **🚦 Stage Management** | จัดการสถานะการใช้งาน | Staging → Production |
 | **👥 Collaboration** | ทำงานร่วมกันเป็นทีม | ทุกคนเห็นโมเดลเดียวกัน |
 | **📝 Audit Trail** | ติดตามการเปลี่ยนแปลง | ใครเปลี่ยนอะไร เมื่อไหร่ |
 | **🔗 Lineage** | เชื่อมโยงกับ Experiment | รู้ว่าโมเดลมาจาก Run ไหน |
+| **🔒 Access Control** | ควบคุมสิทธิ์การเข้าถึง | กำหนดว่าใครสามารถ Deploy ได้ |
+| **📦 Standardization** | มาตรฐานการจัดเก็บ | ทุก Model มีโครงสร้างเดียวกัน |
 
 ---
 
-### 🚦 Model Stages (สถานะของโมเดล)
+## 5. องค์ประกอบหลักของ Model Registry
 
-MLflow Model Registry มี 4 สถานะหลัก:
+### 5.1 Registered Model
+
+**Registered Model** คือชื่อที่ใช้เรียก Model ในระบบ เปรียบเสมือน "โปรเจกต์" หนึ่งโปรเจกต์
+
+**คุณสมบัติ:**
+- มีชื่อเฉพาะ (Unique Name)
+- มี Description อธิบายจุดประสงค์
+- มี Tags สำหรับการจัดหมวดหมู่
+- มีหลาย Versions ได้
+
+**ตัวอย่าง:**
+```
+Registered Model: "fraud-detection-xgboost"
+├── Description: "ตรวจจับการฉ้อโกงบัตรเครดิต"
+├── Tags: [classification, xgboost, fraud, production]
+└── Versions: [1, 2, 3, 4, 5]
+```
+
+### 5.2 Model Version
+
+**Model Version** คือ Instance หนึ่งของ Registered Model ที่สร้างจากการฝึกครั้งหนึ่ง
+
+**คุณสมบัติ:**
+- Version Number (1, 2, 3, ...)
+- เชื่อมโยงกับ Run ID
+- มี Stage หรือ Alias
+- มี Metadata และ Artifacts
+
+**ตัวอย่าง:**
+```
+Version 3:
+├── Run ID: abc123xyz
+├── Stage: Production
+├── Alias: champion
+├── Created: 2024-01-25 09:00:00
+├── Metrics: {accuracy: 0.97, f1: 0.96}
+└── Parameters: {n_estimators: 100, max_depth: 10}
+```
+
+### 5.3 Model Artifacts
+
+**Artifacts** คือไฟล์ที่เกี่ยวข้องกับ Model:
+
+| Artifact | คำอธิบาย |
+|----------|----------|
+| **MLmodel** | ไฟล์ YAML ที่อธิบายโครงสร้าง Model |
+| **model.pkl** | ไฟล์ Model (สำหรับ sklearn) |
+| **model.pth** | ไฟล์ Model (สำหรับ PyTorch) |
+| **conda.yaml** | Dependencies สำหรับรัน Model |
+| **requirements.txt** | Python packages ที่ต้องการ |
+| **input_example.json** | ตัวอย่าง Input data |
+
+### 5.4 Metadata
+
+**Metadata** คือข้อมูลที่อธิบาย Model:
+
+```yaml
+# ตัวอย่าง Metadata
+model_name: iris-classifier
+version: 3
+created_by: john.doe@company.com
+created_at: 2024-01-25T09:00:00Z
+
+parameters:
+  algorithm: GradientBoostingClassifier
+  n_estimators: 100
+  learning_rate: 0.1
+  max_depth: 5
+
+metrics:
+  accuracy: 0.97
+  f1_score: 0.96
+  precision: 0.95
+  recall: 0.97
+
+tags:
+  task: classification
+  dataset: iris
+  environment: production
+  approved_by: ML-Team-Lead
+```
+
+---
+
+## 6. Model Stages และ Aliases
+
+### 6.1 Model Stages (Legacy)
+
+MLflow มี 4 Stages หลัก (แบบเดิม):
 
 ```
 ┌─────────────────────────────────────────────────────────────────────────────┐
@@ -175,50 +312,88 @@ MLflow Model Registry มี 4 สถานะหลัก:
 ├─────────────────────────────────────────────────────────────────────────────┤
 │                                                                              │
 │     ┌────────────┐                                                          │
-│     │            │                                                          │
 │     │    None    │  ← โมเดลเพิ่งลงทะเบียน ยังไม่กำหนดสถานะ                    │
 │     │    ⚪      │                                                          │
 │     └─────┬──────┘                                                          │
 │           │                                                                  │
 │           ▼                                                                  │
 │     ┌────────────┐                                                          │
-│     │            │                                                          │
 │     │  Staging   │  ← กำลังทดสอบ (QA/Testing Environment)                    │
 │     │    🟡      │    - ทดสอบ Performance                                    │
-│     │            │    - ทดสอบ Integration                                    │
-│     └─────┬──────┘    - ทดสอบ Edge Cases                                    │
+│     └─────┬──────┘    - ทดสอบ Integration                                    │
 │           │                                                                  │
 │           ▼                                                                  │
 │     ┌────────────┐                                                          │
-│     │            │                                                          │
 │     │ Production │  ← ใช้งานจริง (Live Environment)                          │
 │     │    🟢      │    - ให้บริการ Users จริง                                 │
-│     │            │    - ต้องมี Monitoring                                    │
-│     └─────┬──────┘    - ต้องมี Alerting                                     │
+│     └─────┬──────┘    - ต้องมี Monitoring                                    │
 │           │                                                                  │
 │           ▼                                                                  │
 │     ┌────────────┐                                                          │
-│     │            │                                                          │
 │     │  Archived  │  ← เก็บถาวร (ไม่ใช้งานแล้ว แต่ยังเข้าถึงได้)               │
 │     │    ⚫      │    - เก็บไว้ Reference                                    │
-│     │            │    - สามารถ Rollback ได้                                  │
-│     └────────────┘                                                          │
+│     └────────────┘    - สามารถ Rollback ได้                                  │
 │                                                                              │
 └─────────────────────────────────────────────────────────────────────────────┘
 ```
 
 **รายละเอียดแต่ละ Stage:**
 
-| Stage | สัญลักษณ์ | คำอธิบาย | ใครใช้งาน | ตัวอย่าง Use Case |
-|-------|----------|----------|----------|------------------|
+| Stage | สัญลักษณ์ | คำอธิบาย | ใครใช้งาน | Use Case |
+|-------|----------|----------|----------|----------|
 | **None** | ⚪ | สถานะเริ่มต้น | Data Scientists | เพิ่งฝึกเสร็จ กำลังประเมินผล |
 | **Staging** | 🟡 | ทดสอบก่อน Production | QA Team, ML Engineers | ทดสอบกับข้อมูลจริงในสภาพแวดล้อมทดสอบ |
 | **Production** | 🟢 | ใช้งานจริง | End Users | ให้บริการผ่าน API |
 | **Archived** | ⚫ | เก็บถาวร | ทุกคน (อ่านอย่างเดียว) | เก็บโมเดลเก่าไว้ Reference |
 
+### 6.2 Model Aliases (MLflow 2.x - แนะนำ)
+
+ใน MLflow 2.x แนะนำให้ใช้ **Model Aliases** แทน Stages เดิม เนื่องจากมีความยืดหยุ่นมากกว่า
+
+**ข้อดีของ Aliases:**
+- กำหนดชื่อได้เอง (ไม่จำกัดแค่ 4 ตัวเลือก)
+- สามารถมีหลาย Alias ได้ (เช่น "champion" และ "latest")
+- เปลี่ยนแปลงได้ง่าย
+
+**Aliases ที่นิยมใช้:**
+
+| Alias | คำอธิบาย | Use Case |
+|-------|----------|----------|
+| **champion** | Model ที่ดีที่สุดในปัจจุบัน | ใช้ใน Production |
+| **challenger** | Model ที่กำลังทดสอบเพื่อแทน champion | A/B Testing |
+| **baseline** | Model แรกสำหรับเปรียบเทียบ | Benchmark |
+| **staging** | Model ที่กำลัง QA | Pre-production testing |
+| **latest** | Model ล่าสุดที่ฝึก | Development |
+
+**ตัวอย่างการใช้งาน:**
+
+```python
+# กำหนด Alias
+client.set_registered_model_alias(
+    name="fraud-detector",
+    alias="champion",
+    version="5"
+)
+
+# โหลด Model จาก Alias
+model = mlflow.pyfunc.load_model("models:/fraud-detector@champion")
+```
+
+### 6.3 เปรียบเทียบ Stages vs Aliases
+
+| คุณสมบัติ | Stages (Legacy) | Aliases (แนะนำ) |
+|-----------|-----------------|-----------------|
+| จำนวนตัวเลือก | 4 ตัว (None, Staging, Production, Archived) | ไม่จำกัด |
+| ความยืดหยุ่น | ต่ำ | สูง |
+| การเปลี่ยนชื่อ | ไม่ได้ | ได้ |
+| Multiple Labels | ไม่ได้ (1 Version = 1 Stage) | ได้ (1 Version = หลาย Aliases) |
+| MLflow Version | ทุก Version | 2.x ขึ้นไป |
+
 ---
 
-### 🔗 ความสัมพันธ์ระหว่าง Components ใน MLflow
+## 7. ความสัมพันธ์ระหว่าง Components ใน MLflow
+
+### 7.1 ภาพรวม
 
 ```
 ┌─────────────────────────────────────────────────────────────────────────────┐
@@ -230,1433 +405,492 @@ MLflow Model Registry มี 4 สถานะหลัก:
 │  │  ┌─────────────────────────────────────────────────────────────┐    │    │
 │  │  │  📁 Experiment: "iris-classification"                        │    │    │
 │  │  │  ├── 🏃 Run 1: random-forest-v1                              │    │    │
-│  │  │  │   ├── Parameters: {n_estimators: 50, max_depth: 5}       │    │    │
-│  │  │  │   ├── Metrics: {accuracy: 0.92, f1: 0.91}                │    │    │
-│  │  │  │   └── Artifacts: [model.pkl, confusion_matrix.png]       │    │    │
+│  │  │  │   ├── Parameters: {n_estimators: 50}                     │    │    │
+│  │  │  │   ├── Metrics: {accuracy: 0.92}                          │    │    │
+│  │  │  │   └── Artifacts: [model.pkl]                             │    │    │
 │  │  │  │                           │                               │    │    │
 │  │  │  │                           │  register_model()             │    │    │
 │  │  │  │                           ▼                               │    │    │
-│  │  │  ├── 🏃 Run 2: random-forest-v2  ─────────────────────────┐  │    │    │
-│  │  │  │   ├── Parameters: {n_estimators: 100, max_depth: 10}   │  │    │    │
-│  │  │  │   └── Metrics: {accuracy: 0.95, f1: 0.94}              │  │    │    │
-│  │  │  │                           │                             │  │    │    │
-│  │  │  │                           ▼                             │  │    │    │
+│  │  │  ├── 🏃 Run 2: random-forest-v2  ────────────────────────┐   │    │    │
+│  │  │  │   └── Metrics: {accuracy: 0.95}                       │   │    │    │
+│  │  │  │                           │                            │   │    │    │
+│  │  │  │                           ▼                            │   │    │    │
 │  │  │  └── 🏃 Run 3: gradient-boosting  ───────────────────────┐│  │    │    │
-│  │  │      ├── Parameters: {n_estimators: 100, lr: 0.1}        ││  │    │    │
-│  │  │      └── Metrics: {accuracy: 0.97, f1: 0.96}             ││  │    │    │
-│  │  │                           │                               ││  │    │    │
-│  │  └───────────────────────────│───────────────────────────────┘│  │    │    │
-│  └──────────────────────────────│────────────────────────────────┘  │    │    │
+│  │  │      └── Metrics: {accuracy: 0.97}                       ││  │    │    │
+│  │  └──────────────────────────────────────────────────────────┘│  │    │    │
+│  └─────────────────────────────────────────────────────────────────┘    │    │
 │                                 │                                    │    │    │
 │                                 ▼                                    ▼    │    │
 │  ┌─────────────────────────────────────────────────────────────────────┐    │
 │  │                    🏛️ MLflow Model Registry                         │    │
-│  │  ┌─────────────────────────────────────────────────────────────┐    │    │
-│  │  │  📦 Registered Model: "iris-classifier"                      │    │    │
-│  │  │  ├── Version 1 ← from Run 1 (Stage: Archived)               │    │    │
-│  │  │  ├── Version 2 ← from Run 2 (Stage: Staging)                │    │    │
-│  │  │  └── Version 3 ← from Run 3 (Stage: Production)             │    │    │
-│  │  └─────────────────────────────────────────────────────────────┘    │    │
-│  └─────────────────────────────────────────────────────────────────────┘    │
-│                                 │                                            │
-│                                 ▼                                            │
-│  ┌─────────────────────────────────────────────────────────────────────┐    │
-│  │                    🚀 MLflow Model Serving                          │    │
-│  │  ┌─────────────────────────────────────────────────────────────┐    │    │
-│  │  │  🌐 REST API Endpoint                                        │    │    │
-│  │  │  └── POST /invocations                                       │    │    │
-│  │  │      └── Uses: models:/iris-classifier@production            │    │    │
-│  │  └─────────────────────────────────────────────────────────────┘    │    │
+│  │  ├── Version 1 ← from Run 1 (Alias: baseline)                       │    │
+│  │  ├── Version 2 ← from Run 2 (Alias: staging)                        │    │
+│  │  └── Version 3 ← from Run 3 (Alias: champion)                       │    │
 │  └─────────────────────────────────────────────────────────────────────┘    │
 │                                                                              │
 └─────────────────────────────────────────────────────────────────────────────┘
 ```
 
----
+### 7.2 การไหลของข้อมูล
 
-### 📋 Model URI Formats
+1. **Experiment** → เป็น Container สำหรับจัดกลุ่ม Runs
+2. **Run** → บันทึกการทดลองหนึ่งครั้ง (Parameters, Metrics, Artifacts)
+3. **Model Artifact** → ไฟล์ Model ที่บันทึกไว้ใน Run
+4. **Registered Model** → Model ที่ลงทะเบียนใน Registry
+5. **Model Version** → เวอร์ชันของ Registered Model ที่เชื่อมกับ Run
 
-เมื่อต้องการโหลดโมเดลจาก Registry สามารถใช้ URI ได้หลายรูปแบบ:
+### 7.3 ความสัมพันธ์แบบละเอียด
 
-```
-┌─────────────────────────────────────────────────────────────────────────────┐
-│                          Model URI Formats                                   │
-├─────────────────────────────────────────────────────────────────────────────┤
-│                                                                              │
-│  📌 โหลดด้วย Version Number                                                  │
-│  ┌─────────────────────────────────────────────────────────────────────┐    │
-│  │  models:/<model_name>/<version>                                      │    │
-│  │                                                                      │    │
-│  │  ตัวอย่าง:                                                            │    │
-│  │  • models:/iris-classifier/1     → โหลด Version 1                    │    │
-│  │  • models:/iris-classifier/3     → โหลด Version 3                    │    │
-│  │  • models:/sales-predictor/5     → โหลด Version 5                    │    │
-│  └─────────────────────────────────────────────────────────────────────┘    │
-│                                                                              │
-│  📌 โหลดด้วย Stage (แนะนำ ⭐)                                                │
-│  ┌─────────────────────────────────────────────────────────────────────┐    │
-│  │  models:/<model_name>@<stage>                                        │    │
-│  │                                                                      │    │
-│  │  ตัวอย่าง:                                                            │    │
-│  │  • models:/iris-classifier@production  → โหลดโมเดลที่ใช้งานจริง       │    │
-│  │  • models:/iris-classifier@staging     → โหลดโมเดลที่กำลังทดสอบ       │    │
-│  │  • models:/sales-predictor@production  → โหลดโมเดล Production        │    │
-│  └─────────────────────────────────────────────────────────────────────┘    │
-│                                                                              │
-│  📌 โหลด Version ล่าสุด                                                      │
-│  ┌─────────────────────────────────────────────────────────────────────┐    │
-│  │  models:/<model_name>/latest                                         │    │
-│  │                                                                      │    │
-│  │  ตัวอย่าง:                                                            │    │
-│  │  • models:/iris-classifier/latest    → โหลด Version ล่าสุด           │    │
-│  └─────────────────────────────────────────────────────────────────────┘    │
-│                                                                              │
-│  💡 ทำไมควรใช้ @stage?                                                       │
-│  ┌─────────────────────────────────────────────────────────────────────┐    │
-│  │  ✅ ไม่ต้องแก้ Code เมื่อมี Version ใหม่                               │    │
-│  │  ✅ แค่เปลี่ยน Stage ของ Version ที่ต้องการ                           │    │
-│  │  ✅ Code ที่ใช้ @production จะโหลดโมเดลใหม่อัตโนมัติ                    │    │
-│  │  ✅ ลด Human Error จากการใส่ Version ผิด                             │    │
-│  └─────────────────────────────────────────────────────────────────────┘    │
-│                                                                              │
-└─────────────────────────────────────────────────────────────────────────────┘
-```
+| Component A | ความสัมพันธ์ | Component B |
+|-------------|-------------|-------------|
+| Experiment | มีหลาย | Runs |
+| Run | มีหนึ่ง | Model Artifact |
+| Run | ลงทะเบียนเป็น | Model Version |
+| Registered Model | มีหลาย | Model Versions |
+| Model Version | เชื่อมกับ | Run (ผ่าน Run ID) |
+| Model Version | มีได้หลาย | Aliases |
 
 ---
 
-## 🗺️ Lab Pipeline Overview
+## 8. Best Practices
 
-### ภาพรวมของ Lab ทั้งหมด
+### 8.1 การตั้งชื่อ Model
+
+**หลักการ:** ใช้ชื่อที่สื่อความหมาย มีโครงสร้าง และหาได้ง่าย
+
+| ✅ ชื่อที่ดี | ❌ ชื่อที่ควรหลีกเลี่ยง | เหตุผล |
+|-------------|------------------------|--------|
+| `fraud-detection-xgboost` | `model1` | ไม่สื่อความหมาย |
+| `customer-churn-predictor` | `test` | ไม่ชัดเจน |
+| `image-classifier-resnet50` | `my_model` | ไม่เฉพาะเจาะจง |
+| `nlp-sentiment-bert` | `final_model_v2_REAL` | สับสน |
+| `product-recommender-als` | `model_good` | ไม่บอกรายละเอียด |
+
+**รูปแบบแนะนำ:**
+```
+<use-case>-<algorithm>[-<variant>]
+
+ตัวอย่าง:
+- fraud-detection-xgboost
+- fraud-detection-xgboost-balanced
+- customer-churn-lgbm-v2
+```
+
+### 8.2 การใช้ Tags
+
+**Tags สำหรับ Registered Model:**
+
+| Tag Key | ตัวอย่าง Values | วัตถุประสงค์ |
+|---------|-----------------|-------------|
+| `task` | classification, regression, clustering | ประเภทงาน |
+| `framework` | sklearn, pytorch, tensorflow | Framework ที่ใช้ |
+| `team` | data-science, ml-engineering | ทีมที่รับผิดชอบ |
+| `domain` | fraud, recommendation, nlp | โดเมนธุรกิจ |
+| `owner` | john.doe@company.com | เจ้าของ Model |
+
+**Tags สำหรับ Model Version:**
+
+| Tag Key | ตัวอย่าง Values | วัตถุประสงค์ |
+|---------|-----------------|-------------|
+| `deployment_status` | production, staging, retired | สถานะการ Deploy |
+| `approved_by` | ML-Team-Lead, Data-Science-Manager | ผู้อนุมัติ |
+| `approval_date` | 2024-01-25 | วันที่อนุมัติ |
+| `experiment_type` | baseline, hyperparameter-tuning | ประเภทการทดลอง |
+| `data_version` | v2.3, 2024-01-15 | เวอร์ชันข้อมูลที่ใช้ |
+
+### 8.3 การใช้ Aliases
+
+**Aliases ที่แนะนำ:**
+
+| Alias | Use Case | ควรมีกี่ Version |
+|-------|----------|-----------------|
+| `champion` | Model ที่ใช้ใน Production | 1 |
+| `challenger` | Model ที่กำลัง A/B Test | 0-1 |
+| `baseline` | Model แรกสำหรับเปรียบเทียบ | 1 |
+| `staging` | Model ที่กำลัง QA | 0-1 |
+| `shadow` | Model ที่รันคู่กับ champion แต่ไม่ส่งผลลัพธ์ | 0-1 |
+
+### 8.4 Workflow แนะนำ
 
 ```
-┌─────────────────────────────────────────────────────────────────────────────┐
-│                         🗺️ Lab Pipeline Overview                            │
-├─────────────────────────────────────────────────────────────────────────────┤
-│                                                                              │
-│  ┌─────────────────────────────────────────────────────────────────────┐    │
-│  │  🛠️ SETUP: เตรียมสภาพแวดล้อม                                         │    │
-│  │  ├── สร้างโฟลเดอร์ mlflowserver-lab                                  │    │
-│  │  ├── สร้าง Virtual Environment                                       │    │
-│  │  ├── ติดตั้ง Packages                                                │    │
-│  │  └── เปิด MLflow Server                                              │    │
-│  └─────────────────────────────────────────────────────────────────────┘    │
-│                              │                                               │
-│                              ▼                                               │
-│  ┌─────────────────────────────────────────────────────────────────────┐    │
-│  │  🔬 LAB 1: ฝึกและลงทะเบียนโมเดล                                       │    │
-│  │  ├── 📊 เตรียมข้อมูล Iris Dataset                                    │    │
-│  │  ├── 🎯 ฝึก RandomForest Model                                       │    │
-│  │  ├── 📈 บันทึก Parameters & Metrics                                  │    │
-│  │  └── 📦 ลงทะเบียนโมเดลเป็น Version 1                                  │    │
-│  │                                                                      │    │
-│  │  Output: iris-classifier (Version 1)                                 │    │
-│  └─────────────────────────────────────────────────────────────────────┘    │
-│                              │                                               │
-│                              ▼                                               │
-│  ┌─────────────────────────────────────────────────────────────────────┐    │
-│  │  🔬 LAB 2: สร้างหลาย Versions                                         │    │
-│  │  ├── 🔄 ปรับ Hyperparameters → Version 2                             │    │
-│  │  ├── 🔄 เปลี่ยน Algorithm → Version 3                                │    │
-│  │  └── 📋 ดูรายการ Versions ทั้งหมด                                     │    │
-│  │                                                                      │    │
-│  │  Output: iris-classifier (Version 1, 2, 3)                           │    │
-│  └─────────────────────────────────────────────────────────────────────┘    │
-│                              │                                               │
-│                              ▼                                               │
-│  ┌─────────────────────────────────────────────────────────────────────┐    │
-│  │  🔬 LAB 3: จัดการสถานะโมเดล                                           │    │
-│  │  ├── ⚫ Version 1 → Archived                                         │    │
-│  │  ├── 🟡 Version 2 → Staging                                          │    │
-│  │  ├── 🟢 Version 3 → Production                                       │    │
-│  │  └── 📝 เพิ่ม Description                                            │    │
-│  │                                                                      │    │
-│  │  Output: โมเดลพร้อม Stages และ Descriptions                          │    │
-│  └─────────────────────────────────────────────────────────────────────┘    │
-│                              │                                               │
-│                              ▼                                               │
-│  ┌─────────────────────────────────────────────────────────────────────┐    │
-│  │  🔬 LAB 4: โหลดโมเดลจาก Registry                                      │    │
-│  │  ├── 📥 โหลดด้วย Version Number                                      │    │
-│  │  ├── 📥 โหลดด้วย Stage (@production, @staging)                       │    │
-│  │  ├── 📥 โหลดเป็น PyFunc Model                                        │    │
-│  │  └── 🔮 ทดสอบ Prediction                                             │    │
-│  │                                                                      │    │
-│  │  Output: เข้าใจวิธีโหลดโมเดลหลายรูปแบบ                                 │    │
-│  └─────────────────────────────────────────────────────────────────────┘    │
-│                              │                                               │
-│                              ▼                                               │
-│  ┌─────────────────────────────────────────────────────────────────────┐    │
-│  │  🔬 LAB 5: สร้าง REST API                                             │    │
-│  │  ├── 🌐 สร้าง Flask Application                                      │    │
-│  │  ├── 🔌 Endpoints: /health, /predict, /model-info                    │    │
-│  │  └── 🧪 ทดสอบด้วย curl                                               │    │
-│  │                                                                      │    │
-│  │  Output: REST API พร้อมใช้งาน                                        │    │
-│  └─────────────────────────────────────────────────────────────────────┘    │
-│                              │                                               │
-│                              ▼                                               │
-│  ┌─────────────────────────────────────────────────────────────────────┐    │
-│  │  🔬 LAB 6: Automated Pipeline (Advanced)                             │    │
-│  │  ├── 🔄 Auto-compare Staging vs Production                           │    │
-│  │  ├── 🚀 Auto-promote ถ้า Staging ดีกว่า                               │    │
-│  │  └── 📊 Generate Comparison Report                                   │    │
-│  │                                                                      │    │
-│  │  Output: Automated Model Promotion Pipeline                          │    │
-│  └─────────────────────────────────────────────────────────────────────┘    │
-│                                                                              │
-└─────────────────────────────────────────────────────────────────────────────┘
+┌─────────────────────────────────────────────────────────────────┐
+│                    Model Promotion Workflow                      │
+├─────────────────────────────────────────────────────────────────┤
+│                                                                  │
+│   1. Train Model                                                │
+│      └── บันทึกด้วย MLflow Tracking                              │
+│                                                                  │
+│   2. Register Model                                             │
+│      └── ลงทะเบียนใน Registry (ยังไม่มี Alias)                   │
+│                                                                  │
+│   3. Internal Testing                                           │
+│      └── ทดสอบโดย Data Scientists                                │
+│                                                                  │
+│   4. Assign "staging" Alias                                     │
+│      └── ส่งให้ QA Team ทดสอบ                                    │
+│                                                                  │
+│   5. QA Testing                                                 │
+│      ├── Performance Testing                                    │
+│      ├── Integration Testing                                    │
+│      └── Load Testing                                           │
+│                                                                  │
+│   6. Approval                                                   │
+│      └── ได้รับการอนุมัติจาก ML Team Lead                        │
+│                                                                  │
+│   7. Assign "champion" Alias                                    │
+│      └── ย้ายจาก staging เป็น champion                          │
+│                                                                  │
+│   8. Production Deployment                                      │
+│      └── Deploy และเริ่มให้บริการ                                 │
+│                                                                  │
+│   9. Monitoring                                                 │
+│      └── ติดตาม Performance ใน Production                        │
+│                                                                  │
+└─────────────────────────────────────────────────────────────────┘
 ```
+
+### 8.5 ข้อควรระวัง
+
+| ⚠️ ข้อควรระวัง | 💡 คำแนะนำ |
+|----------------|-----------|
+| อย่าลบ Model Version ที่เคยใช้ Production | ใช้ Archive หรือลบ Alias แทน |
+| อย่าลืมบันทึก Description และ Tags | ทำให้หาและเข้าใจ Model ได้ง่าย |
+| อย่ามี Model Version มากเกินไป | ลบหรือ Archive เวอร์ชันที่ไม่ใช้ |
+| อย่าใช้ชื่อ Model ที่ซ้ำซ้อน | ใช้ Naming Convention ที่ชัดเจน |
+| อย่าลืมทดสอบก่อน Promote | ใช้ staging alias สำหรับ QA |
 
 ---
 
-### 🔄 Data Flow Diagram
+## 9. คำอธิบายแบบฝึกหัด
 
-```
-┌─────────────────────────────────────────────────────────────────────────────┐
-│                           Data Flow Diagram                                  │
-├─────────────────────────────────────────────────────────────────────────────┤
-│                                                                              │
-│   ┌──────────────┐                                                          │
-│   │              │                                                          │
-│   │  Iris Data   │                                                          │
-│   │   Dataset    │                                                          │
-│   │              │                                                          │
-│   └──────┬───────┘                                                          │
-│          │                                                                   │
-│          ▼                                                                   │
-│   ┌──────────────┐    ┌──────────────┐    ┌──────────────┐                  │
-│   │              │    │              │    │              │                  │
-│   │    Train     │───▶│   Evaluate   │───▶│   Register   │                  │
-│   │    Model     │    │    Model     │    │    Model     │                  │
-│   │              │    │              │    │              │                  │
-│   └──────────────┘    └──────────────┘    └──────┬───────┘                  │
-│                                                   │                          │
-│          ┌────────────────────────────────────────┘                          │
-│          │                                                                   │
-│          ▼                                                                   │
-│   ┌──────────────────────────────────────────────────────────┐              │
-│   │                                                          │              │
-│   │                   MLflow Model Registry                  │              │
-│   │  ┌────────────┐  ┌────────────┐  ┌────────────┐         │              │
-│   │  │ Version 1  │  │ Version 2  │  │ Version 3  │         │              │
-│   │  │  Archived  │  │  Staging   │  │ Production │         │              │
-│   │  └────────────┘  └─────┬──────┘  └─────┬──────┘         │              │
-│   │                        │               │                 │              │
-│   └────────────────────────│───────────────│─────────────────┘              │
-│                            │               │                                 │
-│          ┌─────────────────┘               └─────────────────┐              │
-│          │                                                   │              │
-│          ▼                                                   ▼              │
-│   ┌──────────────┐                                    ┌──────────────┐      │
-│   │              │                                    │              │      │
-│   │   Testing    │                                    │  Production  │      │
-│   │ Environment  │                                    │     API      │      │
-│   │              │                                    │              │      │
-│   └──────────────┘                                    └──────┬───────┘      │
-│                                                              │              │
-│                                                              ▼              │
-│                                                       ┌──────────────┐      │
-│                                                       │              │      │
-│                                                       │    Users     │      │
-│                                                       │              │      │
-│                                                       └──────────────┘      │
-│                                                                              │
-└─────────────────────────────────────────────────────────────────────────────┘
-```
+### 9.1 ภาพรวมแบบฝึกหัด
 
----
+แบบฝึกหัดนี้ออกแบบมาเพื่อให้นักศึกษาได้ลงมือปฏิบัติจริงกับ MLflow Model Registry ครอบคลุมตั้งแต่พื้นฐานจนถึงการใช้งานขั้นสูง
 
-## 🛠️ การเตรียมสภาพแวดล้อม
+**วัตถุประสงค์การเรียนรู้:**
+1. เข้าใจแนวคิดและประโยชน์ของ Model Registry
+2. สามารถลงทะเบียน Model เข้า Registry ได้
+3. จัดการ Model Versions และ Aliases ได้
+4. โหลด Model จาก Registry มาใช้งานได้
+5. เข้าใจ Model Lifecycle Management
 
-### ขั้นตอนที่ 1: สร้างโฟลเดอร์สำหรับ Lab
+### 9.2 โครงสร้างแบบฝึกหัด
 
-```bash
-# สร้างโฟลเดอร์สำหรับเก็บไฟล์ Lab
-mkdir -p mlflowserver-lab
+แบบฝึกหัดแบ่งเป็น 11 ส่วน:
 
-# เข้าไปในโฟลเดอร์
-cd mlflowserver-lab
-```
+| ส่วน | หัวข้อ | เนื้อหาสำคัญ |
+|------|--------|-------------|
+| 1 | การเชื่อมต่อ MLflow Server | ตั้งค่า Tracking URI, สร้าง MLflow Client |
+| 2 | การสร้างและลงทะเบียน Model (Scikit-learn) | 2 วิธีลงทะเบียน: พร้อม Train และ ภายหลัง |
+| 3 | การดูข้อมูล Registered Models | ค้นหาและดูรายละเอียด Models |
+| 4 | การจัดการ Model Stages (Aliases) | กำหนด Alias ให้ Model Versions |
+| 5 | การโหลด Model จาก Registry | โหลด Model จาก ARTIFACTS_BASE |
+| 6 | การลงทะเบียน PyTorch Model | ทำงานกับ Deep Learning Model |
+| 7 | การโหลด PyTorch Model | โหลด PyTorch Model จาก Registry |
+| 8 | การค้นหา Models และ Versions | ค้นหาด้วย Filter String |
+| 9 | การลบ Model และ Version | Destructive Operations |
+| 10 | Best Practices | แนวปฏิบัติที่ดี |
+| 11 | การดู Registry ผ่าน UI | ใช้งาน MLflow Web UI |
 
----
+### 9.3 รายละเอียดแต่ละส่วน
 
-### ขั้นตอนที่ 2: สร้าง Virtual Environment
+#### ส่วนที่ 1: การเชื่อมต่อ MLflow Server
 
-> 💡 **ทำไมต้องใช้ Virtual Environment?**
-> 
-> Virtual Environment ช่วยแยก Package ของแต่ละโปรเจกต์ออกจากกัน ป้องกันปัญหา Package Version ขัดแย้งกัน
-
-```bash
-# 2.1 สร้าง Virtual Environment ชื่อ .venv
-python -m venv .venv
-
-# 2.2 เปิดใช้งาน Virtual Environment
-source .venv/bin/activate
-
-# 2.3 อัพเดท pip ให้เป็นเวอร์ชันล่าสุด
-python -m pip install --upgrade pip
-```
-
-✅ **ตรวจสอบ:** เมื่อเปิดใช้งานสำเร็จ จะเห็น `(.venv)` นำหน้า prompt
-
----
-
-### ขั้นตอนที่ 3: ติดตั้ง Package ที่จำเป็น
-
-```bash
-pip install mlflow[extras] scikit-learn pandas numpy
-```
-
-**รายละเอียด Package:**
-
-| Package | หน้าที่ |
-|---------|--------|
-| `mlflow[extras]` | MLflow เวอร์ชันสมบูรณ์ รวม Model Serving, SQL Storage และ Dependencies ทั้งหมด |
-| `scikit-learn` | Library สำหรับ Machine Learning |
-| `pandas` | จัดการข้อมูลแบบ DataFrame |
-| `numpy` | คำนวณทางคณิตศาสตร์ |
-
-✅ **ตรวจสอบ:** รันคำสั่งนี้เพื่อยืนยันการติดตั้ง:
-
-```bash
-python -c "import mlflow; print('MLflow version:', mlflow.__version__)"
-```
-
----
-
-### ขั้นตอนที่ 4: เปิดใช้งาน MLflow Tracking Server
-
-> ⚠️ **สำคัญ:** ให้นักศึกษา **เลือกทำเพียงแบบเดียว** (แบบที่ 1 หรือ แบบที่ 2) ไม่ต้องทำทั้ง 2 แบบ
-
-| แบบ | ข้อดี | ข้อเสีย | เหมาะสำหรับ |
-|-----|-------|---------|-------------|
-| แบบที่ 1: In-Memory | เริ่มต้นเร็ว ไม่ต้องตั้งค่า | ข้อมูลหายเมื่อปิด Server | ทดลองใช้งานเร็วๆ |
-| แบบที่ 2: Persistent | ข้อมูลไม่หาย | ต้องสร้างโฟลเดอร์เพิ่ม | ใช้งานจริง ⭐ |
-
----
-
-#### 📌 แบบที่ 1: In-Memory (สำหรับทดลองใช้งานเร็ว)
-
-```bash
-mlflow server --host 127.0.0.1 --port 8080
-```
-
-**ข้อดี:** เริ่มต้นได้เร็ว ไม่ต้องตั้งค่าอะไรเพิ่ม  
-**ข้อเสีย:** ข้อมูลหายเมื่อปิด Server
-
-**ผลลัพธ์ที่คาดหวัง:**
-
-```
-INFO:     Started server process [28550]
-INFO:     Application startup complete.
-Uvicorn running on http://127.0.0.1:8080 (Press CTRL+C to quit)
-```
-
----
-
-#### 📌 แบบที่ 2: Persistent Storage (แนะนำสำหรับใช้งานจริง) ⭐
-
-```bash
-# 4.1 สร้างโฟลเดอร์เก็บข้อมูล
-mkdir -p mlruns_db mlartifacts
-
-# 4.2 เปิด Server พร้อม SQLite Backend
-mlflow server \
-  --host 127.0.0.1 --port 8080 \
-  --backend-store-uri sqlite:///mlruns_db/mlflow.db \
-  --artifacts-destination ./mlartifacts \
-  --serve-artifacts
-```
-
-**🗂️ โครงสร้างไฟล์หลังจากสร้าง:**
-
-```
-mlflowserver-lab/
-├── mlruns_db/
-│   └── mlflow.db          # ฐานข้อมูล SQLite เก็บ Experiment และ Run Metadata
-├── mlartifacts/           # โฟลเดอร์เก็บ Model Files และ Artifacts
-└── .venv/                 # Virtual Environment
-```
-
-> 💡 **หมายเหตุ:** เปิด Terminal นี้ทิ้งไว้ แล้วทำงานใน **Terminal ใหม่**
-
----
-
-### ขั้นตอนที่ 5: ตรวจสอบการทำงาน
-
-เปิด Browser แล้วไปที่: `http://127.0.0.1:8080`
-
-✅ **ผลลัพธ์ที่คาดหวัง:** เห็นหน้า MLflow UI
-
----
-
-## 🔬 แบบฝึกหัดที่ 1: การฝึกและลงทะเบียนโมเดล
-
-### 🎯 เป้าหมาย
-
-- ฝึกโมเดล RandomForest
-- บันทึก Parameters และ Metrics
-- ลงทะเบียนโมเดลเข้า Model Registry
-
-> ⚠️ **สำคัญ:** เปิด **Terminal ใหม่** และอย่าลืม activate virtual environment ก่อน!
-
-```bash
-cd mlflowserver-lab
-source .venv/bin/activate
-```
-
-### สร้างไฟล์ `train_and_register.py`
+**ทฤษฎี:**
+ก่อนใช้งาน Model Registry ต้องเชื่อมต่อกับ MLflow Server ที่รัน Registry โดยใช้:
 
 ```python
-"""
-Lab: Model Registration with MLflow
-แบบฝึกหัดที่ 1 - การฝึกและลงทะเบียนโมเดล
-"""
-
 import mlflow
-import mlflow.sklearn
-from sklearn.datasets import load_iris
-from sklearn.model_selection import train_test_split
-from sklearn.ensemble import RandomForestClassifier
-from sklearn.metrics import accuracy_score, f1_score
-import pandas as pd
-
-# ==========================================
-# ขั้นตอนที่ 1: ตั้งค่า MLflow
-# ==========================================
-
-# กำหนด Tracking URI (ที่อยู่ของ MLflow Server)
-mlflow.set_tracking_uri("http://127.0.0.1:8080")
-
-# สร้างหรือเลือก Experiment
-mlflow.set_experiment("model-registration-lab")
-
-print("✅ ตั้งค่า MLflow เรียบร้อย")
-
-# ==========================================
-# ขั้นตอนที่ 2: เตรียมข้อมูล
-# ==========================================
-
-# โหลด Iris Dataset
-iris = load_iris()
-X = pd.DataFrame(iris.data, columns=iris.feature_names)
-y = iris.target
-
-# แบ่งข้อมูล Train/Test
-X_train, X_test, y_train, y_test = train_test_split(
-    X, y, 
-    test_size=0.2, 
-    random_state=42
-)
-
-print(f"✅ เตรียมข้อมูลเรียบร้อย")
-print(f"   - Training samples: {len(X_train)}")
-print(f"   - Test samples: {len(X_test)}")
-
-# ==========================================
-# ขั้นตอนที่ 3: ฝึกโมเดลและลงทะเบียน
-# ==========================================
-
-# ชื่อโมเดลที่จะลงทะเบียน
-MODEL_NAME = "iris-classifier"
-
-# เริ่ม MLflow Run
-with mlflow.start_run(run_name="random-forest-v1") as run:
-    
-    # --- กำหนด Hyperparameters ---
-    n_estimators = 100
-    max_depth = 5
-    random_state = 42
-    
-    # --- บันทึก Parameters ---
-    mlflow.log_param("n_estimators", n_estimators)
-    mlflow.log_param("max_depth", max_depth)
-    mlflow.log_param("random_state", random_state)
-    
-    print("\n📊 Parameters:")
-    print(f"   - n_estimators: {n_estimators}")
-    print(f"   - max_depth: {max_depth}")
-    
-    # --- สร้างและฝึกโมเดล ---
-    model = RandomForestClassifier(
-        n_estimators=n_estimators,
-        max_depth=max_depth,
-        random_state=random_state
-    )
-    model.fit(X_train, y_train)
-    
-    print("\n🎯 ฝึกโมเดลเรียบร้อย!")
-    
-    # --- ประเมินผล ---
-    y_pred = model.predict(X_test)
-    accuracy = accuracy_score(y_test, y_pred)
-    f1 = f1_score(y_test, y_pred, average='weighted')
-    
-    # --- บันทึก Metrics ---
-    mlflow.log_metric("accuracy", accuracy)
-    mlflow.log_metric("f1_score", f1)
-    
-    print(f"\n📈 Metrics:")
-    print(f"   - Accuracy: {accuracy:.4f}")
-    print(f"   - F1 Score: {f1:.4f}")
-    
-    # ==========================================
-    # ⭐ ขั้นตอนสำคัญ: ลงทะเบียนโมเดล
-    # ==========================================
-    
-    # วิธีที่ 1: ลงทะเบียนพร้อมกับ log_model
-    model_info = mlflow.sklearn.log_model(
-        sk_model=model,
-        artifact_path="model",
-        registered_model_name=MODEL_NAME,  # ← ชื่อที่จะลงทะเบียน
-        input_example=X_train.iloc[:5]
-    )
-    
-    print(f"\n✅ ลงทะเบียนโมเดลเรียบร้อย!")
-    print(f"   - Model Name: {MODEL_NAME}")
-    print(f"   - Model URI: {model_info.model_uri}")
-    print(f"   - Run ID: {run.info.run_id}")
-
-print("\n" + "="*50)
-print("🎉 เสร็จสิ้น! ไปดูผลลัพธ์ที่ MLflow UI")
-print("   http://127.0.0.1:8080")
-print("="*50)
-```
-
-### รันโปรแกรม
-
-```bash
-python train_and_register.py
-```
-
-### ✅ ตรวจสอบผลลัพธ์
-
-1. เปิด MLflow UI ที่ `http://127.0.0.1:8080`
-2. คลิกที่แท็บ **"Models"** (ด้านบน)
-3. จะเห็นโมเดล `iris-classifier` ที่ลงทะเบียนไว้
-
----
-
-## 🔬 แบบฝึกหัดที่ 2: การจัดการเวอร์ชันโมเดล
-
-### 🎯 เป้าหมาย
-
-- สร้างหลาย Versions ของโมเดล
-- เปรียบเทียบผลลัพธ์ระหว่าง Versions
-- เรียนรู้ว่า MLflow จัดการ Versions อย่างไร
-
-### สร้างไฟล์ `model_versioning.py`
-
-```python
-"""
-Lab: Model Registration with MLflow
-แบบฝึกหัดที่ 2 - การจัดการเวอร์ชันโมเดล
-"""
-
-import mlflow
-import mlflow.sklearn
-from sklearn.datasets import load_iris
-from sklearn.model_selection import train_test_split
-from sklearn.ensemble import RandomForestClassifier, GradientBoostingClassifier
-from sklearn.metrics import accuracy_score
-import pandas as pd
-
-# ตั้งค่า MLflow
-mlflow.set_tracking_uri("http://127.0.0.1:8080")
-mlflow.set_experiment("model-registration-lab")
-
-# เตรียมข้อมูล
-iris = load_iris()
-X = pd.DataFrame(iris.data, columns=iris.feature_names)
-y = iris.target
-X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
-
-MODEL_NAME = "iris-classifier"
-
-# ==========================================
-# Version 2: ลองปรับ Hyperparameters
-# ==========================================
-
-print("="*50)
-print("🔄 สร้าง Version 2: Random Forest (ปรับ params)")
-print("="*50)
-
-with mlflow.start_run(run_name="random-forest-v2"):
-    
-    # Hyperparameters ใหม่
-    n_estimators = 200  # เพิ่มจาก 100
-    max_depth = 10      # เพิ่มจาก 5
-    
-    mlflow.log_param("n_estimators", n_estimators)
-    mlflow.log_param("max_depth", max_depth)
-    mlflow.log_param("model_type", "RandomForest")
-    
-    # ฝึกโมเดล
-    model = RandomForestClassifier(
-        n_estimators=n_estimators,
-        max_depth=max_depth,
-        random_state=42
-    )
-    model.fit(X_train, y_train)
-    
-    # ประเมินผล
-    accuracy = accuracy_score(y_test, model.predict(X_test))
-    mlflow.log_metric("accuracy", accuracy)
-    
-    print(f"📈 Accuracy: {accuracy:.4f}")
-    
-    # ลงทะเบียนเป็น Version ใหม่
-    mlflow.sklearn.log_model(
-        model, 
-        "model",
-        registered_model_name=MODEL_NAME
-    )
-    
-    print("✅ ลงทะเบียน Version 2 เรียบร้อย!")
-
-# ==========================================
-# Version 3: ลองใช้ Algorithm อื่น
-# ==========================================
-
-print("\n" + "="*50)
-print("🔄 สร้าง Version 3: Gradient Boosting")
-print("="*50)
-
-with mlflow.start_run(run_name="gradient-boosting-v1"):
-    
-    n_estimators = 100
-    max_depth = 3
-    learning_rate = 0.1
-    
-    mlflow.log_param("n_estimators", n_estimators)
-    mlflow.log_param("max_depth", max_depth)
-    mlflow.log_param("learning_rate", learning_rate)
-    mlflow.log_param("model_type", "GradientBoosting")
-    
-    # ฝึกโมเดล
-    model = GradientBoostingClassifier(
-        n_estimators=n_estimators,
-        max_depth=max_depth,
-        learning_rate=learning_rate,
-        random_state=42
-    )
-    model.fit(X_train, y_train)
-    
-    # ประเมินผล
-    accuracy = accuracy_score(y_test, model.predict(X_test))
-    mlflow.log_metric("accuracy", accuracy)
-    
-    print(f"📈 Accuracy: {accuracy:.4f}")
-    
-    # ลงทะเบียนเป็น Version ใหม่
-    mlflow.sklearn.log_model(
-        model, 
-        "model",
-        registered_model_name=MODEL_NAME
-    )
-    
-    print("✅ ลงทะเบียน Version 3 เรียบร้อย!")
-
-# ==========================================
-# ดูรายการ Versions ทั้งหมด
-# ==========================================
-
-print("\n" + "="*50)
-print("📋 รายการ Versions ทั้งหมด")
-print("="*50)
-
 from mlflow.tracking import MlflowClient
 
+# เชื่อมต่อ Server
+mlflow.set_tracking_uri("http://127.0.0.1:5000")
+
+# สร้าง Client สำหรับจัดการ Registry
 client = MlflowClient()
-
-# ดึงข้อมูลโมเดลที่ลงทะเบียน
-model_versions = client.search_model_versions(f"name='{MODEL_NAME}'")
-
-print(f"\n📦 Model: {MODEL_NAME}")
-print("-"*40)
-
-for mv in model_versions:
-    print(f"\n   📌 Version {mv.version}")
-    print(f"      - Run ID: {mv.run_id[:8]}...")
-    print(f"      - Stage: {mv.current_stage}")
-    print(f"      - Status: {mv.status}")
 ```
 
-### รันโปรแกรม
-
-```bash
-python model_versioning.py
-```
-
-### ✅ ตรวจสอบผลลัพธ์
-
-1. ไปที่ MLflow UI → Models → iris-classifier
-2. จะเห็น 3 Versions พร้อมรายละเอียดของแต่ละ Version
+**ฟังก์ชันสำคัญ:**
+- `mlflow.set_tracking_uri(uri)` - กำหนด URL ของ MLflow Server
+- `MlflowClient()` - สร้าง Client สำหรับจัดการ Registry โดยตรง
 
 ---
 
-## 🔬 แบบฝึกหัดที่ 3: การเปลี่ยนสถานะโมเดล (Stage Transitions)
+#### ส่วนที่ 2: การสร้างและลงทะเบียน Model (Scikit-learn)
 
-### 🎯 เป้าหมาย
+**ทฤษฎี:**
+การลงทะเบียน Model มี 2 วิธี:
 
-- เรียนรู้การเปลี่ยน Stage ของโมเดล
-- เข้าใจ Workflow การ Promote โมเดล
-- เพิ่ม Description ให้โมเดล
-
-### สร้างไฟล์ `stage_transitions.py`
-
+**วิธีที่ 1: ลงทะเบียนพร้อม Train**
 ```python
-"""
-Lab: Model Registration with MLflow
-แบบฝึกหัดที่ 3 - การเปลี่ยนสถานะโมเดล
-"""
-
-from mlflow.tracking import MlflowClient
-import mlflow
-
-# ตั้งค่า MLflow
-mlflow.set_tracking_uri("http://127.0.0.1:8080")
-
-# สร้าง MLflow Client
-client = MlflowClient()
-
-MODEL_NAME = "iris-classifier"
-
-print("="*60)
-print("🔄 การจัดการสถานะโมเดล (Stage Transitions)")
-print("="*60)
-
-# ==========================================
-# ดูสถานะปัจจุบันของทุก Versions
-# ==========================================
-
-print("\n📋 สถานะปัจจุบัน:")
-print("-"*40)
-
-versions = client.search_model_versions(f"name='{MODEL_NAME}'")
-for v in versions:
-    print(f"   Version {v.version}: {v.current_stage}")
-
-# ==========================================
-# เปลี่ยนสถานะโมเดล
-# ==========================================
-
-# --- 1. ย้าย Version 1 ไป Archived ---
-print("\n🔸 ย้าย Version 1 → Archived")
-
-client.transition_model_version_stage(
-    name=MODEL_NAME,
-    version="1",
-    stage="Archived",
-    archive_existing_versions=False  # ไม่ย้าย versions อื่น
+mlflow.sklearn.log_model(
+    sk_model=model,
+    artifact_path="model",
+    registered_model_name="my-model"  # ← ลงทะเบียนทันที
 )
-print("   ✅ สำเร็จ!")
+```
 
-# --- 2. ย้าย Version 2 ไป Staging ---
-print("\n🔸 ย้าย Version 2 → Staging")
+**วิธีที่ 2: ลงทะเบียนภายหลัง**
+```python
+# บันทึก Model ก่อน
+mlflow.sklearn.log_model(sk_model=model, artifact_path="model")
 
-client.transition_model_version_stage(
-    name=MODEL_NAME,
-    version="2",
-    stage="Staging"
+# ลงทะเบียนภายหลัง
+mlflow.register_model(
+    model_uri=f"runs:/{run_id}/model",
+    name="my-model"
 )
-print("   ✅ สำเร็จ!")
+```
 
-# --- 3. ย้าย Version 3 ไป Production ---
-print("\n🔸 ย้าย Version 3 → Production")
+**เมื่อไหร่ใช้วิธีไหน:**
 
-client.transition_model_version_stage(
-    name=MODEL_NAME,
-    version="3",
-    stage="Production"
-)
-print("   ✅ สำเร็จ!")
+| วิธี | Use Case |
+|------|----------|
+| วิธีที่ 1 | ต้องการลงทะเบียนทันทีหลังฝึก |
+| วิธีที่ 2 | ต้องการเลือก Model ที่ดีที่สุดก่อนลงทะเบียน |
 
-# ==========================================
-# ดูสถานะหลังการเปลี่ยน
-# ==========================================
-
-print("\n" + "="*60)
-print("📋 สถานะหลังการเปลี่ยน:")
-print("-"*40)
-
-# ดึงข้อมูลใหม่
-versions = client.search_model_versions(f"name='{MODEL_NAME}'")
-for v in versions:
-    stage_emoji = {
-        "None": "⚪",
-        "Staging": "🟡",
-        "Production": "🟢",
-        "Archived": "⚫"
-    }.get(v.current_stage, "❓")
-    
-    print(f"   {stage_emoji} Version {v.version}: {v.current_stage}")
-
-# ==========================================
-# เพิ่มคำอธิบายให้ Version
-# ==========================================
-
-print("\n🔸 เพิ่มคำอธิบายให้ Version 3")
-
-client.update_model_version(
-    name=MODEL_NAME,
-    version="3",
-    description="โมเดล Gradient Boosting ที่ผ่านการทดสอบแล้ว ใช้งานจริง"
-)
-print("   ✅ เพิ่มคำอธิบายเรียบร้อย!")
-
-# ==========================================
-# เพิ่มคำอธิบายให้ Registered Model
-# ==========================================
-
-print("\n🔸 เพิ่มคำอธิบายให้ Registered Model")
-
+**การเพิ่ม Description และ Tags:**
+```python
+# อัพเดท Description
 client.update_registered_model(
-    name=MODEL_NAME,
-    description="โมเดลสำหรับจำแนกประเภทดอกไอริส (Iris Classification)"
+    name="my-model",
+    description="คำอธิบาย Model"
 )
-print("   ✅ เพิ่มคำอธิบายเรียบร้อย!")
 
-print("\n" + "="*60)
-print("🎉 เสร็จสิ้น! ไปดูผลลัพธ์ที่ MLflow UI")
-print("   http://127.0.0.1:8080")
-print("="*60)
+# เพิ่ม Tag ให้ Model
+client.set_registered_model_tag("my-model", "task", "classification")
+
+# เพิ่ม Tag ให้ Version
+client.set_model_version_tag("my-model", "1", "status", "baseline")
 ```
-
-### รันโปรแกรม
-
-```bash
-python stage_transitions.py
-```
-
-### ✅ ตรวจสอบผลลัพธ์
-
-1. ไปที่ MLflow UI → Models → iris-classifier
-2. จะเห็น Stages ที่เปลี่ยนไปของแต่ละ Version
-3. สังเกตสีที่แตกต่างกันของแต่ละ Stage
 
 ---
 
-## 🔬 แบบฝึกหัดที่ 4: การโหลดโมเดลจาก Registry
+#### ส่วนที่ 3: การดูข้อมูล Registered Models
 
-### 🎯 เป้าหมาย
-
-- เรียนรู้วิธีโหลดโมเดลหลายรูปแบบ
-- เข้าใจ Model URI Formats
-- ทดสอบ Prediction กับโมเดลต่างๆ
-
-### สร้างไฟล์ `load_model.py`
+**ทฤษฎี:**
+MLflow Client มีฟังก์ชันสำหรับดูข้อมูล Models และ Versions:
 
 ```python
-"""
-Lab: Model Registration with MLflow
-แบบฝึกหัดที่ 4 - การโหลดโมเดลจาก Registry
-"""
+# ดู Models ทั้งหมด
+for rm in client.search_registered_models():
+    print(f"Model: {rm.name}")
 
-import mlflow
-import pandas as pd
-from sklearn.datasets import load_iris
+# ดู Versions ของ Model
+versions = client.search_model_versions(f"name='my-model'")
+for v in versions:
+    print(f"Version {v.version}: {v.current_stage}")
 
-# ตั้งค่า MLflow
-mlflow.set_tracking_uri("http://127.0.0.1:8080")
+# ดู Model เฉพาะ
+model = client.get_registered_model("my-model")
 
-MODEL_NAME = "iris-classifier"
-
-print("="*60)
-print("📥 การโหลดโมเดลจาก Model Registry")
-print("="*60)
-
-# เตรียมข้อมูลสำหรับทดสอบ
-iris = load_iris()
-sample_data = pd.DataFrame(
-    iris.data[:5], 
-    columns=iris.feature_names
-)
-
-print("\n📊 ข้อมูลตัวอย่างสำหรับ Prediction:")
-print(sample_data)
-print(f"\n🎯 คำตอบที่ถูกต้อง: {iris.target[:5]}")
-
-# ==========================================
-# วิธีที่ 1: โหลดด้วย Version Number
-# ==========================================
-
-print("\n" + "-"*60)
-print("🔹 วิธีที่ 1: โหลดด้วย Version Number")
-print("-"*60)
-
-# โหลด Version 1
-model_v1 = mlflow.sklearn.load_model(
-    model_uri=f"models:/{MODEL_NAME}/1"
-)
-
-predictions_v1 = model_v1.predict(sample_data)
-print(f"\n📦 Version 1 predictions: {predictions_v1}")
-
-# โหลด Version 3
-model_v3 = mlflow.sklearn.load_model(
-    model_uri=f"models:/{MODEL_NAME}/3"
-)
-
-predictions_v3 = model_v3.predict(sample_data)
-print(f"📦 Version 3 predictions: {predictions_v3}")
-
-# ==========================================
-# วิธีที่ 2: โหลดด้วย Stage
-# ==========================================
-
-print("\n" + "-"*60)
-print("🔹 วิธีที่ 2: โหลดด้วย Stage (แนะนำ ⭐)")
-print("-"*60)
-
-# โหลดโมเดลที่อยู่ใน Production
-print("\n🟢 โหลดโมเดล Production:")
-
-model_prod = mlflow.sklearn.load_model(
-    model_uri=f"models:/{MODEL_NAME}@production"
-)
-
-predictions_prod = model_prod.predict(sample_data)
-print(f"   Predictions: {predictions_prod}")
-
-# โหลดโมเดลที่อยู่ใน Staging
-print("\n🟡 โหลดโมเดล Staging:")
-
-model_staging = mlflow.sklearn.load_model(
-    model_uri=f"models:/{MODEL_NAME}@staging"
-)
-
-predictions_staging = model_staging.predict(sample_data)
-print(f"   Predictions: {predictions_staging}")
-
-# ==========================================
-# วิธีที่ 3: โหลดเป็น PyFunc Model
-# ==========================================
-
-print("\n" + "-"*60)
-print("🔹 วิธีที่ 3: โหลดเป็น PyFunc (Generic)")
-print("-"*60)
-
-# โหลดเป็น PyFunc (ใช้ได้กับทุก ML Framework)
-model_pyfunc = mlflow.pyfunc.load_model(
-    model_uri=f"models:/{MODEL_NAME}@production"
-)
-
-predictions_pyfunc = model_pyfunc.predict(sample_data)
-print(f"\n📦 PyFunc predictions: {predictions_pyfunc}")
-
-# ==========================================
-# สรุป
-# ==========================================
-
-print("\n" + "="*60)
-print("📝 สรุป Model URI Formats")
-print("="*60)
-
-print("""
-┌────────────────────────────────────────────────────────────┐
-│  Format                          │  ตัวอย่าง               │
-├──────────────────────────────────┼─────────────────────────┤
-│  models:/<name>/<version>        │  models:/iris-clf/1     │
-│  models:/<name>@<stage>          │  models:/iris-clf@prod  │
-│  models:/<name>/latest           │  models:/iris-clf/latest│
-└──────────────────────────────────┴─────────────────────────┘
-
-💡 แนะนำใช้ @stage เพราะ:
-   ✅ ไม่ต้องเปลี่ยน code เมื่อมี version ใหม่
-   ✅ แค่เปลี่ยน stage ของ version ที่ต้องการ
-   ✅ code ที่ใช้ @production จะโหลดโมเดลใหม่อัตโนมัติ
-""")
-```
-
-### รันโปรแกรม
-
-```bash
-python load_model.py
+# ดู Version เฉพาะ
+version = client.get_model_version("my-model", "1")
 ```
 
 ---
 
-## 🔬 แบบฝึกหัดที่ 5: สร้าง REST API สำหรับ Serve โมเดล
+#### ส่วนที่ 4: การจัดการ Model Aliases
 
-### 🎯 เป้าหมาย
-
-- สร้าง REST API ด้วย Flask
-- โหลดโมเดลจาก Production
-- ทดสอบด้วย curl
-
-### ติดตั้ง Flask
-
-```bash
-pip install flask
-```
-
-### สร้างไฟล์ `serve_model.py`
+**ทฤษฎี:**
+Aliases เป็นวิธีกำหนดชื่อให้ Model Version เพื่อง่ายต่อการอ้างอิง
 
 ```python
-"""
-Lab: Model Registration with MLflow
-แบบฝึกหัดที่ 5 - สร้าง API สำหรับ Serve โมเดล
-"""
+# กำหนด Alias
+client.set_registered_model_alias(
+    name="my-model",
+    alias="champion",
+    version="3"
+)
 
-from flask import Flask, request, jsonify
-import mlflow
-import pandas as pd
+# ดู Version จาก Alias
+champion = client.get_model_version_by_alias("my-model", "champion")
 
-# ตั้งค่า MLflow
-mlflow.set_tracking_uri("http://127.0.0.1:8080")
-
-# โหลดโมเดลจาก Production
-MODEL_NAME = "iris-classifier"
-print(f"📥 กำลังโหลดโมเดล {MODEL_NAME}@production...")
-model = mlflow.sklearn.load_model(f"models:/{MODEL_NAME}@production")
-print("✅ โหลดโมเดลเรียบร้อย!")
-
-# สร้าง Flask App
-app = Flask(__name__)
-
-# Feature names สำหรับ Iris dataset
-FEATURE_NAMES = [
-    'sepal length (cm)', 
-    'sepal width (cm)', 
-    'petal length (cm)', 
-    'petal width (cm)'
-]
-
-# Class names
-CLASS_NAMES = ['setosa', 'versicolor', 'virginica']
-
-@app.route('/health', methods=['GET'])
-def health():
-    """Health check endpoint"""
-    return jsonify({
-        "status": "healthy",
-        "model": MODEL_NAME,
-        "stage": "production"
-    })
-
-@app.route('/predict', methods=['POST'])
-def predict():
-    """
-    Prediction endpoint
-    
-    Input JSON format:
-    {
-        "data": [[5.1, 3.5, 1.4, 0.2], [6.2, 2.9, 4.3, 1.3]]
-    }
-    """
-    try:
-        # รับข้อมูลจาก request
-        input_data = request.json
-        
-        # แปลงเป็น DataFrame
-        df = pd.DataFrame(input_data['data'], columns=FEATURE_NAMES)
-        
-        # ทำนาย
-        predictions = model.predict(df)
-        probabilities = model.predict_proba(df)
-        
-        # สร้าง response
-        results = []
-        for i, pred in enumerate(predictions):
-            results.append({
-                "prediction": int(pred),
-                "class_name": CLASS_NAMES[pred],
-                "probabilities": {
-                    CLASS_NAMES[j]: round(float(prob), 4)
-                    for j, prob in enumerate(probabilities[i])
-                }
-            })
-        
-        return jsonify({
-            "success": True,
-            "results": results
-        })
-    
-    except Exception as e:
-        return jsonify({
-            "success": False,
-            "error": str(e)
-        }), 400
-
-@app.route('/model-info', methods=['GET'])
-def model_info():
-    """ดูข้อมูลโมเดล"""
-    from mlflow.tracking import MlflowClient
-    client = MlflowClient()
-    
-    # ดึงข้อมูล Production version
-    versions = client.get_latest_versions(MODEL_NAME, stages=["Production"])
-    
-    if versions:
-        v = versions[0]
-        return jsonify({
-            "model_name": MODEL_NAME,
-            "version": v.version,
-            "stage": v.current_stage,
-            "description": v.description,
-            "run_id": v.run_id
-        })
-    
-    return jsonify({"error": "No production model found"}), 404
-
-if __name__ == '__main__':
-    print("\n" + "="*50)
-    print("🚀 Starting Model Serving API")
-    print("="*50)
-    print(f"\n📦 Model: {MODEL_NAME}")
-    print(f"🌐 API URL: http://127.0.0.1:9000")
-    print("\n📝 Endpoints:")
-    print("   - GET  /health     : Health check")
-    print("   - POST /predict    : Make predictions")
-    print("   - GET  /model-info : Model information")
-    print("\n" + "="*50 + "\n")
-    
-    app.run(host='127.0.0.1', port=9000, debug=True)
+# ลบ Alias
+client.delete_registered_model_alias("my-model", "champion")
 ```
 
-### รัน API Server
+**ข้อดีของ Aliases:**
+- สามารถโหลด Model ด้วยชื่อที่สื่อความหมาย
+- เปลี่ยน Version ได้โดยไม่ต้องแก้โค้ด
+- รองรับ Workflow เช่น Champion/Challenger
 
-> ⚠️ **หมายเหตุ:** เปิด Terminal ใหม่ (Terminal ที่ 3) เพราะ Terminal ที่ 1 รัน MLflow Server อยู่
+---
 
-```bash
-cd mlflowserver-lab
-source .venv/bin/activate
-python serve_model.py
+#### ส่วนที่ 5: การโหลด Model จาก Registry
+
+**ทฤษฎี:**
+มีหลายวิธีในการโหลด Model:
+
+**วิธีที่ 1: โหลดจาก Model URI**
+```python
+# โหลดจาก Version
+model = mlflow.sklearn.load_model("models:/my-model/3")
+
+# โหลดจาก Alias
+model = mlflow.sklearn.load_model("models:/my-model@champion")
 ```
 
-### ทดสอบ API
+**วิธีที่ 2: โหลดจาก ARTIFACTS_BASE (เร็วที่สุด)**
+```python
+# สำหรับ Server เดียวกัน
+model_path = find_model_path_by_flavor(ARTIFACTS_BASE, experiment_id, "sklearn")
+model = mlflow.sklearn.load_model(model_path)
+```
 
-เปิด **Terminal ที่ 4** แล้วรันคำสั่ง:
-
-```bash
-# ตรวจสอบสถานะ
-curl http://127.0.0.1:9000/health
-
-# ดูข้อมูลโมเดล
-curl http://127.0.0.1:9000/model-info
-
-# ทดสอบ Prediction
-curl -X POST http://127.0.0.1:9000/predict \
-  -H "Content-Type: application/json" \
-  -d '{"data": [[5.1, 3.5, 1.4, 0.2], [6.2, 2.9, 4.3, 1.3]]}'
+**โครงสร้างไฟล์ใน ARTIFACTS_BASE:**
+```
+mlartifacts/
+└── <experiment_id>/
+    ├── <run_id>/
+    │   └── artifacts/           # Artifacts ทั่วไป
+    └── models/                  # Models ถูกเก็บแยก
+        └── m-<model_id>/        
+            └── artifacts/
+                ├── MLmodel
+                ├── model.pkl
+                └── ...
 ```
 
 ---
 
-## 🔬 แบบฝึกหัดที่ 6: Automated Model Promotion Pipeline (Advanced)
+#### ส่วนที่ 6-7: การลงทะเบียนและโหลด PyTorch Model
 
-### 🎯 เป้าหมาย
-
-- สร้าง Pipeline อัตโนมัติสำหรับเปรียบเทียบโมเดล
-- Auto-promote โมเดลจาก Staging → Production
-- สร้าง Comparison Report
-
-```
-┌─────────────────────────────────────────────────────────────────────────────┐
-│                    Automated Model Promotion Pipeline                        │
-├─────────────────────────────────────────────────────────────────────────────┤
-│                                                                              │
-│   ┌──────────────┐                                                          │
-│   │   Staging    │                                                          │
-│   │    Model     │                                                          │
-│   │     🟡       │                                                          │
-│   └──────┬───────┘                                                          │
-│          │                                                                   │
-│          ▼                                                                   │
-│   ┌──────────────────────────────────────────────────────────────────┐      │
-│   │                      Compare Performance                          │      │
-│   │  ┌────────────────────────────────────────────────────────────┐  │      │
-│   │  │  Staging Accuracy vs Production Accuracy                    │  │      │
-│   │  │                                                             │  │      │
-│   │  │  if staging_acc > production_acc:                           │  │      │
-│   │  │      promote staging → production                           │  │      │
-│   │  │      archive old production                                 │  │      │
-│   │  │  else:                                                      │  │      │
-│   │  │      keep current production                                │  │      │
-│   │  └────────────────────────────────────────────────────────────┘  │      │
-│   └──────────────────────────────────────────────────────────────────┘      │
-│          │                                                                   │
-│          ▼                                                                   │
-│   ┌──────────────┐         ┌──────────────┐                                 │
-│   │  Production  │   OR    │    Keep      │                                 │
-│   │   (Updated)  │         │   Current    │                                 │
-│   │     🟢       │         │     🟢       │                                 │
-│   └──────────────┘         └──────────────┘                                 │
-│                                                                              │
-└─────────────────────────────────────────────────────────────────────────────┘
-```
-
-### สร้างไฟล์ `auto_promote.py`
+**ทฤษฎี:**
+PyTorch Model ใช้วิธีเดียวกับ Scikit-learn แต่ใช้ `mlflow.pytorch`:
 
 ```python
-"""
-Lab: Model Registration with MLflow
-แบบฝึกหัดที่ 6 - Automated Model Promotion Pipeline
-"""
+# บันทึกและลงทะเบียน
+mlflow.pytorch.log_model(
+    pytorch_model=model,
+    name="model",
+    signature=signature,
+    registered_model_name="my-pytorch-model"
+)
 
-import mlflow
-from mlflow.tracking import MlflowClient
-from sklearn.datasets import load_iris
-from sklearn.model_selection import train_test_split
-import pandas as pd
-from datetime import datetime
-
-# ==========================================
-# Configuration
-# ==========================================
-
-mlflow.set_tracking_uri("http://127.0.0.1:8080")
-client = MlflowClient()
-
-MODEL_NAME = "iris-classifier"
-METRIC_NAME = "accuracy"
-THRESHOLD = 0.0  # Staging ต้องดีกว่า Production อย่างน้อย 0%
-
-# ==========================================
-# Prepare Test Data
-# ==========================================
-
-print("="*70)
-print("🤖 Automated Model Promotion Pipeline")
-print("="*70)
-
-iris = load_iris()
-X = pd.DataFrame(iris.data, columns=iris.feature_names)
-y = iris.target
-_, X_test, _, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
-
-# ==========================================
-# Get Models from Registry
-# ==========================================
-
-print("\n📋 ดึงข้อมูลโมเดลจาก Registry...")
-
-def get_model_by_stage(model_name, stage):
-    """Get model version by stage"""
-    versions = client.get_latest_versions(model_name, stages=[stage])
-    return versions[0] if versions else None
-
-staging_model = get_model_by_stage(MODEL_NAME, "Staging")
-production_model = get_model_by_stage(MODEL_NAME, "Production")
-
-if not staging_model:
-    print("❌ ไม่พบโมเดลใน Staging")
-    exit(1)
-
-if not production_model:
-    print("⚠️ ไม่พบโมเดลใน Production - จะ promote Staging ไป Production โดยตรง")
-    
-    client.transition_model_version_stage(
-        name=MODEL_NAME,
-        version=staging_model.version,
-        stage="Production"
-    )
-    print(f"✅ Promote Version {staging_model.version} → Production")
-    exit(0)
-
-print(f"\n   🟡 Staging:    Version {staging_model.version}")
-print(f"   🟢 Production: Version {production_model.version}")
-
-# ==========================================
-# Load and Evaluate Models
-# ==========================================
-
-print("\n📊 ประเมินประสิทธิภาพโมเดล...")
-
-def evaluate_model(model_uri, X_test, y_test):
-    """Load and evaluate model"""
-    model = mlflow.sklearn.load_model(model_uri)
-    predictions = model.predict(X_test)
-    accuracy = (predictions == y_test).mean()
-    return accuracy
-
-staging_uri = f"models:/{MODEL_NAME}@staging"
-production_uri = f"models:/{MODEL_NAME}@production"
-
-staging_accuracy = evaluate_model(staging_uri, X_test, y_test)
-production_accuracy = evaluate_model(production_uri, X_test, y_test)
-
-print(f"\n   🟡 Staging Accuracy:    {staging_accuracy:.4f}")
-print(f"   🟢 Production Accuracy: {production_accuracy:.4f}")
-print(f"   📈 Difference:          {staging_accuracy - production_accuracy:+.4f}")
-
-# ==========================================
-# Decision: Promote or Keep
-# ==========================================
-
-print("\n" + "="*70)
-print("🔍 ตัดสินใจ...")
-print("="*70)
-
-if staging_accuracy > production_accuracy + THRESHOLD:
-    print(f"\n✅ Staging ({staging_accuracy:.4f}) ดีกว่า Production ({production_accuracy:.4f})")
-    print("   → จะ Promote Staging ไป Production")
-    
-    # Archive current production
-    print(f"\n🔸 Archive Production Version {production_model.version}...")
-    client.transition_model_version_stage(
-        name=MODEL_NAME,
-        version=production_model.version,
-        stage="Archived"
-    )
-    
-    # Promote staging to production
-    print(f"🔸 Promote Staging Version {staging_model.version} → Production...")
-    client.transition_model_version_stage(
-        name=MODEL_NAME,
-        version=staging_model.version,
-        stage="Production"
-    )
-    
-    # Add description
-    timestamp = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
-    client.update_model_version(
-        name=MODEL_NAME,
-        version=staging_model.version,
-        description=f"Auto-promoted on {timestamp}. Accuracy: {staging_accuracy:.4f}"
-    )
-    
-    print("\n🎉 Promotion สำเร็จ!")
-    
-else:
-    print(f"\n⏸️ Staging ({staging_accuracy:.4f}) ไม่ดีกว่า Production ({production_accuracy:.4f})")
-    print("   → คง Production ไว้เหมือนเดิม")
-
-# ==========================================
-# Generate Report
-# ==========================================
-
-print("\n" + "="*70)
-print("📝 Comparison Report")
-print("="*70)
-
-report = f"""
-┌─────────────────────────────────────────────────────────────────────┐
-│                    Model Comparison Report                           │
-├─────────────────────────────────────────────────────────────────────┤
-│  Timestamp: {datetime.now().strftime("%Y-%m-%d %H:%M:%S")}                                       │
-│  Model: {MODEL_NAME}                                          │
-├─────────────────────────────────────────────────────────────────────┤
-│                                                                      │
-│  🟡 Staging (Version {staging_model.version})                                           │
-│     - Accuracy: {staging_accuracy:.4f}                                              │
-│     - Run ID: {staging_model.run_id[:20]}...                       │
-│                                                                      │
-│  🟢 Production (Version {production_model.version})                                       │
-│     - Accuracy: {production_accuracy:.4f}                                              │
-│     - Run ID: {production_model.run_id[:20]}...                       │
-│                                                                      │
-├─────────────────────────────────────────────────────────────────────┤
-│  📊 Comparison                                                       │
-│     - Accuracy Difference: {staging_accuracy - production_accuracy:+.4f}                                    │
-│     - Winner: {"Staging 🏆" if staging_accuracy > production_accuracy else "Production 🏆"}                                                    │
-│     - Action Taken: {"Promoted Staging → Production" if staging_accuracy > production_accuracy + THRESHOLD else "Kept Current Production"}                      │
-│                                                                      │
-└─────────────────────────────────────────────────────────────────────┘
-"""
-
-print(report)
-
-# Save report to file
-with open("promotion_report.txt", "w") as f:
-    f.write(report)
-
-print("📁 Report saved to: promotion_report.txt")
-
-# ==========================================
-# Final Status
-# ==========================================
-
-print("\n" + "="*70)
-print("📋 สถานะปัจจุบัน")
-print("="*70)
-
-versions = client.search_model_versions(f"name='{MODEL_NAME}'")
-for v in sorted(versions, key=lambda x: int(x.version)):
-    stage_emoji = {
-        "None": "⚪",
-        "Staging": "🟡", 
-        "Production": "🟢",
-        "Archived": "⚫"
-    }.get(v.current_stage, "❓")
-    print(f"   {stage_emoji} Version {v.version}: {v.current_stage}")
+# โหลด
+loaded_model = mlflow.pytorch.load_model("models:/my-pytorch-model@champion")
 ```
 
-### รันโปรแกรม
+**ข้อควรระวัง:**
+- ต้องสร้าง Signature ที่ถูกต้อง
+- Input ต้องเป็น float32 สำหรับ PyTorch
+- ต้องเรียก `model.eval()` ก่อนทำนาย
 
-```bash
-python auto_promote.py
+---
+
+#### ส่วนที่ 8: การค้นหา Models และ Versions
+
+**ทฤษฎี:**
+MLflow รองรับ Filter String สำหรับค้นหา:
+
+```python
+# ค้นหา Models ที่มี Tag
+models = client.search_registered_models(
+    filter_string="tags.task = 'classification'"
+)
+
+# ค้นหา Versions
+versions = client.search_model_versions(
+    filter_string="name = 'my-model'"
+)
+
+# ค้นหาจาก Run ID
+versions = client.search_model_versions(
+    filter_string=f"run_id = '{run_id}'"
+)
 ```
 
 ---
 
-## 📂 โครงสร้างไฟล์หลังจบ Lab
+#### ส่วนที่ 9: การลบ Model และ Version
 
-```
-mlflowserver-lab/
-├── .venv/                      # Virtual Environment
-├── mlruns_db/
-│   └── mlflow.db               # SQLite Database
-├── mlartifacts/                # Model Artifacts
-│
-├── train_and_register.py       # Lab 1: ฝึกและลงทะเบียนโมเดล
-├── model_versioning.py         # Lab 2: จัดการ Versions
-├── stage_transitions.py        # Lab 3: เปลี่ยน Stages
-├── load_model.py               # Lab 4: โหลดโมเดล
-├── serve_model.py              # Lab 5: REST API
-├── auto_promote.py             # Lab 6: Automated Pipeline
-│
-└── promotion_report.txt        # Report จาก Lab 6
+**ทฤษฎี:**
+การลบเป็น Destructive Operation ต้องระวัง:
+
+```python
+# ลบ Version
+client.delete_model_version(name="my-model", version="1")
+
+# ลบ Alias ก่อนลบ Model
+client.delete_registered_model_alias("my-model", "champion")
+
+# ลบ Model ทั้งหมด
+client.delete_registered_model(name="my-model")
 ```
 
----
-
-## 📝 สรุป
-
-### สิ่งที่ได้เรียนรู้
-
-| หัวข้อ | คำสั่ง/วิธีการ |
-|--------|---------------|
-| ลงทะเบียนโมเดล | `mlflow.sklearn.log_model(..., registered_model_name="...")` |
-| จัดการ Versions | ทุกครั้งที่ log_model ด้วยชื่อเดิม จะสร้าง version ใหม่ |
-| เปลี่ยน Stage | `client.transition_model_version_stage(...)` |
-| โหลดด้วย Version | `models:/<name>/<version>` |
-| โหลดด้วย Stage | `models:/<name>@<stage>` |
-| อัพเดท Description | `client.update_model_version(...)` |
-
-### Best Practices
-
-1. **ใช้ชื่อโมเดลที่สื่อความหมาย** เช่น `iris-classifier`, `sales-predictor`
-
-2. **เพิ่มคำอธิบายให้ทุก Version** เพื่อให้ทีมเข้าใจว่าแต่ละ version ต่างกันอย่างไร
-
-3. **ใช้ @stage แทน version number** ในโค้ดที่ใช้งานจริง เพื่อให้อัปเดตโมเดลได้ง่าย
-
-4. **ทดสอบใน Staging ก่อน Production** เสมอ
-
-5. **สร้าง Automated Pipeline** เพื่อลด Human Error และเพิ่มความเร็วในการ Deploy
+**⚠️ ข้อควรระวัง:**
+- การลบไม่สามารถยกเลิกได้
+- ต้องลบ Aliases และ Versions ก่อนลบ Model
+- แนะนำให้ Archive แทนการลบ
 
 ---
 
-## 🎯 แบบฝึกหัดเพิ่มเติม
+### 9.4 สรุปฟังก์ชันสำคัญ
 
-1. **ฝึกโมเดลใหม่** โดยใช้ Dataset อื่น และลงทะเบียนเป็นโมเดลใหม่
-
-2. **เพิ่ม Tags** ให้กับ Registered Model และ Model Versions
-
-3. **สร้าง CI/CD Pipeline** ด้วย GitHub Actions ที่ทดสอบและ Deploy โมเดลอัตโนมัติ
-
-4. **เพิ่ม Model Signature** เพื่อตรวจสอบ Input/Output Schema
+| หมวดหมู่ | ฟังก์ชัน | วัตถุประสงค์ |
+|----------|----------|-------------|
+| **ลงทะเบียน** | `mlflow.sklearn.log_model(..., registered_model_name)` | บันทึกและลงทะเบียนพร้อมกัน |
+| **ลงทะเบียน** | `mlflow.register_model(model_uri, name)` | ลงทะเบียน Model ที่มีอยู่ |
+| **โหลด** | `mlflow.sklearn.load_model(model_path)` | โหลด sklearn model |
+| **โหลด** | `mlflow.pytorch.load_model(model_path)` | โหลด PyTorch model |
+| **Alias** | `client.set_registered_model_alias(name, alias, version)` | กำหนด Alias |
+| **Alias** | `client.get_model_version_by_alias(name, alias)` | ดู Version จาก Alias |
+| **Metadata** | `client.update_registered_model(name, description)` | อัพเดท Description |
+| **Tags** | `client.set_registered_model_tag(name, key, value)` | เพิ่ม Tag ให้ Model |
+| **Tags** | `client.set_model_version_tag(name, version, key, value)` | เพิ่ม Tag ให้ Version |
+| **ค้นหา** | `client.search_registered_models(filter_string)` | ค้นหา Models |
+| **ค้นหา** | `client.search_model_versions(filter_string)` | ค้นหา Versions |
+| **ดูข้อมูล** | `client.get_registered_model(name)` | ดู Model |
+| **ดูข้อมูล** | `client.get_model_version(name, version)` | ดู Version |
 
 ---
 
-## 📚 แหล่งเรียนรู้เพิ่มเติม
+## 10. แหล่งข้อมูลเพิ่มเติม
+
+### 10.1 เอกสารอ้างอิง
 
 - [MLflow Model Registry Documentation](https://mlflow.org/docs/latest/model-registry.html)
-- [MLflow Python API](https://mlflow.org/docs/latest/python_api/index.html)
-- [MLOps Best Practices](https://ml-ops.org/)
+- [MLflow Model Registry Concepts](https://mlflow.org/docs/latest/concepts.html#model-registry)
+- [MLflow Python API - Model Registry](https://mlflow.org/docs/latest/python_api/mlflow.html#mlflow.register_model)
+- [Model Aliases and Tags](https://mlflow.org/docs/latest/model-registry.html#model-aliases)
+
+### 10.2 บทความที่แนะนำ
+
+- [Best Practices for Model Registry](https://mlflow.org/docs/latest/model-registry.html#best-practices)
+- [Model Lifecycle Management](https://www.databricks.com/blog/2020/07/08/model-registry-best-practices.html)
+- [MLOps Maturity Model](https://cloud.google.com/architecture/mlops-continuous-delivery-and-automation-pipelines-in-machine-learning)
+
+### 10.3 วิดีโอและ Tutorials
+
+- [MLflow Model Registry Tutorial (YouTube)](https://www.youtube.com/results?search_query=mlflow+model+registry+tutorial)
+- [Databricks Model Registry Course](https://www.databricks.com/learn/training)
 
 ---
 
-**🎉 ยินดีด้วย! คุณได้เรียนรู้การจัดการโมเดลด้วย MLflow Model Registry แล้ว**
+## 📝 หมายเหตุสำหรับผู้สอน
+
+### การเตรียมตัวก่อนสอน
+
+1. **ตรวจสอบ MLflow Server:** ให้แน่ใจว่า Server รันที่ `http://127.0.0.1:5000`
+2. **ตรวจสอบ Dependencies:** scikit-learn, pytorch, mlflow
+3. **เตรียม Dataset:** Iris dataset (มาพร้อมกับ sklearn)
+
+### คำแนะนำในการสอน
+
+1. เริ่มจากทฤษฎีใน README นี้ก่อน (ประมาณ 30 นาที)
+2. ให้นักศึกษาทำแบบฝึกหัดทีละส่วน
+3. หยุดอธิบายเพิ่มเติมหลังจบแต่ละส่วน
+4. เน้นให้นักศึกษาดู MLflow UI ควบคู่กับการรันโค้ด
+
+### การประเมินผล
+
+- ความเข้าใจแนวคิด Model Registry (30%)
+- ความสามารถในการลงทะเบียนและโหลด Model (40%)
+- การใช้ Aliases และ Tags อย่างเหมาะสม (20%)
+- Best Practices และการนำไปประยุกต์ใช้ (10%)
+
+---
+
+*เอกสารนี้จัดทำขึ้นสำหรับรายวิชา MLOps*  
+**MLflow Server URL:** http://127.0.0.1:5000

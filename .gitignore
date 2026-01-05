@@ -1,4 +1,5 @@
 *.pptx
+**/mlflowserver-labs/
 /backup
 **/dert/
 **/mlruns/
