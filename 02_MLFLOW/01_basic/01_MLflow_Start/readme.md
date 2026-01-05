@@ -37,12 +37,34 @@
 
 หากเคยรัน Lab นี้มาก่อนและต้องการ clear ของเก่าทั้งหมด ให้รันคำสั่งต่อไปนี้:
 
+**สำหรับ Linux / macOS / Git Bash:**
+
 ```bash
 # หยุด container ทั้งหมด
 docker stop $(docker ps -aq)
 
 # ลบ container ทั้งหมด
 docker rm $(docker ps -aq)
+```
+
+**สำหรับ Windows (Command Prompt):**
+
+```cmd
+# หยุด container ทั้งหมด
+for /f "tokens=*" %i in ('docker ps -aq') do docker stop %i
+
+# ลบ container ทั้งหมด
+for /f "tokens=*" %i in ('docker ps -aq') do docker rm %i
+```
+
+**สำหรับ Windows (PowerShell):**
+
+```powershell
+# หยุด container ทั้งหมด
+docker ps -aq | ForEach-Object { docker stop $_ }
+
+# ลบ container ทั้งหมด
+docker ps -aq | ForEach-Object { docker rm $_ }
 ```
 
 ---
