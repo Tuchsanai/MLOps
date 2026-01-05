@@ -32,6 +32,7 @@ git checkout -b dev
 cat >> .gitignore << 'EOF'
 
 # Dev branch exclusions
+*.svg
 *.pdf
 *.md
 *.png
@@ -73,6 +74,7 @@ git checkout -b dev
 @"
 
 # Dev branch exclusions
+*.svg
 *.md
 *.pdf
 *.png
