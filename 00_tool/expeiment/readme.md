@@ -1,9 +1,19 @@
 
 
-```
-docker run -d -p 8888:8888  -p 8080:8080 --name mlflow-container tuchsanai/mlops_mlflow_2568_2:latest 
+
 ```
 
+# Step 1: Run container
+docker run -d -p 5000:5000 -p 8888:8888 --name mlops-container -v "C:\Users\oishi\Documents\GitHub\MLOps\02_MLFLOW\01_basic\02_MLflow_Tracking\LAB:/home/student/workspace" tuchsanai/mlops_2568_2:latest
+
+# Step 2: Create directories
+docker exec mlops-container mkdir -p /home/student/workspace/mlflowserver-lab/mlruns_db
+docker exec mlops-container mkdir -p /home/student/workspace/mlflowserver-lab/mlartifacts
+
+# Step 3: Start MLflow server
+docker exec -d mlops-container mlflow server --host 0.0.0.0 --port 5000 --backend-store-uri sqlite:////home/student/workspace/mlflowserver-lab/mlruns_db/mlflow.db --artifacts-destination /home/student/workspace/mlflowserver-lab/mlartifacts --serve-artifacts
+
+```
 
 
 # Linux Delete existing dev branch (local and remote)

@@ -32,15 +32,19 @@ RUN pip install --upgrade pip && \
     pandas \
     scikit-learn \
     opencv-python-headless \
-    "mlflow[extras]"
+    "mlflow[extras]" \
+    jupytext
 
 # PyTorch CPU-only
-RUN pip install \p
+RUN pip install \
     torch torchvision \
     --index-url https://download.pytorch.org/whl/cpu
 
 # Register the venv kernel with Jupyter
 RUN python -m ipykernel install --name=mlops --display-name="Python (mlops)"
+
+# Enable jupytext extension for JupyterLab
+RUN jupyter labextension enable jupytext
 
 # Set working directory
 WORKDIR /home/student/workspace
