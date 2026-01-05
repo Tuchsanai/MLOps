@@ -10,14 +10,13 @@
 
 1. ติดตั้งและตั้งค่า MLflow บนเครื่องของตนเองได้
 2. เข้าใจองค์ประกอบหลักของ MLflow (Tracking Server, Backend Store, Artifact Store)
-3. เปิดใช้งาน MLflow Tracking Server ได้ทั้งแบบ In-memory และแบบ Persistent
+3. เปิดใช้งาน MLflow Tracking Server แบบ Persistent ได้
 4. เชื่อมต่อ Python Client กับ MLflow Server ได้
 
 ### 📚 ความรู้พื้นฐานที่ต้องมี
 
 - Python เบื้องต้น
 - การใช้งาน Command Line / Terminal
-- ความเข้าใจเรื่อง Virtual Environment
 
 ---
 
@@ -28,7 +27,7 @@
 | Python | เวอร์ชัน 3.9 - 3.12 |
 | pip | ตัวจัดการ Package ของ Python |
 | ระบบปฏิบัติการ | Linux หรือ macOS |
-| Port ที่ต้องใช้ | 8080 (สำหรับ Tracking Server และ UI) |
+| Port ที่ต้องใช้ | 5000 (สำหรับ Tracking Server และ UI) |
 
 ---
 
@@ -37,132 +36,61 @@
 สำหรับผู้ที่ต้องการใช้งานผ่าน Docker Container ที่ติดตั้ง Library พื้นฐานไว้ครบถ้วนแล้ว สามารถรันคำสั่งดังนี้:
 
 ```bash
-docker run -d -p 8080:8080 -p 8888:8888  --name mlops-container tuchsanai/mlops_2568_2:latest
+docker run -d -p 5000:5000 -p 8888:8888  --name mlops-container tuchsanai/mlops_2568_2:latest
 ```
+
+**อธิบาย Port ที่ใช้งาน:**
+
+| Port | Service | URL |
+|------|---------|-----|
+| 5000 | MLflow Tracking Server | http://127.0.0.1:5000 |
+| 8888 | Jupyter Notebook | http://127.0.0.1:8888 |
 
 ---
 
 ## 🚀 ขั้นตอนการทำ Lab
 
-### ขั้นตอนที่ 1: สร้างโฟลเดอร์สำหรับ Lab
+### ขั้นตอนที่ 1: สร้างโฟลเดอร์และเปิดใช้งาน MLflow Tracking Server
 
 ```bash
-# สร้างโฟลเดอร์สำหรับเก็บไฟล์ Lab
-mkdir -p mlflowserver-lab
+# 1.1 สร้างโฟลเดอร์สำหรับเก็บไฟล์ Lab
+mkdir -p /home/student/workspace/mlflowserver-lab
 
-# เข้าไปในโฟลเดอร์
-cd mlflowserver-lab
-```
+# 1.2 เข้าไปในโฟลเดอร์
+cd /home/student/workspace/mlflowserver-lab
 
----
+# 1.3 สร้างโฟลเดอร์เก็บข้อมูล
+mkdir -p /home/student/workspace/mlflowserver-lab/mlruns_db
+mkdir -p /home/student/workspace/mlflowserver-lab/mlartifacts
 
-### ขั้นตอนที่ 2: สร้าง Virtual Environment
-
-> 💡 **ทำไมต้องใช้ Virtual Environment?**
-> 
-> Virtual Environment ช่วยแยก Package ของแต่ละโปรเจกต์ออกจากกัน ป้องกันปัญหา Package Version ขัดแย้งกัน
-
-```bash
-# 1.1 สร้าง Virtual Environment ชื่อ .venv
-python -m venv .venv
-
-# 1.2 เปิดใช้งาน Virtual Environment
-source .venv/bin/activate
-
-# 1.3 อัพเดท pip ให้เป็นเวอร์ชันล่าสุด
-python -m pip install --upgrade pip
-```
-
-✅ **ตรวจสอบ:** เมื่อเปิดใช้งานสำเร็จ จะเห็น `(.venv)` นำหน้า prompt
-
----
-
-### ขั้นตอนที่ 3: ติดตั้ง Package ที่จำเป็น
-
-```bash
-pip install mlflow[extras] scikit-learn pandas numpy
-```
-
-**รายละเอียด Package:**
-
-| Package | หน้าที่ |
-|---------|--------|
-| `mlflow[extras]` | MLflow เวอร์ชันสมบูรณ์ รวม Model Serving, SQL Storage และ Dependencies ทั้งหมด |
-| `scikit-learn` | Library สำหรับ Machine Learning |
-| `pandas` | จัดการข้อมูลแบบ DataFrame |
-| `numpy` | คำนวณทางคณิตศาสตร์ |
-
-✅ **ตรวจสอบ:** รันคำสั่งนี้เพื่อยืนยันการติดตั้ง:
-```bash
-python -c "import mlflow; print('MLflow version:', mlflow.__version__)"
-```
-
----
-
-### ขั้นตอนที่ 4: เปิดใช้งาน MLflow Tracking Server
-
-> ⚠️ **สำคัญ:** ให้นักศึกษา **เลือกทำเพียงแบบเดียว** (แบบที่ 1 หรือ แบบที่ 2) ไม่ต้องทำทั้ง 2 แบบ
-
-| แบบ | ข้อดี | ข้อเสีย | เหมาะสำหรับ |
-|-----|-------|---------|-------------|
-| แบบที่ 1: In-Memory | เริ่มต้นเร็ว ไม่ต้องตั้งค่า | ข้อมูลหายเมื่อปิด Server | ทดลองใช้งานเร็วๆ |
-| แบบที่ 2: Persistent | ข้อมูลไม่หาย | ต้องสร้างโฟลเดอร์เพิ่ม | ใช้งานจริง ⭐ |
-
----
-
-#### 📌 แบบที่ 1: In-Memory (สำหรับทดลองใช้งานเร็ว)
-
-```bash
-nohup mlflow server --host 0.0.0.0 --port 8080 > mlflow.log 2>&1 &
-```
-
-**ข้อดี:** เริ่มต้นได้เร็ว ไม่ต้องตั้งค่าอะไรเพิ่ม  
-**ข้อเสีย:** ข้อมูลหายเมื่อปิด Server
-
-**ผลลัพธ์ที่คาดหวัง:**
-```
-INFO:     Started server process [28550]
-INFO:     Application startup complete.
-Uvicorn running on http://127.0.0.1:8080 (Press CTRL+C to quit)
-```
-
----
-
-#### 📌 แบบที่ 2: Persistent Storage (แนะนำสำหรับใช้งานจริง) ⭐
-
-```bash
-# 3.1 สร้างโฟลเดอร์เก็บข้อมูล
-mkdir -p mlruns_db mlartifacts
-
-# 3.2 เปิด Server ให้เข้าถึงได้จากทุก IP
+# 1.4 เปิด Server ให้เข้าถึงได้จากทุก IP
 nohup mlflow server \
-  --host 0.0.0.0 --port 8080 \
-  --backend-store-uri sqlite:///mlruns_db/mlflow.db \
-  --artifacts-destination ./mlartifacts \
+  --host 0.0.0.0 --port 5000 \
+  --backend-store-uri sqlite:////home/student/workspace/mlflowserver-lab/mlruns_db/mlflow.db \
+  --artifacts-destination /home/student/workspace/mlflowserver-lab/mlartifacts \
   --serve-artifacts > mlflow.log 2>&1 &
 ```
 
 **🗂️ อธิบายโครงสร้างไฟล์:**
 
 ```
-โปรเจกต์ของคุณ/
+/home/student/workspace/mlflowserver-lab/
 ├── mlruns_db/
 │   └── mlflow.db          # ฐานข้อมูล SQLite เก็บ Experiment และ Run Metadata
 ├── mlartifacts/           # โฟลเดอร์เก็บ Model Files และ Artifacts
-└── .venv/                 # Virtual Environment
 ```
 
-| ส่วนประกอบ | หน้าที่ |
-|-----------|--------|
-| Backend Store | เก็บข้อมูล Experiment, Run, Parameters, Metrics |
-| Artifact Store | เก็บไฟล์โมเดล, กราฟ, ไฟล์ผลลัพธ์อื่นๆ |
+| ส่วนประกอบ | หน้าที่ | Full Path |
+|-----------|--------|-----------|
+| Backend Store (SQLite) | เก็บข้อมูล Experiment, Run, Parameters, Metrics | `/home/student/workspace/mlflowserver-lab/mlruns_db/mlflow.db` |
+| Artifact Store | เก็บไฟล์โมเดล, กราฟ, ไฟล์ผลลัพธ์อื่นๆ | `/home/student/workspace/mlflowserver-lab/mlartifacts/` |
 
 ---
 
-### ขั้นตอนที่ 5: ตรวจสอบ MLflow UI
+### ขั้นตอนที่ 2: ตรวจสอบ MLflow UI
 
 1. เปิด Web Browser
-2. ไปที่ URL: **http://127.0.0.1:8080**
+2. ไปที่ URL: **http://127.0.0.1:5000**
 3. จะเห็นหน้า MLflow UI ดังรูป:
 
 ![MLflow UI](./img/1.png)
@@ -175,9 +103,7 @@ nohup mlflow server \
 
 | หัวข้อ | สิ่งที่ได้เรียนรู้ |
 |--------|------------------|
-| Virtual Environment | การสร้างและใช้งาน Python Virtual Environment |
-| MLflow Installation | การติดตั้ง MLflow และ Dependencies |
-| Tracking Server | การเปิดใช้งาน Server แบบ In-memory และ Persistent |
+| Tracking Server | การเปิดใช้งาน Server แบบ Persistent |
 | Storage Architecture | เข้าใจ Backend Store และ Artifact Store |
 
 ---
@@ -200,11 +126,15 @@ nohup mlflow server \
 
 ## 🛠️ การแก้ปัญหาที่พบบ่อย (Troubleshooting)
 
-### ปัญหา: Port 8080 ถูกใช้งานอยู่แล้ว
+### ปัญหา: Port 5000 ถูกใช้งานอยู่แล้ว
 
-**วิธีแก้:** เปลี่ยนไปใช้ Port อื่น เช่น 5000
+**วิธีแก้:** เปลี่ยนไปใช้ Port อื่น เช่น 5001
 ```bash
-mlflow server --host 127.0.0.1 --port 5000
+nohup mlflow server \
+  --host 0.0.0.0 --port 5001 \
+  --backend-store-uri sqlite:////home/student/workspace/mlflowserver-lab/mlruns_db/mlflow.db \
+  --artifacts-destination /home/student/workspace/mlflowserver-lab/mlartifacts \
+  --serve-artifacts > mlflow.log 2>&1 &
 ```
 
 ### ปัญหา: ไม่สามารถเชื่อมต่อกับ Server ได้
