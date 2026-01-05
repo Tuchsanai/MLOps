@@ -33,6 +33,7 @@ cat >> .gitignore << 'EOF'
 
 # Dev branch exclusions
 *.pdf
+*.md
 *.png
 *.jpg
 *.jpeg
