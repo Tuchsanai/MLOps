@@ -1,13 +1,13 @@
 # %% [markdown]
 # # 🧪 Lab: MLflow Tracking พื้นฐาน
-# 
+#
 # **วัตถุประสงค์การเรียนรู้:**
 # - เข้าใจองค์ประกอบหลัก 5 ส่วนของ MLflow Tracking
 # - สามารถสร้าง Experiment และ Run ได้
 # - บันทึก Parameters, Metrics และ Artifacts ได้อย่างถูกต้อง
 # - บันทึกและโหลด Model ได้
 # - เปรียบเทียบผลการทดลองผ่าน MLflow UI
-# 
+#
 # **องค์ประกอบหลักของ MLflow Tracking:**
 # | องค์ประกอบ | คำอธิบาย | ตัวอย่าง |
 # |------------|----------|----------|
@@ -20,30 +20,30 @@
 # %% [markdown]
 # ---
 # ## ⚙️ Pre-requisite: เตรียมความพร้อมก่อนเริ่ม Lab
-# 
+#
 # ### 📋 สิ่งที่ต้องมี
-# 
+#
 # ก่อนเริ่ม Lab นี้ ต้องมี MLflow Server รันอยู่และเข้าถึงได้ที่ `http://127.0.0.1:5000`
-# 
+#
 # ### 🔍 ตรวจสอบ MLflow Server
-# 
+#
 # เปิด Browser แล้วไปที่: [http://127.0.0.1:5000](http://127.0.0.1:5000)
-# 
+#
 # ![MLflow UI](./img/1.png)
 
 # %% [markdown]
 # ---
 # ## 📚 ส่วนที่ 1: การเชื่อมต่อ MLflow Server
-# 
+#
 # ### แนวคิด
 # ก่อนใช้งาน MLflow Tracking ต้องกำหนด **Tracking URI** เพื่อบอกว่าจะเก็บข้อมูลการทดลองไว้ที่ไหน
-# 
+#
 # ### ฟังก์ชันสำคัญ
 # | ฟังก์ชัน | คำอธิบาย |
 # |----------|----------|
 # | `mlflow.set_tracking_uri(uri)` | กำหนด URL ของ MLflow Server |
 # | `mlflow.get_tracking_uri()` | ตรวจสอบ URL ที่กำหนดไว้ |
-# 
+#
 # ### ทางเลือกอื่นสำหรับ Tracking URI
 # | ประเภท | ตัวอย่าง URI | คำอธิบาย |
 # |--------|--------------|----------|
@@ -68,10 +68,10 @@ print(f"✅ MLflow Tracking URI: {mlflow.get_tracking_uri()}")
 # %% [markdown]
 # ---
 # ## 📚 ส่วนที่ 2: การสร้าง Experiment
-# 
+#
 # ### แนวคิด
 # **Experiment** คือกลุ่มของ Runs ที่เกี่ยวข้องกัน เปรียบเสมือน "โปรเจกต์" หรือ "หัวข้อการทดลอง"
-# 
+#
 # ```
 # Experiment: fraud-detection-project
 # ├── Run 1: baseline-model
@@ -79,20 +79,20 @@ print(f"✅ MLflow Tracking URI: {mlflow.get_tracking_uri()}")
 # ├── Run 3: lstm-v2-tuned
 # └── Run 4: transformer-model
 # ```
-# 
+#
 # ### หลักการตั้งชื่อ Experiment
 # | ✅ ชื่อที่ดี | ❌ ชื่อที่ควรหลีกเลี่ยง |
 # |-------------|------------------------|
 # | `fraud-detection-lstm` | `test` |
 # | `customer-churn-prediction` | `experiment1` |
 # | `image-classification-resnet` | `my_model` |
-# 
+#
 # ### ฟังก์ชันสำคัญ
 # | ฟังก์ชัน | คำอธิบาย |
 # |----------|----------|
 # | `mlflow.set_experiment(name)` | สร้างหรือเลือก Experiment |
 # | `mlflow.get_experiment_by_name(name)` | ดึงข้อมูล Experiment |
-# 
+#
 # ### คุณสมบัติของ Experiment Object
 # | คุณสมบัติ | คำอธิบาย |
 # |-----------|----------|
@@ -117,14 +117,14 @@ print(f"🔄 Lifecycle Stage: {experiment.lifecycle_stage}")
 # %% [markdown]
 # ---
 # ## 📚 ส่วนที่ 3: การสร้าง Run และบันทึก Parameters
-# 
+#
 # ### แนวคิด
 # **Run** คือการทดลองแต่ละครั้ง เป็นหน่วยพื้นฐานที่สุดของ MLflow Tracking
 # ทุกครั้งที่ train model ด้วย hyperparameters ชุดใหม่ ควรสร้าง Run ใหม่
-# 
+#
 # **Parameters** คือค่าที่เราตั้งก่อนเริ่มการทดลอง (Input Configuration) 
 # เป็นค่าคงที่ตลอดการทดลอง ไม่เปลี่ยนแปลง
-# 
+#
 # ### ประเภทของ Parameters
 # | ประเภท | ตัวอย่าง |
 # |--------|----------|
@@ -132,7 +132,7 @@ print(f"🔄 Lifecycle Stage: {experiment.lifecycle_stage}")
 # | Data Parameters | `train_split`, `image_size` |
 # | Architecture | `model_type`, `num_layers`, `hidden_units` |
 # | Training Config | `optimizer`, `loss_function` |
-# 
+#
 # ### ฟังก์ชันสำคัญ
 # | ฟังก์ชัน | คำอธิบาย |
 # |----------|----------|
@@ -140,7 +140,7 @@ print(f"🔄 Lifecycle Stage: {experiment.lifecycle_stage}")
 # | `mlflow.log_param(key, value)` | บันทึก Parameter ทีละค่า |
 # | `mlflow.log_params(dict)` | บันทึกหลาย Parameters พร้อมกัน |
 # | `mlflow.active_run()` | ดึงข้อมูล Run ที่กำลังทำงานอยู่ |
-# 
+#
 # ### Context Manager (`with` statement)
 # การใช้ `with mlflow.start_run()` มีข้อดีคือ:
 # - Run จะถูกปิดอัตโนมัติเมื่อออกจาก block
@@ -225,11 +225,11 @@ df[param_cols]
 # %% [markdown]
 # ---
 # ## 📚 ส่วนที่ 4: การบันทึก Metrics
-# 
+#
 # ### แนวคิด
 # **Metrics** คือค่าที่วัดได้จากการทดลอง (Output/Results) 
 # สามารถบันทึกได้หลายครั้งพร้อม step number เพื่อติดตามการเปลี่ยนแปลงตามเวลา
-# 
+#
 # ### ความแตกต่างระหว่าง Parameters และ Metrics
 # | คุณสมบัติ | Parameters | Metrics |
 # |-----------|------------|---------|
@@ -237,13 +237,13 @@ df[param_cols]
 # | จำนวนค่า | ค่าเดียวต่อชื่อ | หลายค่าได้ (ต่าง step) |
 # | การเปลี่ยนแปลง | คงที่ | เปลี่ยนได้ตามเวลา |
 # | วัตถุประสงค์ | บอกว่าทำอะไร (Input) | บอกว่าได้ผลอย่างไร (Output) |
-# 
+#
 # ### ฟังก์ชันสำคัญ
 # | ฟังก์ชัน | คำอธิบาย |
 # |----------|----------|
 # | `mlflow.log_metric(key, value, step)` | บันทึก Metric ค่าเดียว |
 # | `mlflow.log_metrics(dict, step)` | บันทึกหลาย Metrics พร้อมกัน |
-# 
+#
 # ### การใช้ Step Parameter
 # Step ทำให้ MLflow สามารถสร้างกราฟแสดงการเปลี่ยนแปลงของ metric ตามเวลาได้
 
@@ -344,11 +344,11 @@ print(df)
 # %% [markdown]
 # ---
 # ## 📚 ส่วนที่ 5: การบันทึก Artifacts
-# 
+#
 # ### แนวคิด
 # **Artifacts** คือไฟล์ที่สร้างจากการทดลอง สามารถเป็นไฟล์ประเภทใดก็ได้
 # MLflow จะเก็บไว้ใน Artifact Store
-# 
+#
 # ### ประเภทของ Artifacts
 # | ประเภท | ตัวอย่างไฟล์ |
 # |--------|-------------|
@@ -357,7 +357,7 @@ print(df)
 # | Data | `predictions.csv`, `feature_importance.json` |
 # | Reports | `report.html`, `summary.pdf` |
 # | Configs | `config.yaml`, `hyperparams.json` |
-# 
+#
 # ### ฟังก์ชันสำคัญ
 # | ฟังก์ชัน | คำอธิบาย |
 # |----------|----------|
@@ -600,17 +600,17 @@ else:
 # %% [markdown]
 # ---
 # ## 📚 ส่วนที่ 6: การบันทึก Model (Model Logging)
-# 
+#
 # ### แนวคิด
 # **Model Logging** เป็นฟีเจอร์สำคัญของ MLflow ที่ช่วยให้เราสามารถบันทึก Model 
 # พร้อมกับข้อมูลที่จำเป็นสำหรับการนำไปใช้งาน (Deployment) ได้อย่างสมบูรณ์
-# 
+#
 # ### ประโยชน์ของการบันทึก Model ผ่าน MLflow
 # - บันทึก Model พร้อม dependencies และ environment
 # - สามารถโหลด Model กลับมาใช้งานได้ง่าย
 # - รองรับการ Deploy ไปยัง Production
 # - เก็บ Model signature (input/output schema)
-# 
+#
 # ### MLflow Model Flavors
 # | Flavor | Library | ฟังก์ชัน |
 # |--------|---------|----------|
@@ -622,7 +622,7 @@ else:
 
 # %% [markdown]
 # ### 6.1 การบันทึก Scikit-learn Model
-# 
+#
 # **ฟังก์ชันสำคัญ:**
 # - `mlflow.sklearn.log_model()` บันทึก sklearn model
 # - `artifact_path` กำหนดชื่อโฟลเดอร์ที่จะเก็บ model
@@ -692,76 +692,105 @@ with mlflow.start_run(run_name="sklearn-model-demo"):
     sklearn_run_id = mlflow.active_run().info.run_id
     print(f"🆔 Run ID: {sklearn_run_id}")
 
+
 # %% [markdown]
 # ### 6.2 การโหลด Model กลับมาใช้งาน
-# 
-# **วิธีการโหลด Model:**
-# - ใช้ `mlflow.<flavor>.load_model()` โหลด model ตาม flavor
-# - ระบุ path ในรูปแบบ `runs:/<run_id>/<artifact_path>`
-# - หรือใช้ `models:/<model_name>/<version>` สำหรับ registered models
-# 
-# **รูปแบบ Model URI:**
-# | รูปแบบ | ตัวอย่าง | คำอธิบาย |
-# |--------|----------|----------|
-# | Runs | `runs:/<run_id>/model` | โหลดจาก Run ID |
-# | Models | `models:/<name>/<version>` | โหลดจาก Model Registry |
-# | Local Path | `/path/to/model` | โหลดจาก local path |
+#
+# **วิธีการโหลด Model จาก ARTIFACTS_BASE โดยตรง (เร็วที่สุด! ⚡)**
+#
+# เมื่อใช้ `--serve-artifacts` กับ MLflow Server, **Models จะถูกเก็บในโฟลเดอร์ `models/` แยกต่างหาก**:
+#
+# ```
+# mlartifacts/
+# └── <experiment_id>/
+#     ├── <run_id>/
+#     │   └── artifacts/           # Artifacts ทั่วไป (plots, data, config)
+#     └── models/                  # ⚠️ Models ถูกเก็บที่นี่!
+#         └── m-<model_id>/        
+#             └── artifacts/
+#                 ├── MLmodel
+#                 ├── model.pkl
+#                 └── ...
+# ```
 
 # %%
-# วิธีที่ 1: โหลด Model โดยใช้ runs:/ URI
-model_uri = f"runs:/{sklearn_run_id}/model"
-print(f"📦 Model URI: {model_uri}")
+# =============================================================
+# โหลด Model จาก ARTIFACTS_BASE โดยตรง (เร็วที่สุด! ⚡)
+# =============================================================
 
-# โหลดเป็น sklearn model (ได้ native sklearn object)
-loaded_model = mlflow.sklearn.load_model(model_uri)
-print(f"✅ โหลด Model สำเร็จ: {type(loaded_model)}")
+# กำหนด ARTIFACTS_BASE path ตาม MLflow Server configuration
+ARTIFACTS_BASE = "/home/student/workspace/mlflowserver-lab/mlartifacts"
 
-# ทดสอบทำนาย
-sample_data = X_test[:5]
-predictions = loaded_model.predict(sample_data)
-print(f"\n🔮 ทดสอบทำนาย 5 ตัวอย่างแรก:")
-print(f"   Predictions: {predictions}")
-print(f"   Actual:      {y_test[:5]}")
+# ดึงข้อมูล Experiment ID
+experiment = mlflow.get_experiment_by_name("mlflow-tracking-lab")
+experiment_id = experiment.experiment_id
 
-# %%
-# วิธีที่ 2: โหลดเป็น pyfunc (generic Python function)
-pyfunc_model = mlflow.pyfunc.load_model(model_uri)
-print(f"✅ โหลดเป็น PyFunc: {type(pyfunc_model)}")
-
-# ทดสอบทำนาย
-predictions = pyfunc_model.predict(sample_data)
-print(f"\n🔮 ทดสอบทำนาย 5 ตัวอย่างแรก:")
-print(f"   Predictions: {predictions}")
-print(f"   Actual:      {y_test[:5]}")
+print(f"📁 ARTIFACTS_BASE: {ARTIFACTS_BASE}")
+print(f"🆔 Experiment ID: {experiment_id}")
+print(f"🆔 Run ID: {sklearn_run_id}")
 
 # %%
-# วิธีที่ 3: ใช้ MlflowClient download artifacts มาก่อน
-from mlflow.tracking import MlflowClient
+# =============================================================
+# Helper Function: ค้นหา Model ตาม flavor (sklearn, pytorch, etc.)
+# =============================================================
+import yaml
 
-client = MlflowClient()
+def find_model_path_by_flavor(artifacts_base: str, experiment_id: str, flavor: str = "sklearn") -> str:
+    """
+    ค้นหา model path จาก models/ folder ตาม flavor ที่ต้องการ
+    (MLflow เก็บ models แยกใน models/ folder เมื่อใช้ --serve-artifacts)
+    
+    Args:
+        artifacts_base: Base path ของ artifacts
+        experiment_id: Experiment ID
+        flavor: MLflow flavor ที่ต้องการ ("sklearn", "pytorch", "tensorflow", etc.)
+    
+    Returns:
+        Full path ไปยัง model หรือ None ถ้าไม่พบ
+    """
+    models_folder = f"{artifacts_base}/{experiment_id}/models"
+    
+    if not os.path.exists(models_folder):
+        return None
+    
+    # ค้นหา model folder ที่มี flavor ตรงกับที่ต้องการ
+    for model_dir in os.listdir(models_folder):
+        model_path = f"{models_folder}/{model_dir}/artifacts"
+        mlmodel_file = f"{model_path}/MLmodel"
+        
+        if os.path.exists(mlmodel_file):
+            # อ่าน MLmodel file เพื่อตรวจสอบ flavor
+            with open(mlmodel_file, 'r') as f:
+                mlmodel = yaml.safe_load(f)
+            
+            # ตรวจสอบว่ามี flavor ที่ต้องการหรือไม่
+            if 'flavors' in mlmodel and flavor in mlmodel['flavors']:
+                return model_path
+    
+    return None
 
-# Download model artifacts มาเก็บ local ก่อน
-local_path = client.download_artifacts(
-    run_id=sklearn_run_id,
-    path="model",
-    dst_path="./downloaded_models"
-)
+# ค้นหาและโหลด sklearn model
+model_path = find_model_path_by_flavor(ARTIFACTS_BASE, experiment_id, flavor="sklearn")
 
-print(f"📁 Downloaded to: {local_path}")
-
-# โหลด Model จาก local path
-loaded_model_local = mlflow.sklearn.load_model(local_path)
-print(f"✅ โหลด Model จาก local path สำเร็จ: {type(loaded_model_local)}")
-
-# ทดสอบทำนาย
-predictions = loaded_model_local.predict(sample_data)
-print(f"\n🔮 ทดสอบทำนาย 5 ตัวอย่างแรก:")
-print(f"   Predictions: {predictions}")
-print(f"   Actual:      {y_test[:5]}")
+if model_path:
+    print(f"📦 Model Path: {model_path}")
+    
+    # โหลด model
+    loaded_model = mlflow.sklearn.load_model(model_path)
+    print(f"✅ โหลด Model สำเร็จ: {type(loaded_model)}")
+    
+    # ทดสอบทำนาย
+    sample_data = X_test[:5]
+    predictions = loaded_model.predict(sample_data)
+    print(f"\n🔮 ทดสอบทำนาย 5 ตัวอย่างแรก:")
+    print(f"   Predictions: {predictions}")
+    print(f"   Actual:      {y_test[:5]}")
+else:
+    print("⚠️ ไม่พบ model")
 
 # %% [markdown]
 # ### 6.3 การบันทึก PyTorch Model
-# 
+#
 # **ฟังก์ชันสำคัญ:**
 # - `mlflow.pytorch.log_model()` บันทึก PyTorch model
 # - รองรับทั้ง `nn.Module` และ `torch.jit.ScriptModule`
@@ -807,8 +836,11 @@ with mlflow.start_run(run_name="pytorch-model-demo"):
     # สร้าง Model
     pytorch_model = SimpleNN(input_size, hidden_size, num_classes)
     
-    # เตรียมข้อมูล
-    X_tensor = torch.FloatTensor(X_train)
+    # เตรียมข้อมูล - แปลงเป็น float32 เพื่อให้ตรงกับ PyTorch default
+    X_train_float32 = X_train.astype('float32')
+    X_test_float32 = X_test.astype('float32')
+    
+    X_tensor = torch.FloatTensor(X_train_float32)
     y_tensor = torch.LongTensor(y_train)
     
     # Training
@@ -831,7 +863,7 @@ with mlflow.start_run(run_name="pytorch-model-demo"):
     # คำนวณ Accuracy
     pytorch_model.eval()
     with torch.no_grad():
-        X_test_tensor = torch.FloatTensor(X_test)
+        X_test_tensor = torch.FloatTensor(X_test_float32)
         outputs = pytorch_model(X_test_tensor)
         _, predicted = torch.max(outputs.data, 1)
         accuracy = (predicted.numpy() == y_test).sum() / len(y_test)
@@ -839,18 +871,18 @@ with mlflow.start_run(run_name="pytorch-model-demo"):
     mlflow.log_metric("accuracy", accuracy)
     print(f"\n📊 Test Accuracy: {accuracy:.4f}")
     
-    # สร้าง Signature
+    # สร้าง Signature - ใช้ float32 data
     signature = infer_signature(
-        X_train, 
-        pytorch_model(torch.FloatTensor(X_train)).detach().numpy()
+        X_train_float32, 
+        pytorch_model(torch.FloatTensor(X_train_float32)).detach().numpy()
     )
     
-    # บันทึก PyTorch Model
+    # บันทึก PyTorch Model - ใช้ name แทน artifact_path
     mlflow.pytorch.log_model(
         pytorch_model=pytorch_model,
-        artifact_path="pytorch_model",
+        name="pytorch_model",  # เปลี่ยนจาก artifact_path เป็น name
         signature=signature,
-        input_example=X_train[:3]
+        input_example=X_train_float32[:3]
     )
     
     print(f"✅ บันทึก PyTorch Model สำเร็จ!")
@@ -858,11 +890,41 @@ with mlflow.start_run(run_name="pytorch-model-demo"):
     print(f"🆔 Run ID: {pytorch_run_id}")
 
 # %% [markdown]
-# ### 6.4 การบันทึก Model ด้วย Autolog
-# 
+# ### 6.4 โหลด PyTorch Model จาก ARTIFACTS_BASE
+
+# %%
+# โหลด PyTorch Model (ใช้ find_model_path_by_flavor ที่สร้างไว้ใน 6.2)
+print("="*60)
+print("🔥 โหลด PyTorch Model จาก ARTIFACTS_BASE")
+print("="*60)
+
+pytorch_model_path = find_model_path_by_flavor(ARTIFACTS_BASE, experiment_id, flavor="pytorch")
+
+if pytorch_model_path:
+    print(f"📦 PyTorch Model Path: {pytorch_model_path}")
+    
+    # โหลด model
+    loaded_pytorch_model = mlflow.pytorch.load_model(pytorch_model_path)
+    print(f"✅ โหลด PyTorch Model สำเร็จ: {type(loaded_pytorch_model)}")
+    
+    # ทดสอบทำนาย
+    loaded_pytorch_model.eval()
+    with torch.no_grad():
+        X_test_tensor = torch.FloatTensor(X_test_float32[:5])
+        outputs = loaded_pytorch_model(X_test_tensor)
+        _, predicted = torch.max(outputs.data, 1)
+        print(f"\n🔮 ทดสอบทำนาย 5 ตัวอย่างแรก:")
+        print(f"   Predictions: {predicted.numpy()}")
+        print(f"   Actual:      {y_test[:5]}")
+else:
+    print("⚠️ ไม่พบ PyTorch model")
+
+# %% [markdown]
+# ### 6.5 การบันทึก Model ด้วย Autolog
+#
 # **Autolog** เป็นฟีเจอร์ที่ช่วยบันทึก Parameters, Metrics และ Model อัตโนมัติ
 # โดยไม่ต้องเขียนโค้ดบันทึกเอง
-# 
+#
 # **รองรับหลาย Framework:**
 # - `mlflow.sklearn.autolog()`
 # - `mlflow.pytorch.autolog()`
@@ -890,15 +952,25 @@ with mlflow.start_run(run_name="autolog-demo"):
 mlflow.sklearn.autolog(disable=True)
 
 # %% [markdown]
+# ### 6.6 สรุปวิธีการโหลด Model
+#
+# | วิธี | Code | Use Case |
+# |------|------|----------|
+# | **โหลดจาก ARTIFACTS_BASE** | `find_model_path_by_flavor(base, exp_id, "sklearn")` | Production บน Server เดียวกัน (เร็วที่สุด!) |
+#
+# **หมายเหตุ:** 
+# - เมื่อใช้ `--serve-artifacts` กับ MLflow Server, models จะถูกเก็บในโฟลเดอร์ `models/` แยกต่างหาก
+# - ใช้ parameter `flavor` เพื่อระบุประเภท model ที่ต้องการ ("sklearn", "pytorch", "tensorflow", etc.)
+# %% [markdown]
 # ---
 # ## 📚 ส่วนที่ 7: Nested Runs (การรันซ้อนกัน)
-# 
+#
 # ### แนวคิด
 # **Nested Runs** ใช้สำหรับจัดกลุ่มการทดลองที่เกี่ยวข้องกัน โดยเฉพาะในกรณี:
 # - Hyperparameter Tuning (ทดลองหลายค่าพารามิเตอร์)
 # - Cross-Validation (ทดลองหลาย folds)
 # - Ensemble Models (รวมหลาย models)
-# 
+#
 # ### โครงสร้าง Nested Runs
 # ```
 # Parent Run: hyperparameter-tuning
@@ -906,7 +978,7 @@ mlflow.sklearn.autolog(disable=True)
 # ├── Child Run 2: lr=0.01  → accuracy=0.92 ⭐
 # └── Child Run 3: lr=0.1   → accuracy=0.70
 # ```
-# 
+#
 # ### ข้อดีของ Nested Runs
 # | ข้อดี | คำอธิบาย |
 # |-------|----------|
@@ -961,22 +1033,22 @@ with mlflow.start_run(run_name="hyperparameter-tuning"):
 # %% [markdown]
 # ---
 # ## 📚 ส่วนที่ 8: การดูข้อมูลจาก MLflow UI
-# 
+#
 # หลังจากบันทึกข้อมูลการทดลองแล้ว เราสามารถดูและวิเคราะห์ผลลัพธ์ผ่าน MLflow UI 
 # ซึ่งเป็น Web Interface ที่ใช้งานง่าย
-# 
+#
 # ### 8.1 การเข้าถึง MLflow UI
-# 
+#
 # เปิด Browser แล้วไปที่: [http://127.0.0.1:5000](http://127.0.0.1:5000)
-# 
+#
 # ![MLflow UI Homepage](./img/mlflow-ui-home.png)
 
 # %% [markdown]
 # ### 8.2 ส่วนประกอบหลักของ MLflow UI
-# 
+#
 # #### 📁 Experiments Sidebar (แถบด้านซ้าย)
 # แสดงรายการ Experiments ทั้งหมด สามารถคลิกเลือกเพื่อดู Runs ภายใน
-# 
+#
 # #### 📋 Runs Table (ตารางกลาง)
 # แสดงรายการ Runs ทั้งหมดใน Experiment ที่เลือก พร้อมข้อมูล:
 # - **Run Name**: ชื่อ Run
@@ -987,9 +1059,9 @@ with mlflow.start_run(run_name="hyperparameter-tuning"):
 
 # %% [markdown]
 # ### 8.3 การดูรายละเอียด Run
-# 
+#
 # คลิกที่ Run Name เพื่อดูรายละเอียด จะเห็นหน้าที่แบ่งเป็น Tabs:
-# 
+#
 # | Tab | คำอธิบาย |
 # |-----|----------|
 # | **Overview** | แสดงข้อมูลทั่วไปของ Run |
@@ -999,11 +1071,11 @@ with mlflow.start_run(run_name="hyperparameter-tuning"):
 
 # %% [markdown]
 # ### 8.4 การเปรียบเทียบหลาย Runs
-# 
+#
 # #### วิธีการเปรียบเทียบ:
 # 1. **เลือก Runs**: คลิก checkbox หน้า Runs ที่ต้องการเปรียบเทียบ
 # 2. **คลิก Compare**: กดปุ่ม "Compare" ที่ด้านบน
-# 
+#
 # #### หน้า Compare View:
 # แสดงการเปรียบเทียบแบบ side-by-side:
 # - **Parameters Comparison**: เปรียบเทียบค่า Parameters
@@ -1011,7 +1083,7 @@ with mlflow.start_run(run_name="hyperparameter-tuning"):
 
 # %% [markdown]
 # ### 8.5 การค้นหาและ Filter Runs
-# 
+#
 # #### ตัวอย่าง Filter Syntax:
 # | Filter | ความหมาย |
 # |--------|----------|
@@ -1044,21 +1116,21 @@ print(f"\n🔗 ดูรายละเอียดเพิ่มเติม�
 
 # %% [markdown]
 # ### 8.6 การดู Nested Runs
-# 
+#
 # Nested Runs จะแสดงเป็นโครงสร้าง tree ใน UI:
-# 
+#
 # ```
 # 📁 hyperparameter-tuning (Parent Run)
 # ├── 📄 lr-0.001 (Child Run) - accuracy: 0.85
 # ├── 📄 lr-0.01 (Child Run)  - accuracy: 0.92 ⭐
 # └── 📄 lr-0.1 (Child Run)   - accuracy: 0.70
 # ```
-# 
+#
 # คลิกที่ Parent Run จะเห็น Child Runs ทั้งหมด
 
 # %% [markdown]
 # ### 8.7 การ Download Artifacts
-# 
+#
 # #### วิธี Download ผ่าน UI:
 # 1. เข้าไปที่หน้า Run Detail
 # 2. คลิก Tab "Artifacts"
@@ -1082,7 +1154,7 @@ print("💡 Tip: ใช้ mlflow.artifacts.download_artifacts() เพื่อ
 
 # %% [markdown]
 # ### 8.8 การจัดการ Tags
-# 
+#
 # Tags ช่วยจัดกลุ่มและค้นหา Runs ได้ง่ายขึ้น
 
 # %%
@@ -1154,7 +1226,7 @@ print(f"\n🔗 ดูรายละเอียดเพิ่มเติม�
 
 # %% [markdown]
 # ### 8.10 สรุปความสามารถ MLflow UI
-# 
+#
 # | ฟีเจอร์ | คำอธิบาย | วิธีใช้งาน |
 # |---------|----------|-----------|
 # | **View Experiments** | ดูรายการ Experiments | คลิกที่ sidebar ซ้าย |
@@ -1169,9 +1241,9 @@ print(f"\n🔗 ดูรายละเอียดเพิ่มเติม�
 # %% [markdown]
 # ---
 # ## 📝 สรุปบทเรียน
-# 
+#
 # ในบทเรียนนี้ได้เรียนรู้:
-# 
+#
 # | องค์ประกอบ | คำอธิบาย | ฟังก์ชันหลัก |
 # |------------|----------|--------------|
 # | **Experiment** | กลุ่มของ Runs ที่เกี่ยวข้องกัน | `mlflow.set_experiment()` |
@@ -1180,30 +1252,35 @@ print(f"\n🔗 ดูรายละเอียดเพิ่มเติม�
 # | **Metrics** | ค่าที่วัดได้จากการทดลอง (Output) | `mlflow.log_metric()`, `mlflow.log_metrics()` |
 # | **Artifacts** | ไฟล์ที่สร้างจากการทดลอง | `mlflow.log_artifact()`, `mlflow.log_figure()` |
 # | **Model** | บันทึกและโหลด ML Model | `mlflow.sklearn.log_model()`, `mlflow.pytorch.log_model()` |
-# 
+#
 # ### Best Practices
-# 
+#
 # #### 1. การตั้งชื่อ
 # - ✅ ใช้ชื่อที่สื่อความหมาย: `fraud-detection-lstm-v2`
 # - ❌ หลีกเลี่ยงชื่อทั่วไป: `test`, `experiment1`
-# 
+#
 # #### 2. การบันทึก Parameters
 # - บันทึกทุกค่าที่มีผลต่อผลลัพธ์
 # - ใช้ `log_params()` สำหรับหลายค่าพร้อมกัน
-# 
+#
 # #### 3. การบันทึก Metrics
 # - บันทึกพร้อม `step` เพื่อติดตามการเปลี่ยนแปลง
 # - บันทึกทั้ง training และ validation metrics
-# 
+#
 # #### 4. การบันทึก Artifacts
 # - บันทึก plots, configs และ models
 # - จัดโครงสร้างโฟลเดอร์ให้ชัดเจน
-# 
+#
 # #### 5. การบันทึก Model
 # - ใช้ `signature` และ `input_example`
 # - พิจารณาใช้ `autolog()` สำหรับความสะดวก
-# 
-# #### 6. การจัดระเบียบ
+#
+# #### 6. การโหลด Model
+# - **Production บน Server เดียวกัน**: ใช้ `find_model_path_by_flavor()` + `mlflow.sklearn.load_model(path)` (เร็วที่สุด!)
+# - **⚠️ หมายเหตุ**: เมื่อใช้ `--serve-artifacts` models จะถูกเก็บในโฟลเดอร์ `models/` แยกต่างหาก
+# - ระบุ `flavor` ให้ตรงกับประเภท model ("sklearn", "pytorch", etc.)
+#
+# #### 7. การจัดระเบียบ
 # - ใช้ Nested Runs สำหรับ Hyperparameter Tuning
 # - ใช้ Tags เพื่อจัดกลุ่ม Runs
 
@@ -1219,14 +1296,14 @@ print("🧹 ทำความสะอาดไฟล์ชั่วครา�
 # %% [markdown]
 # ---
 # ## 🔗 แหล่งข้อมูลเพิ่มเติม
-# 
+#
 # - [MLflow Documentation](https://mlflow.org/docs/latest/index.html)
 # - [MLflow Tracking Guide](https://mlflow.org/docs/latest/tracking.html)
 # - [MLflow Model Registry](https://mlflow.org/docs/latest/model-registry.html)
 # - [MLflow Projects](https://mlflow.org/docs/latest/projects.html)
-# 
+#
 # ---
-# 
+#
 # *Lab นี้จัดทำขึ้นสำหรับการเรียนรู้ MLflow Tracking*
-# 
+#
 # **MLflow Server URL: http://127.0.0.1:5000**
