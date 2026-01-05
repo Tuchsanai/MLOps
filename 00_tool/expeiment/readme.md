@@ -73,6 +73,7 @@ git checkout -b dev
 @"
 
 # Dev branch exclusions
+*.md
 *.pdf
 *.png
 *.jpg
