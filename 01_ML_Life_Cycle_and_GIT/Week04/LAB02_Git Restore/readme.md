@@ -1,4 +1,4 @@
-# 🔄 Lab: Git Restore ใน MLOps Application
+# 🔄 Lab: Git Restore 
 
 ## 📚 ภาพรวมของ Lab
 
