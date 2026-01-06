@@ -213,24 +213,61 @@ git-reset-mlops-lab/
 - `src/` - เก็บ source code
 - `models/` - เก็บ trained models
 
+**ขั้นตอนที่ 0.1: ตั้งค่า Git User (สำคัญมาก! ต้องทำก่อน)**
+
+```bash
+# ตั้งค่าชื่อและอีเมล (จำเป็นสำหรับการ commit)
+git config --global user.email "student@example.com"
+git config --global user.name "Student"
+```
+
+**💡 อธิบาย:**
+- `git config --global user.email` - ตั้งค่าอีเมลที่จะแสดงใน commit
+- `git config --global user.name` - ตั้งค่าชื่อที่จะแสดงใน commit
+- `--global` หมายถึงใช้กับทุก repository ในเครื่อง
+- ⚠️ ถ้าไม่ตั้งค่า Git จะไม่ยอมให้ commit!
+
+**🔍 ตรวจสอบการตั้งค่า:**
+```bash
+git config --global user.name
+git config --global user.email
+```
+
+**ขั้นตอนที่ 0.2: สร้างโฟลเดอร์โปรเจค**
+
 ```bash
 # สร้างโฟลเดอร์โปรเจค
 mkdir -p git-reset-mlops-lab/{data,src,models}
 cd git-reset-mlops-lab
+```
 
+**ขั้นตอนที่ 0.3: Initialize Git Repository**
+
+```bash
 # Initialize Git repository
 git init
-git config user.email "student@example.com"
-git config user.name "Student"
-
-echo "# MLOps Git Reset Lab" > README.md
-git add README.md
-git commit -m "Initial commit"
 ```
 
 **✅ ผลลัพธ์ที่คาดหวัง:**
 ```
 Initialized empty Git repository in .../git-reset-mlops-lab/.git/
+```
+
+**ขั้นตอนที่ 0.4: สร้าง Initial Commit**
+
+```bash
+# สร้างไฟล์ README.md
+echo "# MLOps Git Reset Lab" > README.md
+
+# เพิ่มไฟล์เข้า staging area
+git add README.md
+
+# สร้าง commit แรก
+git commit -m "Initial commit"
+```
+
+**✅ ผลลัพธ์ที่คาดหวัง:**
+```
 [main (root-commit) xxxxxxx] Initial commit
  1 file changed, 1 insertion(+)
  create mode 100644 README.md
