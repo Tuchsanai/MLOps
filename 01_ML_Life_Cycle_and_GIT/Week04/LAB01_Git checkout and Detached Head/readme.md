@@ -1,85 +1,541 @@
+# 🔬 Lab: Git Checkout และ Detached HEAD State
 
+## สำหรับนักศึกษา MLOps
 
-### Git Lab Exercise: Git checkout and Detached Head
+---
 
-#### Objective
-This lab will guide you through using `git checkout` to navigate between commits, using `git log --oneline` to view a concise commit history, and understanding the concept of a detached head in Git. You will create and navigate through a series of five commits.
+## 📚 วัตถุประสงค์การเรียนรู้
 
-#### Setup
-1. **Initialize a New Git Repository:**
-   Open your terminal and run the following commands to create a new repository:
+เมื่อจบ Lab นี้ นักศึกษาจะสามารถ:
 
-   ```bash
-   git init GitCheckoutLab
-   cd GitCheckoutLab
-   ```
+1. เข้าใจการทำงานของ `git checkout` ในบริบทต่างๆ
+2. เข้าใจว่า **Detached HEAD** คืออะไร และเกิดขึ้นเมื่อใด
+3. รู้วิธีจัดการและออกจากสถานะ Detached HEAD อย่างปลอดภัย
+4. ประยุกต์ใช้ในการทดลอง ML Model versions ต่างๆ
 
-2. **Create an Initial File and Commit:**
-   Create your first file and make the initial commit:
+---
 
-   ```bash
-   echo "Initial line in the file." > example.txt
-   git add example.txt
-   git commit -m "Initial commit"
-   ```
+## 🎯 สถานการณ์จำลอง
 
-#### Tasks
-1. **Make Four Additional Commits:**
-   You will add new content to `example.txt` and make four more commits. Here's how to proceed:
+สมมติว่าเราเป็น ML Engineer ที่กำลังพัฒนาโมเดล Classification โดยมีหลาย versions:
 
-   - **Second Commit:**
-     ```bash
-     echo "Second line in the file." >> example.txt
-     git commit -am "Second commit"
-     ```
+- **v1.0**: โมเดล Logistic Regression พื้นฐาน
+- **v2.0**: เปลี่ยนเป็น Random Forest
+- **v3.0**: ปรับ hyperparameters
 
-   - **Third Commit:**
-     ```bash
-     echo "Third line added." >> example.txt
-     git commit -am "Third commit"
-     ```
+เราต้องการย้อนกลับไปดูโค้ดเก่า เปรียบเทียบผลลัพธ์ และทดลองแก้ไข
 
-   - **Fourth Commit:**
-     ```bash
-     echo "Fourth line now." >> example.txt
-     git commit -am "Fourth commit"
-     ```
+---
 
-   - **Fifth Commit:**
-     ```bash
-     echo "Finally, the fifth line." >> example.txt
-     git commit -am "Fifth commit"
-     ```
+## 📋 สิ่งที่ต้องเตรียม
 
-2. **View the Commit History with `git log --oneline`:**
-   After your five commits, run the following command to view a summarized commit history:
+```bash
+# ตรวจสอบว่ามี Git และ Python
+git --version
+python3 --version
 
-   ```bash
-   git log --oneline
-   ```
+# ติดตั้ง scikit-learn (ถ้ายังไม่มี)
+pip install scikit-learn pandas
+```
 
-3. **Checkout to Specific Commits and Explore:**
-   - **Checkout to the Third Commit:**
-     Find and use the hash of the third commit to switch to it:
+### ตั้งค่า Git User (ถ้ายังไม่ได้ตั้ง)
 
-     ```bash
-     git checkout <hash-of-third-commit>
-     ```
+```bash
+git config --global user.name "นักศึกษา MLOps"
+git config --global user.email "student@example.com"
+```
 
-   - **Explore Detached Head State:**
-     While in this state, observe the contents and status of your repository.
+---
 
-   - **Return to the Latest Commit:**
-     Checkout back to the latest commit on your main branch:
+## 🚀 ขั้นตอนปฏิบัติ
 
-     ```bash
-     git checkout main or git checkout master
+### ขั้นตอนที่ 1: สร้าง Project และ Initialize Git
 
-     ```
+```bash
+# สร้างโฟลเดอร์โปรเจค
+mkdir ml-classification-project
+cd ml-classification-project
 
-   - **Checkout to the First Commit:**
-     Finally, checkout to the first commit using its commit hash.
+# เริ่มต้น Git repository
+git init
+```
 
-#### Deliverables
-- Submit a report detailing your process, observations in the detached head state, and changes in the repository at different commit stages.
-- Discuss the utility of `git log --oneline` and how it assists in understanding the history of changes in a project.
+---
+
+### ขั้นตอนที่ 2: สร้าง Version 1.0 - Logistic Regression
+
+```bash
+cat > train_model.py << 'EOF'
+# train_model.py - Version 1.0: Logistic Regression
+from sklearn.datasets import load_iris
+from sklearn.model_selection import train_test_split
+from sklearn.linear_model import LogisticRegression
+from sklearn.metrics import accuracy_score
+import json
+
+def train():
+    # โหลดข้อมูล Iris dataset
+    iris = load_iris()
+    X, y = iris.data, iris.target
+    
+    # แบ่งข้อมูล
+    X_train, X_test, y_train, y_test = train_test_split(
+        X, y, test_size=0.2, random_state=42
+    )
+    
+    # สร้างและ train โมเดล Logistic Regression
+    model = LogisticRegression(max_iter=200)
+    model.fit(X_train, y_train)
+    
+    # ประเมินผล
+    y_pred = model.predict(X_test)
+    accuracy = accuracy_score(y_test, y_pred)
+    
+    # บันทึกผลลัพธ์
+    result = {
+        "model": "LogisticRegression",
+        "version": "1.0",
+        "accuracy": round(accuracy, 4)
+    }
+    
+    print(f"Model: {result['model']}")
+    print(f"Version: {result['version']}")
+    print(f"Accuracy: {result['accuracy']}")
+    
+    return result
+
+if __name__ == "__main__":
+    train()
+EOF
+```
+
+**Commit Version 1.0:**
+
+```bash
+# เพิ่มไฟล์และ commit
+git add train_model.py
+git commit -m "v1.0: Initial Logistic Regression model"
+```
+
+**ทดสอบรัน:**
+
+```bash
+python train_model.py
+```
+
+**ผลลัพธ์ที่คาดหวัง:**
+```
+Model: LogisticRegression
+Version: 1.0
+Accuracy: 1.0
+```
+
+---
+
+### ขั้นตอนที่ 3: สร้าง Version 2.0 - Random Forest
+
+```bash
+cat > train_model.py << 'EOF'
+# train_model.py - Version 2.0: Random Forest
+from sklearn.datasets import load_iris
+from sklearn.model_selection import train_test_split
+from sklearn.ensemble import RandomForestClassifier
+from sklearn.metrics import accuracy_score
+import json
+
+def train():
+    # โหลดข้อมูล Iris dataset
+    iris = load_iris()
+    X, y = iris.data, iris.target
+    
+    # แบ่งข้อมูล
+    X_train, X_test, y_train, y_test = train_test_split(
+        X, y, test_size=0.2, random_state=42
+    )
+    
+    # สร้างและ train โมเดล Random Forest
+    model = RandomForestClassifier(n_estimators=10, random_state=42)
+    model.fit(X_train, y_train)
+    
+    # ประเมินผล
+    y_pred = model.predict(X_test)
+    accuracy = accuracy_score(y_test, y_pred)
+    
+    # บันทึกผลลัพธ์
+    result = {
+        "model": "RandomForestClassifier",
+        "version": "2.0",
+        "n_estimators": 10,
+        "accuracy": round(accuracy, 4)
+    }
+    
+    print(f"Model: {result['model']}")
+    print(f"Version: {result['version']}")
+    print(f"n_estimators: {result['n_estimators']}")
+    print(f"Accuracy: {result['accuracy']}")
+    
+    return result
+
+if __name__ == "__main__":
+    train()
+EOF
+```
+
+**Commit Version 2.0:**
+
+```bash
+git add train_model.py
+git commit -m "v2.0: Switch to Random Forest model"
+```
+
+**ทดสอบรัน:**
+
+```bash
+python train_model.py
+```
+
+---
+
+### ขั้นตอนที่ 4: สร้าง Version 3.0 - Tuned Random Forest
+
+```bash
+cat > train_model.py << 'EOF'
+# train_model.py - Version 3.0: Tuned Random Forest
+from sklearn.datasets import load_iris
+from sklearn.model_selection import train_test_split
+from sklearn.ensemble import RandomForestClassifier
+from sklearn.metrics import accuracy_score
+import json
+
+def train():
+    # โหลดข้อมูล Iris dataset
+    iris = load_iris()
+    X, y = iris.data, iris.target
+    
+    # แบ่งข้อมูล
+    X_train, X_test, y_train, y_test = train_test_split(
+        X, y, test_size=0.2, random_state=42
+    )
+    
+    # สร้างและ train โมเดล Random Forest (Tuned)
+    model = RandomForestClassifier(
+        n_estimators=100,
+        max_depth=5,
+        min_samples_split=2,
+        random_state=42
+    )
+    model.fit(X_train, y_train)
+    
+    # ประเมินผล
+    y_pred = model.predict(X_test)
+    accuracy = accuracy_score(y_test, y_pred)
+    
+    # บันทึกผลลัพธ์
+    result = {
+        "model": "RandomForestClassifier",
+        "version": "3.0",
+        "n_estimators": 100,
+        "max_depth": 5,
+        "accuracy": round(accuracy, 4)
+    }
+    
+    print(f"Model: {result['model']}")
+    print(f"Version: {result['version']}")
+    print(f"n_estimators: {result['n_estimators']}")
+    print(f"max_depth: {result['max_depth']}")
+    print(f"Accuracy: {result['accuracy']}")
+    
+    return result
+
+if __name__ == "__main__":
+    train()
+EOF
+```
+
+**Commit Version 3.0:**
+
+```bash
+git add train_model.py
+git commit -m "v3.0: Tuned Random Forest with more trees"
+```
+
+---
+
+### ขั้นตอนที่ 5: ดู History ของโปรเจค
+
+```bash
+# ดู log แบบสวยงาม
+git log --oneline --graph --all
+```
+
+**ผลลัพธ์จะประมาณนี้:**
+```
+* abc1234 (HEAD -> main) v3.0: Tuned Random Forest with more trees
+* def5678 v2.0: Switch to Random Forest model  
+* ghi9012 v1.0: Initial Logistic Regression model
+```
+
+---
+
+## 🔍 ทำความเข้าใจ Git Checkout
+
+### Git Checkout คืออะไร?
+
+`git checkout` เป็นคำสั่งที่ใช้สำหรับ:
+
+1. **สลับ branch** - `git checkout <branch-name>`
+2. **ย้อนกลับไปดู commit เก่า** - `git checkout <commit-hash>`
+3. **กู้คืนไฟล์** - `git checkout <commit> -- <file>`
+
+---
+
+## ⚠️ Detached HEAD State
+
+### ขั้นตอนที่ 6: เข้าสู่ Detached HEAD State
+
+ลองย้อนกลับไปดู Commit แรก (v1.0):
+
+```bash
+# ดู commit hash ก่อน
+git log --oneline
+
+# checkout ไปที่ commit แรก (ใส่ hash ที่ได้จาก git log เช่น ghi9012)
+git checkout ghi9012
+```
+
+**⚠️ คุณจะเห็นข้อความเตือน:**
+
+```
+Note: switching to 'ghi9012'.
+
+You are in 'detached HEAD' state. You can look around, make experimental
+changes and commit them, and you can discard any commits you make in this
+state without impacting any branches by switching back to a branch.
+
+If you want to create a new branch to retain commits you create, you may
+do so (now or later) by using -c with the switch command. Example:
+
+  git switch -c <new-branch-name>
+
+Or undo this operation with:
+
+  git switch -
+
+HEAD is now at ghi9012 v1.0: Initial Logistic Regression model
+```
+
+---
+
+### 📖 Detached HEAD หมายความว่าอย่างไร?
+
+```
+ปกติ (HEAD ชี้ไปที่ Branch):
+                                    
+    main (branch)
+       ↓
+    [v1.0] --- [v2.0] --- [v3.0]
+                             ↑
+                           HEAD
+                           
+Detached HEAD (HEAD ชี้ตรงไปที่ Commit):
+
+    main (branch)
+                             ↓
+    [v1.0] --- [v2.0] --- [v3.0]
+       ↑
+     HEAD (detached!)
+```
+
+**สรุปง่ายๆ:**
+- **ปกติ**: HEAD → Branch → Commit
+- **Detached**: HEAD → Commit (ไม่ผ่าน Branch)
+
+---
+
+### ขั้นตอนที่ 7: ตรวจสอบสถานะ Detached HEAD
+
+```bash
+# ตรวจสอบสถานะ
+git status
+```
+
+**ผลลัพธ์:**
+```
+HEAD detached at ghi9012
+nothing to commit, working tree clean
+```
+
+```bash
+# ดูว่า HEAD ชี้ไปที่ไหน
+git log --oneline -1
+
+# ทดสอบรันโค้ด v1.0
+python train_model.py
+# จะเห็น Logistic Regression
+```
+
+---
+
+### ขั้นตอนที่ 8: ทดลองแก้ไขในสถานะ Detached HEAD
+
+ลองแก้ไขโค้ดขณะอยู่ใน Detached HEAD:
+
+```bash
+cat > train_model.py << 'EOF'
+# train_model.py - Experimental: Logistic Regression with different solver
+from sklearn.datasets import load_iris
+from sklearn.model_selection import train_test_split
+from sklearn.linear_model import LogisticRegression
+from sklearn.metrics import accuracy_score
+
+def train():
+    iris = load_iris()
+    X, y = iris.data, iris.target
+    
+    X_train, X_test, y_train, y_test = train_test_split(
+        X, y, test_size=0.2, random_state=42
+    )
+    
+    # ทดลองใช้ solver อื่น
+    model = LogisticRegression(solver='saga', max_iter=500)
+    model.fit(X_train, y_train)
+    
+    y_pred = model.predict(X_test)
+    accuracy = accuracy_score(y_test, y_pred)
+    
+    print(f"Experimental Model: LogisticRegression (saga solver)")
+    print(f"Accuracy: {round(accuracy, 4)}")
+    
+    return accuracy
+
+if __name__ == "__main__":
+    train()
+EOF
+```
+
+```bash
+# ทดสอบการทดลอง
+python train_model.py
+
+# Commit การทดลอง
+git add train_model.py
+git commit -m "Experiment: Try saga solver"
+```
+
+---
+
+### ขั้นตอนที่ 9: ดู History หลังจาก Commit ใน Detached HEAD
+
+```bash
+git log --oneline --all --graph
+```
+
+**ผลลัพธ์:**
+
+```
+* xyz7890 (HEAD) Experiment: Try saga solver
+| * abc1234 (main) v3.0: Tuned Random Forest with more trees
+| * def5678 v2.0: Switch to Random Forest model
+|/
+* ghi9012 v1.0: Initial Logistic Regression model
+```
+
+**สังเกต:** Commit ใหม่ไม่ได้อยู่บน branch ใดเลย!
+
+---
+
+## 🆘 วิธีจัดการกับ Detached HEAD
+
+### สร้าง Branch เก็บการทดลอง (Recommended)
+
+ถ้าต้องการเก็บการทดลองไว้:
+
+```bash
+# สร้าง branch ใหม่จากตำแหน่งปัจจุบัน
+git checkout -b experiment/saga-solver
+
+# ตอนนี้การทดลองจะถูกเก็บไว้อย่างปลอดภัย
+git log --oneline -3
+```
+
+**กลับไป main:**
+
+```bash
+git checkout main
+```
+
+---
+
+## 🧪 แบบฝึกหัดเพิ่มเติม
+
+### แบบฝึกหัดที่ 1: เปรียบเทียบ Model Versions
+
+```bash
+# ดู commit hash ทั้งหมดก่อน
+git log --oneline
+
+# ดูความแตกต่างระหว่าง commit (ใส่ hash จริงที่ได้)
+# เช่น เปรียบเทียบ commit แรก กับ commit ที่สอง
+git diff ghi9012 def5678 -- train_model.py
+
+# เปรียบเทียบ commit ที่สอง กับ commit ที่สาม
+git diff def5678 abc1234 -- train_model.py
+```
+
+---
+
+### แบบฝึกหัดที่ 2: กู้ไฟล์จาก Commit เก่า
+
+```bash
+# กู้เฉพาะไฟล์ train_model.py จาก commit แรก โดยไม่ต้อง checkout ทั้งหมด
+# (ใส่ hash ของ commit แรก)
+git checkout ghi9012 -- train_model.py
+
+# ดูว่าไฟล์เปลี่ยนแปลง
+git status
+
+# ถ้าต้องการยกเลิก
+git checkout main -- train_model.py
+```
+
+---
+
+## 📝 สรุปคำสั่งสำคัญ
+
+| คำสั่ง | การใช้งาน |
+|--------|-----------|
+| `git checkout <branch>` | สลับไปยัง branch |
+| `git checkout <commit-hash>` | ไปดู commit เฉพาะ (Detached HEAD) |
+| `git checkout HEAD~N` | ไปดู N commits ก่อนหน้า (Detached HEAD) |
+| `git checkout -b <new-branch>` | สร้าง branch ใหม่จากตำแหน่งปัจจุบัน |
+| `git checkout <commit> -- <file>` | กู้ไฟล์จาก commit เก่า |
+| `git switch -` | กลับไป branch ก่อนหน้า |
+| `git status` | ตรวจสอบสถานะ (รวมถึง Detached HEAD) |
+
+---
+
+## ⚡ เคล็ดลับสำหรับ MLOps
+
+1. **ใช้ Commit Message ที่มีความหมาย**: ระบุ version และการเปลี่ยนแปลงชัดเจน
+2. **อย่า Commit บน Detached HEAD**: ควรสร้าง branch ก่อน
+3. **ใช้ Branch สำหรับ Experiments**: แยกการทดลองออกจาก main
+4. **รวม Git กับ MLflow**: Track ทั้งโค้ดและ metrics
+
+---
+
+## ❓ คำถามทบทวน
+
+1. Detached HEAD state เกิดขึ้นเมื่อใด?
+2. จะเกิดอะไรขึ้นถ้าเรา commit ใน Detached HEAD แล้วสลับไป branch อื่น?
+3. วิธีใดที่ปลอดภัยที่สุดในการทดลองโค้ดเก่า?
+4. `HEAD~2` หมายถึงอะไร?
+
+---
+
+## 📚 แหล่งเรียนรู้เพิ่มเติม
+
+- [Git Documentation - git-checkout](https://git-scm.com/docs/git-checkout)
+- [Atlassian - Git Checkout](https://www.atlassian.com/git/tutorials/using-branches/git-checkout)
+- [Pro Git Book (ฟรี)](https://git-scm.com/book/en/v2)
+
+---
