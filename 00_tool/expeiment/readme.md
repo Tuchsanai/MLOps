@@ -4,7 +4,7 @@
 ```
 
 # Step 1: Run container
-docker run -d -p 5000:5000 -p 8888:8888 --name mlops-container -v "C:\Users\oishi\Documents\GitHub\MLOps\02_MLFLOW:/home/student/workspace" tuchsanai/mlops_2568_2:latest
+docker run -d -p 5000:5000 -p 8888:8888 --name mlops-container -v "C:\Users\oishi\Documents\GitHub\MLOps\03_Mornitoring:/home/student/workspace" tuchsanai/mlops_2568_2:latest
 
 # Step 2: Create directories
 docker exec mlops-container mkdir -p /home/student/workspace/mlflowserver-lab/mlruns_db
