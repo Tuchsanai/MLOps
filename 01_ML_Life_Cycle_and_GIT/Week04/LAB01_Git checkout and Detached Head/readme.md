@@ -370,6 +370,7 @@ git log --oneline --graph --all
 git log --oneline
 ```
 
+
 ```bash
 # checkout ไปที่ commit แรก (ใส่ hash ที่ได้จาก git log เช่น ghi9012)
 git checkout ghi9012
