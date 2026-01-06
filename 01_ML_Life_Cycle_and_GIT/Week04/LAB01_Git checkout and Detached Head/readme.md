@@ -447,7 +447,9 @@ nothing to commit, working tree clean
 ```bash
 # ดูว่า HEAD ชี้ไปที่ไหน
 git log --oneline -1
+```
 
+```bash
 # ทดสอบรันโค้ด v1.0
 python train_model.py
 # จะเห็น Logistic Regression
@@ -503,7 +505,9 @@ EOF
 ```bash
 # ทดสอบการทดลอง
 python train_model.py
+```
 
+```bash
 # Commit การทดลอง
 git add train_model.py
 git commit -m "Experiment: Try saga solver"
