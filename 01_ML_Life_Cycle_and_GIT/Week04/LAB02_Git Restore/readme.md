@@ -20,59 +20,155 @@ Lab นี้จะสอนการใช้คำสั่ง `git restore` �
 
 ## 📖 ทฤษฎี: Git Restore คืออะไร?
 
-### ความเป็นมา
+### 🔑 แนวคิดหลัก
 
-`git restore` เป็นคำสั่งที่ถูกเพิ่มเข้ามาใน Git 2.23 (สิงหาคม 2019) เพื่อแยกหน้าที่ออกจากคำสั่ง `git checkout` ที่เคยทำหลายอย่างพร้อมกัน ทำให้การใช้งานชัดเจนและปลอดภัยมากขึ้น
+ลองนึกภาพว่าคุณกำลังเขียนรายงานด้วย Microsoft Word ถ้าคุณพิมพ์ผิดหรือลบข้อความไปโดยไม่ตั้งใจ คุณจะกด **Ctrl+Z** เพื่อย้อนกลับ ใช่ไหม?
 
-### Git Areas ที่ต้องเข้าใจ
+`git restore` ก็ทำหน้าที่คล้ายๆ กัน แต่ทรงพลังกว่ามาก เพราะมันสามารถย้อนกลับไปหาเวอร์ชันใดก็ได้ในประวัติการทำงานของคุณ ไม่ใช่แค่ขั้นตอนก่อนหน้า
+
+### 📜 ความเป็นมา
+
+ก่อนหน้านี้ Git ใช้คำสั่ง `git checkout` ทำหลายอย่างพร้อมกัน ทั้งสลับ branch และกู้คืนไฟล์ ซึ่งทำให้สับสน ในเดือนสิงหาคม 2019 (Git 2.23) จึงแยกออกมาเป็น 2 คำสั่งที่ชัดเจน:
+
+| คำสั่งเดิม | คำสั่งใหม่ | หน้าที่ |
+|-----------|-----------|---------|
+| `git checkout <branch>` | `git switch <branch>` | สลับ branch |
+| `git checkout -- <file>` | `git restore <file>` | กู้คืนไฟล์ |
+
+### 🏠 ทำความเข้าใจ "บ้าน" ของ Git (Git Areas)
+
+ก่อนจะใช้ `git restore` ได้อย่างมั่นใจ คุณต้องเข้าใจว่า Git แบ่งพื้นที่ทำงานออกเป็น 3 ส่วน เปรียบเหมือน "บ้าน" ที่มี 3 ห้อง:
 
 ```
-┌─────────────────────────────────────────────────────────────────────┐
-│                         Git Workflow Areas                          │
-├─────────────────────────────────────────────────────────────────────┤
-│                                                                     │
-│  ┌─────────────────┐    ┌─────────────────┐    ┌─────────────────┐ │
-│  │   Working       │    │    Staging      │    │   Repository    │ │
-│  │   Directory     │───▶│    Area         │───▶│   (Commits)     │ │
-│  │                 │    │   (Index)       │    │                 │ │
-│  │  ไฟล์ที่กำลัง    │    │  ไฟล์ที่พร้อม    │    │  ประวัติที่บันทึก │ │
-│  │  แก้ไขอยู่       │    │  commit         │    │  แล้ว           │ │
-│  └─────────────────┘    └─────────────────┘    └─────────────────┘ │
-│           ▲                     ▲                     │            │
-│           │                     │                     │            │
-│           └─────────────────────┴─────────────────────┘            │
-│                      git restore (กู้คืน)                          │
-│                                                                     │
-└─────────────────────────────────────────────────────────────────────┘
+┌─────────────────────────────────────────────────────────────────────────┐
+│                      🏠 บ้านของ Git (Git Areas)                         │
+├─────────────────────────────────────────────────────────────────────────┤
+│                                                                         │
+│  ┌───────────────────┐   ┌───────────────────┐   ┌───────────────────┐ │
+│  │  🛠️ ห้องทำงาน      │   │  📦 ห้องจัดเตรียม   │   │  🏛️ ห้องเก็บของถาวร │ │
+│  │  (Working         │   │  (Staging Area    │   │  (Repository)     │ │
+│  │   Directory)      │   │   / Index)        │   │                   │ │
+│  │                   │   │                   │   │                   │ │
+│  │  • ไฟล์ที่คุณ      │   │  • ไฟล์ที่เลือกแล้ว │   │  • ประวัติที่บันทึก  │ │
+│  │    กำลังแก้ไข      │   │    ว่าจะ commit   │   │    ถาวรแล้ว        │ │
+│  │  • ยังไม่ได้เลือก   │   │  • รอการ commit   │   │  • กู้คืนได้เสมอ    │ │
+│  │    ว่าจะเก็บ       │   │                   │   │                   │ │
+│  └───────────────────┘   └───────────────────┘   └───────────────────┘ │
+│           │                       │                       │            │
+│           │    git add ───────▶   │    git commit ─────▶  │            │
+│           │                       │                       │            │
+│           │   ◀─── git restore    │  ◀── git restore      │            │
+│           │        --staged       │      --source         │            │
+│           │                       │                       │            │
+│           └───────────────────────┴───────────────────────┘            │
+│                            ▲                                           │
+│                            │                                           │
+│                   git restore (กู้คืนจาก commit ล่าสุด)                 │
+│                                                                         │
+└─────────────────────────────────────────────────────────────────────────┘
 ```
 
-### คำสั่ง git restore ที่สำคัญ
+**อธิบายแต่ละห้อง:**
 
-| คำสั่ง | หน้าที่ |
-|--------|---------|
-| `git restore <file>` | ยกเลิกการเปลี่ยนแปลงใน Working Directory |
-| `git restore --staged <file>` | ยกเลิกการ add ไฟล์ออกจาก Staging Area |
-| `git restore --source=<commit> <file>` | กู้คืนไฟล์จาก commit ที่ระบุ |
-| `git restore .` | ยกเลิกการเปลี่ยนแปลงทุกไฟล์ |
+| ห้อง | ชื่อภาษาอังกฤษ | คำอธิบาย | เปรียบเทียบ |
+|------|---------------|----------|------------|
+| 🛠️ ห้องทำงาน | Working Directory | ไฟล์ที่คุณเห็นและแก้ไขได้ในโฟลเดอร์โปรเจกต์ | โต๊ะทำงานที่มีเอกสารกระจัดกระจาย |
+| 📦 ห้องจัดเตรียม | Staging Area (Index) | ไฟล์ที่คุณเลือกแล้วว่าจะ commit ในรอบถัดไป | กล่องที่ใส่เอกสารที่จัดเรียบร้อยแล้ว รอส่งไปเก็บ |
+| 🏛️ ห้องเก็บของถาวร | Repository | ประวัติ commit ทั้งหมด เก็บถาวรอย่างปลอดภัย | ตู้เซฟเก็บเอกสารสำคัญ ล็อคกุญแจไว้ |
 
-### ความสำคัญใน MLOps
+### 🎮 คำสั่ง git restore ที่สำคัญ
 
-ในการพัฒนา Machine Learning Pipeline เรามักจะต้อง:
+| คำสั่ง | ทำอะไร | เมื่อไหร่ใช้ |
+|--------|--------|------------|
+| `git restore <file>` | ยกเลิกการแก้ไขใน Working Directory | เมื่อแก้ไขผิด ยังไม่ได้ `git add` |
+| `git restore --staged <file>` | เอาไฟล์ออกจาก Staging Area | เมื่อ `git add` ไปแล้ว แต่ยังไม่อยาก commit |
+| `git restore --source=<commit> <file>` | กู้คืนไฟล์จาก commit ที่ระบุ | เมื่อต้องการเวอร์ชันเก่าจากประวัติ |
+| `git restore .` | ยกเลิกการแก้ไขทุกไฟล์ | เมื่อทุกอย่างพังหมด ต้องการเริ่มใหม่ |
 
-1. **ทดลองปรับ hyperparameters** - บางครั้งผลลัพธ์แย่ลง ต้องย้อนกลับ
-2. **แก้ไข preprocessing logic** - อาจทำให้ data pipeline พัง
-3. **เปลี่ยน model architecture** - ผลการ train อาจไม่ดี
-4. **ปรับแต่ง evaluation metrics** - อาจคำนวณผิดพลาด
+### 🤖 ทำไม Git Restore ถึงสำคัญใน MLOps?
 
-`git restore` ช่วยให้เราสามารถ "ย้อนเวลา" กลับไปใช้โค้ดเวอร์ชันที่ทำงานได้อย่างรวดเร็ว
+ในการพัฒนา Machine Learning เราทำการทดลองบ่อยมาก และบ่อยครั้งที่ผลลัพธ์ไม่เป็นไปตามที่หวัง:
+
+| สถานการณ์ | ปัญหาที่เกิด | วิธีแก้ด้วย git restore |
+|-----------|-------------|------------------------|
+| ปรับ hyperparameters | Accuracy ลดลง | กู้คืนค่า parameters เดิม |
+| เปลี่ยน preprocessing | Data pipeline พัง | ย้อนกลับไปใช้โค้ดเดิม |
+| ลอง model architecture ใหม่ | Training ช้าลง 10 เท่า | กู้คืน model เดิม |
+| แก้ไข evaluation metrics | ผลลัพธ์คำนวณผิด | กลับไปใช้สูตรที่ถูกต้อง |
+
+**ข้อดีของการใช้ git restore:**
+- ⚡ กู้คืนได้ทันที ไม่ต้อง copy-paste จากที่อื่น
+- 🛡️ ปลอดภัย ไม่มีทางทำให้ประวัติ commit เสียหาย
+- 🎯 เลือกกู้คืนเฉพาะไฟล์ที่ต้องการได้
 
 ---
 
-## 🛠️ การเตรียมความพร้อม
+## 🎬 สถานการณ์จำลอง: เรื่องราวของ Lab นี้
+
+### 📋 บทบาทของคุณ
+
+คุณคือ **ML Engineer** ที่เพิ่งเข้าทำงานที่บริษัท DataTech ได้ 1 เดือน หัวหน้าทีมมอบหมายให้คุณพัฒนา **Classification Pipeline** สำหรับจำแนกพันธุ์ดอกไอริส (Iris) ซึ่งเป็นโปรเจกต์ฝึกหัดก่อนจะได้ทำโปรเจกต์จริง
+
+### 🎯 เป้าหมายของโปรเจกต์
+
+สร้าง ML Pipeline ที่ประกอบด้วย 3 ส่วนหลัก:
+
+```
+┌─────────────────┐    ┌─────────────────┐    ┌─────────────────┐
+│  📊 data_prep   │───▶│  🤖 train       │───▶│  📈 evaluate    │
+│                 │    │                 │    │                 │
+│  โหลด & เตรียม   │    │  Train โมเดล    │    │  วัดผล & รายงาน │
+│  ข้อมูล         │    │  Random Forest  │    │  Accuracy, F1   │
+└─────────────────┘    └─────────────────┘    └─────────────────┘
+```
+
+### 🚧 ปัญหาที่จะเกิดขึ้นระหว่างทาง
+
+ในระหว่างการพัฒนา คุณจะพบเหตุการณ์ไม่คาดฝันหลายอย่าง:
+
+| สถานการณ์ | ปัญหา | สิ่งที่จะเรียนรู้ |
+|-----------|------|-----------------|
+| **#1** | แก้ไขโค้ดผิดพลาด ทำให้โปรแกรมพัง | ใช้ `git restore` กู้คืนไฟล์ |
+| **#2** | Add ไฟล์ผิด ไม่พร้อม commit | ใช้ `git restore --staged` ยกเลิก staging |
+| **#3** | โค้ดเวอร์ชันใหม่ซับซ้อนเกินไป | ใช้ `git restore --source` กู้คืนจาก commit เก่า |
+| **#4** | แก้ไขหลายไฟล์พร้อมกัน ทั้งหมดผิด | ใช้ `git restore .` กู้คืนทุกไฟล์ |
+
+### 🗺️ แผนการทำ Lab
+
+```
+┌──────────────────────────────────────────────────────────────────────┐
+│                        🗺️ แผนการทำ Lab                               │
+├──────────────────────────────────────────────────────────────────────┤
+│                                                                      │
+│  Part 1: เตรียมความพร้อม                                             │
+│  ├── ขั้นตอนที่ 0.1: ตั้งค่า Git (ครั้งแรกครั้งเดียว)                   │
+│  └── ขั้นตอนที่ 0.2: สร้าง Project Environment                       │
+│                                                                      │
+│  Part 2: สร้าง ML Pipeline                                           │
+│  ├── ขั้นตอนที่ 1: สร้าง data_prep.py → commit                       │
+│  ├── ขั้นตอนที่ 2: สร้าง train.py → commit                           │
+│  └── ขั้นตอนที่ 3: สร้าง evaluate.py → commit                        │
+│                                                                      │
+│  Part 3: เรียนรู้ git restore ผ่านสถานการณ์จำลอง                      │
+│  ├── สถานการณ์ 1: กู้คืนไฟล์ใน Working Directory                     │
+│  ├── สถานการณ์ 2: ยกเลิกไฟล์ที่ add ไปแล้ว (Staged)                  │
+│  ├── สถานการณ์ 3: กู้คืนไฟล์จาก Commit เฉพาะ                         │
+│  └── สถานการณ์ 4: กู้คืนหลายไฟล์พร้อมกัน                             │
+│                                                                      │
+│  Part 4: แบบฝึกหัดเพิ่มเติม & สรุป                                    │
+│                                                                      │
+└──────────────────────────────────────────────────────────────────────┘
+```
+
+---
+
+## 🛠️ Part 1: การเตรียมความพร้อม
 
 ### ขั้นตอนที่ 0.1: ตั้งค่า Git (ทำครั้งแรกครั้งเดียว)
 
 > ⚠️ **หมายเหตุ**: ถ้าเคยตั้งค่า Git แล้ว ให้ข้ามไปขั้นตอนที่ 0.2 ได้เลย
+
+**ทำไมต้องตั้งค่า?** Git ต้องรู้ว่า "ใคร" เป็นคนทำการเปลี่ยนแปลง เพื่อบันทึกในประวัติ commit
 
 ```bash
 # ตรวจสอบว่าตั้งค่าไว้แล้วหรือยัง
@@ -100,6 +196,8 @@ git config --global --list
 
 ### ขั้นตอนที่ 0.2: เตรียม Project Environment
 
+**สิ่งที่จะทำ:** สร้างโฟลเดอร์โปรเจกต์ใหม่ และเริ่มต้น Git repository
+
 ```bash
 # สร้างโฟลเดอร์สำหรับ Lab
 mkdir -p ~/mlops-git-restore-lab
@@ -116,24 +214,27 @@ source venv/bin/activate
 pip install scikit-learn pandas numpy
 ```
 
----
+**ผลลัพธ์ที่คาดหวัง:**
+```
+Initialized empty Git repository in /home/user/mlops-git-restore-lab/.git/
+```
 
-## 📝 Lab Exercise
-
-### 🎬 สถานการณ์จำลอง
-
-คุณเป็น ML Engineer ที่กำลังพัฒนา Classification Pipeline สำหรับ Iris Dataset โดยมีหน้าที่:
-1. เตรียมข้อมูล (Data Preparation)
-2. Train โมเดล (Model Training)
-3. ประเมินผล (Model Evaluation)
-
-ระหว่างการทำงาน คุณจะพบปัญหาต่างๆ และต้องใช้ `git restore` เพื่อแก้ไข
+**💡 อธิบาย:**
+- `mkdir -p` สร้างโฟลเดอร์ (รวมถึง parent folders ถ้าไม่มี)
+- `git init` สร้าง repository ว่างเปล่า พร้อมใช้งาน Git
+- `python3 -m venv venv` สร้าง virtual environment เพื่อแยก dependencies
 
 ---
 
-### ขั้นตอนที่ 1: สร้างไฟล์เริ่มต้น - Data Preparation
+## 📝 Part 2: สร้าง ML Pipeline
 
-สร้างไฟล์ `data_prep.py` สำหรับเตรียมข้อมูล:
+ในส่วนนี้ เราจะสร้างไฟล์ 3 ไฟล์ และ commit ทีละไฟล์ เพื่อให้มีประวัติ commit ที่จะใช้ในการทดลอง `git restore`
+
+### ขั้นตอนที่ 1: สร้างไฟล์ Data Preparation
+
+**เป้าหมาย:** สร้างโมดูลสำหรับโหลดและเตรียมข้อมูล Iris Dataset
+
+**ทำไมต้อง commit ทันที?** เพื่อสร้าง "จุดบันทึก" (restore point) ที่สามารถกลับมาได้
 
 ```bash
 cat > data_prep.py << 'EOF'
@@ -189,18 +290,26 @@ if __name__ == "__main__":
 EOF
 ```
 
-Commit ไฟล์แรก:
+**Commit ไฟล์แรก:**
 
 ```bash
 git add data_prep.py
 git commit -m "feat: add data preparation module"
 ```
 
+**💡 อธิบายสิ่งที่เกิดขึ้น:**
+
+| ขั้นตอน | คำสั่ง | สิ่งที่เกิดขึ้น |
+|--------|--------|--------------|
+| 1. สร้างไฟล์ | `cat > data_prep.py` | ไฟล์อยู่ใน Working Directory (ยังไม่ถูก track) |
+| 2. เตรียม commit | `git add data_prep.py` | ย้ายไฟล์ไปยัง Staging Area |
+| 3. บันทึกถาวร | `git commit -m "..."` | บันทึกไฟล์ลงใน Repository |
+
 ---
 
 ### ขั้นตอนที่ 2: สร้างไฟล์ Training
 
-สร้างไฟล์ `train.py` สำหรับ train โมเดล:
+**เป้าหมาย:** สร้างโมดูลสำหรับ train โมเดล Random Forest
 
 ```bash
 cat > train.py << 'EOF'
@@ -253,18 +362,20 @@ if __name__ == "__main__":
 EOF
 ```
 
-Commit ไฟล์ training:
+**Commit ไฟล์ training:**
 
 ```bash
 git add train.py
 git commit -m "feat: add model training module"
 ```
 
+**💡 สังเกต:** ตอนนี้เรามี 2 commits แล้ว
+
 ---
 
 ### ขั้นตอนที่ 3: สร้างไฟล์ Evaluation
 
-สร้างไฟล์ `evaluate.py` สำหรับประเมินผลโมเดล:
+**เป้าหมาย:** สร้างโมดูลสำหรับประเมินผลโมเดล
 
 ```bash
 cat > evaluate.py << 'EOF'
@@ -343,35 +454,85 @@ if __name__ == "__main__":
 EOF
 ```
 
-Commit ไฟล์ evaluation:
+**Commit ไฟล์ evaluation:**
 
 ```bash
 git add evaluate.py
 git commit -m "feat: add model evaluation module"
 ```
 
-ตรวจสอบ commits ที่มี:
+---
+
+### ✅ ตรวจสอบประวัติ Commits
 
 ```bash
 git log --oneline
 ```
 
-ผลลัพธ์ที่คาดหวัง:
+**ผลลัพธ์ที่คาดหวัง:**
 ```
 abc1234 feat: add model evaluation module
 def5678 feat: add model training module  
 ghi9012 feat: add data preparation module
 ```
 
+**💡 อธิบาย:** ตอนนี้เรามี 3 commits ซึ่งเปรียบเหมือน 3 "จุดบันทึก" ที่สามารถกลับไปได้ทุกเมื่อ
+
+```
+┌──────────────────────────────────────────────────────────────────────┐
+│                    📸 Commits ที่เรามีตอนนี้                          │
+├──────────────────────────────────────────────────────────────────────┤
+│                                                                      │
+│   [ghi9012]              [def5678]              [abc1234]            │
+│      │                      │                      │                 │
+│      ▼                      ▼                      ▼                 │
+│  ┌────────┐            ┌────────┐            ┌────────┐             │
+│  │data_   │───────────▶│train.py│───────────▶│evaluate│─────▶ HEAD  │
+│  │prep.py │            │        │            │.py     │             │
+│  └────────┘            └────────┘            └────────┘             │
+│                                                                      │
+│   Commit #1             Commit #2             Commit #3              │
+│   (เก่าสุด)                                   (ใหม่สุด)              │
+│                                                                      │
+└──────────────────────────────────────────────────────────────────────┘
+```
+
 ---
 
-## 🚨 สถานการณ์ปัญหาและการแก้ไขด้วย Git Restore
+## 🚨 Part 3: สถานการณ์ปัญหาและการแก้ไขด้วย Git Restore
 
 ### 📍 สถานการณ์ที่ 1: แก้ไขโค้ดผิดพลาดใน Working Directory
 
-**ปัญหา**: คุณต้องการทดลองเปลี่ยน hyperparameters แต่ทำให้โค้ดพังและยังไม่ได้ commit
+#### 🎭 เรื่องราว
 
-#### ขั้นตอน 1.1: แก้ไขไฟล์ให้ผิดพลาด
+วันจันทร์เช้า คุณตื่นมาด้วยความตั้งใจว่าจะปรับปรุง train.py ให้ดีขึ้น คุณต้องการทดลองเปลี่ยน hyperparameters แต่เผลอพิมพ์ผิด ทำให้โค้ดพังทั้งหมด และคุณ **ยังไม่ได้ commit**
+
+#### 🎯 สิ่งที่จะเรียนรู้
+
+**`git restore <file>`** - กู้คืนไฟล์จาก commit ล่าสุด (HEAD) ไปยัง Working Directory
+
+```
+┌─────────────────────────────────────────────────────────────────────┐
+│                 สถานการณ์ที่ 1: ไฟล์พังใน Working Directory          │
+├─────────────────────────────────────────────────────────────────────┤
+│                                                                     │
+│   Repository                Working Directory                       │
+│   (commit ล่าสุด)            (ไฟล์พัง!)                             │
+│                                                                     │
+│   ┌──────────────┐          ┌──────────────┐                       │
+│   │  train.py    │          │  train.py    │                       │
+│   │  ✅ ใช้งานได้  │ ◀─────── │  ❌ พัง!      │                       │
+│   │              │ git      │  n_estimators│                       │
+│   │  n_estimators│ restore  │  = -999      │                       │
+│   │  = 100       │          │  max_depth   │                       │
+│   │  max_depth   │          │  = "invalid" │                       │
+│   │  = 5         │          │              │                       │
+│   └──────────────┘          └──────────────┘                       │
+│                                                                     │
+└─────────────────────────────────────────────────────────────────────┘
+```
+
+#### ขั้นตอน 1.1: แก้ไขไฟล์ให้ผิดพลาด (จำลองความผิดพลาด)
 
 ```bash
 cat > train.py << 'EOF'
@@ -416,57 +577,123 @@ if __name__ == "__main__":
 EOF
 ```
 
+**💡 สังเกต bugs ที่ใส่ไว้:**
+- `n_estimators=-999` → ค่าติดลบ ไม่ถูกต้อง
+- `max_depth="invalid"` → ต้องเป็นตัวเลข ไม่ใช่ string
+- ลืม scaler ทำให้โค้ดพังต่อเนื่อง
+
 #### ขั้นตอน 1.2: ตรวจสอบสถานะ
 
 ```bash
 # ดูสถานะไฟล์
 git status
-
-# ดูความแตกต่าง
-git diff train.py
 ```
 
-ผลลัพธ์ที่คาดหวัง:
+**ผลลัพธ์ที่คาดหวัง:**
 ```
 On branch main
 Changes not staged for commit:
-  modified:   train.py
+  (use "git add <file>..." to update what will be committed)
+  (use "git restore <file>..." to discard changes in working directory)
+        modified:   train.py
+
+no changes added to commit (use "git add" and/or "git commit -a")
 ```
 
-#### ขั้นตอน 1.3: ลองรันโค้ดที่พัง
+**💡 สังเกต:** Git บอกเราเองว่าใช้ `git restore <file>` เพื่อยกเลิกการเปลี่ยนแปลงได้!
+
+```bash
+# ดูความแตกต่างระหว่างไฟล์ปัจจุบันกับ commit ล่าสุด
+git diff train.py
+```
+
+**💡 อธิบาย `git diff`:**
+- บรรทัดที่ขึ้นต้นด้วย `-` (สีแดง) = ถูกลบออก
+- บรรทัดที่ขึ้นต้นด้วย `+` (สีเขียว) = ถูกเพิ่มเข้ามา
+
+#### ขั้นตอน 1.3: ลองรันโค้ดที่พัง (เพื่อยืนยันว่าพังจริง)
 
 ```bash
 python train.py
 ```
 
-ผลลัพธ์ที่คาดหวัง: **Error!**
+**ผลลัพธ์ที่คาดหวัง:** Error! เพราะ parameters ไม่ถูกต้อง
 
 #### ขั้นตอน 1.4: ใช้ git restore เพื่อกู้คืน
 
 ```bash
 # กู้คืนไฟล์ train.py กลับไปเป็นเวอร์ชันล่าสุดที่ commit
 git restore train.py
+```
 
+**ตรวจสอบผลลัพธ์:**
+
+```bash
 # ตรวจสอบว่าไฟล์กลับมาเป็นปกติ
 git status
+
+# ดู diff อีกครั้ง - ไม่ควรมีความแตกต่าง
 git diff train.py
 
 # ลองรันอีกครั้ง - ควรทำงานได้
 python train.py
 ```
 
-**สิ่งที่เกิดขึ้น**: ไฟล์ `train.py` กลับมาเป็นเวอร์ชันที่ commit ไว้ล่าสุด
+**ผลลัพธ์ที่คาดหวัง:**
+```
+Training set size: 120
+Test set size: 30
+Model trained with 100 trees, max_depth=5
+Model saved to model.pkl
+Scaler saved to scaler.pkl
+```
+
+#### 📝 สรุปสถานการณ์ที่ 1
+
+| ก่อน | หลัง |
+|-----|------|
+| `train.py` มี bugs | `train.py` กลับมาเป็นเวอร์ชันที่ใช้งานได้ |
+| `git status` แสดง modified | `git status` แสดง clean |
+| รันโค้ดแล้ว Error | รันโค้ดได้ปกติ |
 
 ---
 
 ### 📍 สถานการณ์ที่ 2: ยกเลิกไฟล์ที่ add ไปแล้ว (Staged)
 
-**ปัญหา**: คุณแก้ไขไฟล์หลายไฟล์และ add ไปหมด แต่ต้องการยกเลิก add บางไฟล์
+#### 🎭 เรื่องราว
+
+วันอังคาร คุณแก้ไขไฟล์หลายไฟล์พร้อมกัน แล้วใช้ `git add .` เพื่อ add ทั้งหมด แต่หลังจากนั้นคุณรู้ตัวว่า evaluate.py ยังไม่พร้อม commit เพราะมี experimental features ที่ยังไม่ได้ทดสอบ
+
+#### 🎯 สิ่งที่จะเรียนรู้
+
+**`git restore --staged <file>`** - เอาไฟล์ออกจาก Staging Area กลับไปยัง Working Directory
+
+```
+┌─────────────────────────────────────────────────────────────────────┐
+│                 สถานการณ์ที่ 2: Unstage ไฟล์                         │
+├─────────────────────────────────────────────────────────────────────┤
+│                                                                     │
+│   Working Directory          Staging Area                           │
+│                                                                     │
+│   ┌──────────────┐          ┌──────────────┐                       │
+│   │  data_prep   │          │  data_prep   │  ✅ พร้อม commit      │
+│   │  (แก้ไขแล้ว)  │───add──▶│  (แก้ไขแล้ว)  │                       │
+│   └──────────────┘          └──────────────┘                       │
+│                                                                     │
+│   ┌──────────────┐          ┌──────────────┐                       │
+│   │  evaluate    │◀──────── │  evaluate    │  ❌ ยังไม่พร้อม!       │
+│   │  (ยังไม่เสร็จ) │  git     │  (ยังไม่เสร็จ) │                       │
+│   └──────────────┘ restore  └──────────────┘                       │
+│                    --staged                                         │
+│                                                                     │
+└─────────────────────────────────────────────────────────────────────┘
+```
 
 #### ขั้นตอน 2.1: แก้ไขหลายไฟล์
 
+**แก้ไข data_prep.py** (เพิ่ม feature engineering):
+
 ```bash
-# แก้ไข data_prep.py - เพิ่ม feature ใหม่
 cat > data_prep.py << 'EOF'
 """
 Data Preparation Module - Updated Version
@@ -532,8 +759,9 @@ if __name__ == "__main__":
 EOF
 ```
 
+**แก้ไข evaluate.py** (เพิ่ม experimental features ที่ยังไม่พร้อม):
+
 ```bash
-# แก้ไข evaluate.py - เพิ่มการบันทึก metrics เป็นไฟล์ (แต่ยังไม่พร้อม)
 cat > evaluate.py << 'EOF'
 """
 Model Evaluation Module - EXPERIMENTAL VERSION
@@ -613,21 +841,29 @@ if __name__ == "__main__":
 EOF
 ```
 
-#### ขั้นตอน 2.2: Add ทุกไฟล์ไปก่อน
+#### ขั้นตอน 2.2: Add ทุกไฟล์ไปก่อน (จำลองการ add โดยไม่ได้คิดก่อน)
 
 ```bash
 git add .
 git status
 ```
 
-ผลลัพธ์ที่คาดหวัง:
+**ผลลัพธ์ที่คาดหวัง:**
 ```
 Changes to be committed:
-  modified:   data_prep.py
-  modified:   evaluate.py
+  (use "git restore --staged <file>..." to unstage)
+        modified:   data_prep.py
+        modified:   evaluate.py
 ```
 
+**💡 สังเกต:** Git บอกเราว่าใช้ `git restore --staged <file>` เพื่อ unstage ได้
+
 #### ขั้นตอน 2.3: ตัดสินใจว่า evaluate.py ยังไม่พร้อม commit
+
+**สาเหตุ:**
+- มี experimental features ที่ยังไม่ได้ทดสอบ
+- ยังมี TODO ที่ยังไม่ได้ทำ
+- อาจทำให้ production พัง
 
 ```bash
 # ยกเลิก staging เฉพาะ evaluate.py
@@ -637,32 +873,88 @@ git restore --staged evaluate.py
 git status
 ```
 
-ผลลัพธ์ที่คาดหวัง:
+**ผลลัพธ์ที่คาดหวัง:**
 ```
 Changes to be committed:
-  modified:   data_prep.py
+  (use "git restore --staged <file>..." to unstage)
+        modified:   data_prep.py
 
 Changes not staged for commit:
-  modified:   evaluate.py
+  (use "git add <file>..." to update what will be committed)
+  (use "git restore <file>..." to discard changes in working directory)
+        modified:   evaluate.py
 ```
+
+**💡 อธิบาย:**
+- `data_prep.py` ยังอยู่ใน Staging Area → พร้อม commit
+- `evaluate.py` กลับไปอยู่ใน Working Directory → ยังไม่ถูก commit
 
 #### ขั้นตอน 2.4: Commit เฉพาะ data_prep.py
 
 ```bash
 git commit -m "feat: add feature engineering to data_prep"
+```
 
-# ตัดสินใจว่า evaluate.py ยังไม่พร้อม ให้กู้คืนกลับเป็นเวอร์ชันเดิม
+#### ขั้นตอน 2.5: ตัดสินใจว่า evaluate.py ยังไม่พร้อม ให้กู้คืนเวอร์ชันเดิม
+
+```bash
+# กู้คืน evaluate.py กลับไปเป็นเวอร์ชันเดิม (ไม่มี experimental features)
 git restore evaluate.py
 
 # ตรวจสอบ
 git status
 ```
 
+**ผลลัพธ์ที่คาดหวัง:**
+```
+On branch main
+nothing to commit, working tree clean
+```
+
+#### 📝 สรุปสถานการณ์ที่ 2
+
+| ขั้นตอน | คำสั่ง | ผลลัพธ์ |
+|--------|--------|---------|
+| แก้ไข 2 ไฟล์ | - | ทั้ง 2 ไฟล์อยู่ใน Working Directory |
+| Add ทั้งหมด | `git add .` | ทั้ง 2 ไฟล์อยู่ใน Staging Area |
+| Unstage 1 ไฟล์ | `git restore --staged evaluate.py` | evaluate.py กลับไป Working Directory |
+| Commit | `git commit -m "..."` | เฉพาะ data_prep.py ถูก commit |
+| กู้คืน | `git restore evaluate.py` | evaluate.py กลับไปเวอร์ชันเดิม |
+
 ---
 
 ### 📍 สถานการณ์ที่ 3: กู้คืนไฟล์จาก Commit เฉพาะ
 
-**ปัญหา**: คุณต้องการกู้คืน evaluate.py จาก commit แรกที่สร้างมัน เพราะเวอร์ชันปัจจุบันซับซ้อนเกินไป
+#### 🎭 เรื่องราว
+
+วันพุธ หัวหน้าทีมบอกว่า evaluate.py เวอร์ชันปัจจุบันซับซ้อนเกินไป (over-engineered) และอยากให้กลับไปใช้เวอร์ชันแรกที่เรียบง่ายกว่า ปัญหาคือ คุณได้ commit เวอร์ชันซับซ้อนไปแล้ว
+
+#### 🎯 สิ่งที่จะเรียนรู้
+
+**`git restore --source=<commit> <file>`** - กู้คืนไฟล์จาก commit ที่ระบุ
+
+```
+┌─────────────────────────────────────────────────────────────────────┐
+│                 สถานการณ์ที่ 3: กู้คืนจาก commit เฉพาะ                │
+├─────────────────────────────────────────────────────────────────────┤
+│                                                                     │
+│   Commit History (เก่า → ใหม่)                                       │
+│                                                                     │
+│   [abc1234]         [def5678]         [xyz7890]                     │
+│       │                 │                 │                         │
+│       ▼                 ▼                 ▼                         │
+│   ┌─────────┐       ┌─────────┐       ┌─────────┐                   │
+│   │evaluate │       │evaluate │       │evaluate │──▶ HEAD           │
+│   │ Simple  │       │ Medium  │       │ Complex │   (ปัจจุบัน)       │
+│   │ Version │       │         │       │ Version │                   │
+│   └─────────┘       └─────────┘       └─────────┘                   │
+│       ▲                                                             │
+│       │                                                             │
+│       └─────────── git restore --source=abc1234 evaluate.py        │
+│                    (กู้คืนเวอร์ชันเรียบง่าย)                         │
+│                                                                     │
+└─────────────────────────────────────────────────────────────────────┘
+```
 
 #### ขั้นตอน 3.1: ดูประวัติ commits
 
@@ -670,7 +962,7 @@ git status
 git log --oneline
 ```
 
-ผลลัพธ์ตัวอย่าง:
+**ผลลัพธ์ตัวอย่าง:**
 ```
 xyz7890 feat: add feature engineering to data_prep
 abc1234 feat: add model evaluation module
@@ -678,10 +970,11 @@ def5678 feat: add model training module
 ghi9012 feat: add data preparation module
 ```
 
-#### ขั้นตอน 3.2: สมมติว่าเราทำการเปลี่ยนแปลง evaluate.py แล้ว commit
+**💡 จด commit hash ของ "feat: add model evaluation module" ไว้** เพราะนั่นคือเวอร์ชันเรียบง่ายที่เราต้องการ
+
+#### ขั้นตอน 3.2: สร้างเวอร์ชันซับซ้อนแล้ว commit (จำลองการ over-engineer)
 
 ```bash
-# แก้ไข evaluate.py อีกครั้ง
 cat > evaluate.py << 'EOF'
 """
 Model Evaluation Module - TOO COMPLEX VERSION
@@ -737,36 +1030,94 @@ git add evaluate.py
 git commit -m "refactor: over-engineer evaluation module"
 ```
 
-#### ขั้นตอน 3.3: กู้คืนไฟล์จาก commit เดิม
+#### ขั้นตอน 3.3: ดู commits อีกครั้ง
 
 ```bash
-# ดู commits อีกครั้ง
 git log --oneline
+```
 
-# หา commit hash ของ "feat: add model evaluation module"
-# สมมติว่าเป็น abc1234
+**ผลลัพธ์ตัวอย่าง:**
+```
+pqr4567 refactor: over-engineer evaluation module
+xyz7890 feat: add feature engineering to data_prep
+abc1234 feat: add model evaluation module         ← เราต้องการเวอร์ชันนี้!
+def5678 feat: add model training module  
+ghi9012 feat: add data preparation module
+```
 
-# กู้คืนจาก commit นั้น (ใช้ commit hash จริงของคุณ)
-git restore --source=HEAD~1 evaluate.py
+#### ขั้นตอน 3.4: กู้คืนไฟล์จาก commit เดิม
 
-# หรือใช้ commit hash โดยตรง
-# git restore --source=abc1234 evaluate.py
+**วิธีที่ 1: ใช้ HEAD~N** (N = จำนวน commits ย้อนกลับ)
 
+```bash
+# HEAD~2 หมายถึง 2 commits ก่อน HEAD
+git restore --source=HEAD~2 evaluate.py
+```
+
+**วิธีที่ 2: ใช้ commit hash โดยตรง** (แนะนำ เพราะแม่นยำกว่า)
+
+```bash
+# ใช้ commit hash จริงของคุณ (จากขั้นตอน 3.3)
+git restore --source=abc1234 evaluate.py
+```
+
+#### ขั้นตอน 3.5: ตรวจสอบและ commit การเปลี่ยนแปลง
+
+```bash
 # ตรวจสอบว่าไฟล์กลับมาเป็นเวอร์ชันเรียบง่าย
 cat evaluate.py
+
+# ดู status
+git status
 
 # Commit การเปลี่ยนแปลง
 git add evaluate.py
 git commit -m "revert: restore simple evaluation module"
 ```
 
+#### 📝 สรุปสถานการณ์ที่ 3
+
+| ขั้นตอน | สิ่งที่เกิดขึ้น |
+|--------|--------------|
+| มี commit ที่ over-engineered | evaluate.py ซับซ้อนเกินไป |
+| ใช้ `git log` หา commit hash | รู้ว่าเวอร์ชันไหนที่ต้องการ |
+| ใช้ `git restore --source=<commit>` | กู้คืนเวอร์ชันเรียบง่าย |
+| Commit | บันทึกการกู้คืนเป็น commit ใหม่ |
+
 ---
 
 ### 📍 สถานการณ์ที่ 4: กู้คืนหลายไฟล์พร้อมกัน
 
-**ปัญหา**: คุณแก้ไขหลายไฟล์พร้อมกัน แต่ทั้งหมดผิดพลาด ต้องกู้คืนทั้งหมด
+#### 🎭 เรื่องราว
 
-#### ขั้นตอน 4.1: แก้ไขหลายไฟล์ให้ผิดพลาด
+วันพฤหัส คุณกำลังรีบทำงานก่อนประชุม เผลอรันคำสั่งที่เขียนทับไฟล์หลายๆ ไฟล์ ทำให้โค้ดพังหมด โชคดีที่ยังไม่ได้ commit
+
+#### 🎯 สิ่งที่จะเรียนรู้
+
+**`git restore .`** - กู้คืนทุกไฟล์ใน directory ปัจจุบัน
+
+```
+┌─────────────────────────────────────────────────────────────────────┐
+│                 สถานการณ์ที่ 4: กู้คืนหลายไฟล์พร้อมกัน                │
+├─────────────────────────────────────────────────────────────────────┤
+│                                                                     │
+│   Working Directory (พังหมด!)        Repository (ยังดี!)             │
+│                                                                     │
+│   ┌──────────────┐                   ┌──────────────┐               │
+│   │ data_prep.py │  ◀────────────────│ data_prep.py │               │
+│   │ "# BROKEN!"  │   git restore .   │ (เวอร์ชันดี)  │               │
+│   └──────────────┘                   └──────────────┘               │
+│   ┌──────────────┐                   ┌──────────────┐               │
+│   │ train.py     │  ◀────────────────│ train.py     │               │
+│   │ "# BROKEN!"  │   git restore .   │ (เวอร์ชันดี)  │               │
+│   └──────────────┘                   └──────────────┘               │
+│                                                                     │
+│   ❌ ทั้งโปรเจกต์พัง!                   ✅ ทุกอย่างกลับมา!             │
+│                                                                     │
+└─────────────────────────────────────────────────────────────────────┘
+```
+
+#### ขั้นตอน 4.1: แก้ไขหลายไฟล์ให้ผิดพลาด (จำลองอุบัติเหตุ)
 
 ```bash
 # แก้ไข data_prep.py ให้ผิด
@@ -777,45 +1128,72 @@ echo "# BROKEN!" > train.py
 
 # ตรวจสอบสถานะ
 git status
+```
 
+**ผลลัพธ์ที่คาดหวัง:**
+```
+On branch main
+Changes not staged for commit:
+        modified:   data_prep.py
+        modified:   train.py
+```
+
+```bash
 # ดูเนื้อหาที่ถูกเขียนทับ - ไฟล์พังหมดแล้ว!
 echo "=== data_prep.py ==="
 cat data_prep.py
 
+echo ""
 echo "=== train.py ==="
 cat train.py
 ```
 
-ผลลัพธ์ที่คาดหวัง:
+**ผลลัพธ์ที่คาดหวัง:**
 ```
 === data_prep.py ===
 # BROKEN!
+
 === train.py ===
 # BROKEN!
 ```
+
+😱 **ทั้งสองไฟล์มีแค่ "# BROKEN!" หมดแล้ว!**
 
 #### ขั้นตอน 4.2: กู้คืนทุกไฟล์พร้อมกัน
 
 ```bash
 # กู้คืนทุกไฟล์ใน directory ปัจจุบัน
 git restore .
+```
 
-# หรือกู้คืนเฉพาะบางไฟล์
-# git restore data_prep.py train.py
+**💡 หรือกู้คืนเฉพาะบางไฟล์:**
+```bash
+git restore data_prep.py train.py
+```
 
+#### ขั้นตอน 4.3: ตรวจสอบผลลัพธ์
+
+```bash
 # ตรวจสอบสถานะ
 git status
 
-# ดูเนื้อหาที่กู้คืนมา - กลับมาเป็นปกติแล้ว!
+# ดูเนื้อหาที่กู้คืนมา
 echo "=== data_prep.py (หลัง restore) ==="
-cat data_prep.py
+head -20 data_prep.py
 
 echo ""
 echo "=== train.py (หลัง restore) ==="
-cat train.py
+head -20 train.py
 ```
 
-ผลลัพธ์ที่คาดหวัง: ไฟล์ทั้งสองกลับมามีโค้ดเต็มเหมือนเดิม!
+**ผลลัพธ์ที่คาดหวัง:** ไฟล์ทั้งสองกลับมามีโค้ดเต็มเหมือนเดิม!
+
+#### 📝 สรุปสถานการณ์ที่ 4
+
+| ก่อน | หลัง |
+|-----|------|
+| หลายไฟล์พังพร้อมกัน | ทุกไฟล์กลับมาเป็นปกติ |
+| ต้องกู้คืนทีละไฟล์? ไม่! | ใช้ `git restore .` คำสั่งเดียวจบ |
 
 ---
 
@@ -826,48 +1204,67 @@ cat train.py
 │                     Git Restore Command Summary                        │
 ├────────────────────────────────────────────────────────────────────────┤
 │                                                                        │
-│  🔹 Discard changes in Working Directory:                             │
+│  🔹 Discard changes in Working Directory:                              │
 │     git restore <file>                                                 │
 │     git restore .                       # ทุกไฟล์                      │
 │                                                                        │
-│  🔹 Unstage file (remove from Staging Area):                          │
+│  🔹 Unstage file (remove from Staging Area):                           │
 │     git restore --staged <file>                                        │
 │     git restore --staged .              # ทุกไฟล์                      │
 │                                                                        │
-│  🔹 Restore file from specific commit:                                │
+│  🔹 Restore file from specific commit:                                 │
 │     git restore --source=<commit> <file>                               │
-│     git restore --source=HEAD~2 <file>  # 2 commits ก่อน             │
+│     git restore --source=HEAD~2 <file>  # 2 commits ก่อน               │
 │                                                                        │
 │  🔹 Combined operations:                                               │
-│     git restore --source=<commit> --staged --worktree <file>          │
-│     (กู้คืนทั้ง staging และ working directory)                        │
+│     git restore --source=<commit> --staged --worktree <file>           │
+│     (กู้คืนทั้ง staging และ working directory)                         │
 │                                                                        │
 └────────────────────────────────────────────────────────────────────────┘
 ```
 
+### 📋 Quick Reference Table
+
+| สถานการณ์ | คำสั่ง | ผลลัพธ์ |
+|-----------|--------|---------|
+| แก้ไขผิด ยังไม่ได้ add | `git restore <file>` | กลับไปเป็น commit ล่าสุด |
+| Add ไปแล้ว ไม่อยาก commit | `git restore --staged <file>` | เอาออกจาก staging |
+| ต้องการเวอร์ชันเก่า | `git restore --source=<commit> <file>` | กู้คืนจาก commit ที่ระบุ |
+| ทุกอย่างพัง! | `git restore .` | กู้คืนทั้งหมด |
+
 ---
 
-## ✅ แบบฝึกหัดเพิ่มเติม
+## ✅ Part 4: แบบฝึกหัดเพิ่มเติม
 
 ### แบบฝึกหัดที่ 1: Basic Restore
+
+**เป้าหมาย:** ฝึกใช้ `git restore` กับการเปลี่ยนแปลงเล็กน้อย
+
 1. แก้ไข `train.py` โดยเปลี่ยน `n_estimators=100` เป็น `n_estimators=10`
 2. ใช้ `git diff` ดูความแตกต่าง
-3. ใช้ `git restore` กู้คืนไฟล์
-4. ตรวจสอบว่าไฟล์กลับมาเป็นค่าเดิม
+3. ใช้ `git restore train.py` กู้คืนไฟล์
+4. ตรวจสอบว่าไฟล์กลับมาเป็นค่าเดิม (`n_estimators=100`)
 
 ### แบบฝึกหัดที่ 2: Staged Restore
-1. แก้ไข `evaluate.py` เพิ่ม comment ใดๆ
+
+**เป้าหมาย:** ฝึกใช้ `git restore --staged`
+
+1. แก้ไข `evaluate.py` เพิ่ม comment ใดๆ (เช่น `# This is a test`)
 2. ใช้ `git add evaluate.py`
-3. ใช้ `git restore --staged evaluate.py`
-4. ตรวจสอบสถานะด้วย `git status`
-5. ใช้ `git restore evaluate.py` เพื่อยกเลิกการเปลี่ยนแปลงทั้งหมด
+3. ตรวจสอบด้วย `git status` ว่าไฟล์อยู่ใน staging
+4. ใช้ `git restore --staged evaluate.py`
+5. ตรวจสอบด้วย `git status` ว่าไฟล์กลับไปอยู่ใน working directory
+6. ใช้ `git restore evaluate.py` เพื่อยกเลิกการเปลี่ยนแปลงทั้งหมด
 
 ### แบบฝึกหัดที่ 3: Source Restore
+
+**เป้าหมาย:** ฝึกใช้ `git restore --source`
+
 1. ดู commit history ด้วย `git log --oneline`
-2. เลือก commit ที่มี `data_prep.py` เวอร์ชันแรก
+2. เลือก commit ที่มี `data_prep.py` เวอร์ชันแรก (ก่อน feature engineering)
 3. ใช้ `git restore --source=<commit_hash> data_prep.py`
 4. ตรวจสอบความแตกต่างด้วย `git diff data_prep.py`
-5. Commit หรือ restore กลับตามต้องการ
+5. ตัดสินใจว่าจะ commit หรือ restore กลับตามต้องการ
 
 ---
 
@@ -880,12 +1277,23 @@ cat train.py
 3. ใน MLOps การทดลองและย้อนกลับเป็นเรื่องปกติ - `git restore` ช่วยให้ทำได้อย่างปลอดภัย
 4. การใช้ `--source` ช่วยให้กู้คืนไฟล์จาก commit ใดก็ได้ในประวัติ
 
-### Best Practices
+### Best Practices สำหรับ MLOps
 
-1. **Commit บ่อยๆ** - ทำให้มี restore points มากขึ้น
-2. **เขียน commit message ที่ชัดเจน** - ช่วยให้หา commit ที่ต้องการได้ง่าย
-3. **ใช้ `git status` บ่อยๆ** - รู้ว่าอยู่ในสถานะไหน
-4. **ทดสอบก่อน commit** - ลดโอกาสที่ต้อง restore
+| Practice | เหตุผล |
+|----------|--------|
+| **Commit บ่อยๆ** | ทำให้มี restore points มากขึ้น ย้อนกลับได้หลายจุด |
+| **เขียน commit message ที่ชัดเจน** | ช่วยให้หา commit ที่ต้องการได้ง่ายเมื่อต้อง restore |
+| **ใช้ `git status` บ่อยๆ** | รู้ว่าอยู่ในสถานะไหน ก่อนตัดสินใจใช้คำสั่ง |
+| **ทดสอบก่อน commit** | ลดโอกาสที่ต้อง restore เพราะ commit โค้ดที่พัง |
+| **ใช้ branch สำหรับ experiment** | แยก experiments ออกจาก main branch |
+
+### ⚠️ ข้อควรระวัง
+
+| คำสั่ง | ข้อควรระวัง |
+|--------|------------|
+| `git restore <file>` | การเปลี่ยนแปลงที่ไม่ได้ commit จะหายไปถาวร! |
+| `git restore .` | ทุกไฟล์จะถูกกู้คืน ตรวจสอบให้ดีก่อนใช้ |
+| `git restore --source` | ไฟล์จะเปลี่ยน แต่ยังไม่ได้ commit อัตโนมัติ |
 
 ---
 
