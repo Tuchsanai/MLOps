@@ -768,7 +768,9 @@ if __name__ == "__main__":
     metrics, y_pred = evaluate_model(model, scaler, X_test, y_test)
     print_evaluation_report(metrics, y_test, y_pred)
 EOF
+```
 
+```bash
 # Commit
 git add evaluate.py
 git commit -m "feat: add model evaluation module"
