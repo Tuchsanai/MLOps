@@ -871,10 +871,14 @@ git status
 ```bash
 # Unstage evaluate.py
 git restore --staged evaluate.py
+```
 
+```bash
 # Commit เฉพาะ data_prep.py
 git commit -m "feat: add feature engineering to data_prep"
+```
 
+```bash
 # กู้คืน evaluate.py กลับเป็นเวอร์ชันเดิม
 git restore evaluate.py
 ```
