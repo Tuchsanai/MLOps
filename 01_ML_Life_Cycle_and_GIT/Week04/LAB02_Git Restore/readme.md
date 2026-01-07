@@ -636,7 +636,9 @@ if __name__ == "__main__":
     
     X_train, X_test, y_train, y_test = prepare_data(df)
 EOF
+```
 
+```bash
 # Commit
 git add data_prep.py
 git commit -m "feat: add data preparation module"
@@ -688,7 +690,9 @@ if __name__ == "__main__":
     model, scaler = train_model(X_train, y_train)
     save_model(model, scaler)
 EOF
+```
 
+```bash
 # Commit
 git add train.py
 git commit -m "feat: add model training module"
