@@ -1,12 +1,13 @@
+# %%
 # Complete MLOps Labs: Understanding Data Drift Concepts with sklearn
 
 ## LAB 1: Understanding Data Drift Concepts
 
-```python
-#%% [markdown]
+
+# %% [markdown]
 # # LAB 1: Understanding Data Drift Concepts
 # ## ทำความเข้าใจแนวคิดพื้นฐานของ Data Drift
-# 
+#
 # ### วัตถุประสงค์การเรียนรู้:
 # 1. เข้าใจความแตกต่างระหว่าง Covariate Shift และ Concept Drift
 # 2. เรียนรู้ Statistical tests สำหรับ drift detection (KS, PSI, Wasserstein)
@@ -19,12 +20,12 @@
 # - **Covariate Shift**: การเปลี่ยนแปลงของ input features P(X) โดยที่ความสัมพันธ์ P(Y|X) ยังคงเดิม
 # - **Concept Drift**: การเปลี่ยนแปลงของความสัมพันธ์ระหว่าง input และ output P(Y|X)
 
-#%% [markdown]
+# %% [markdown]
 # ## ส่วนที่ 1: เตรียม Environment และ Import Libraries
-# 
+#
 # ก่อนเริ่มต้น เราจะ import libraries ที่จำเป็นทั้งหมด
 
-#%%
+# %%
 # Import libraries ที่จำเป็น
 import numpy as np
 import pandas as pd
@@ -49,9 +50,9 @@ print("✅ Libraries imported successfully!")
 print(f"NumPy version: {np.__version__}")
 print(f"Pandas version: {pd.__version__}")
 
-#%% [markdown]
+# %% [markdown]
 # ## ส่วนที่ 2: ทำความเข้าใจ Covariate Shift
-# 
+#
 # ### ทฤษฎี Covariate Shift:
 # - เกิดขึ้นเมื่อ distribution ของ input features เปลี่ยนแปลง
 # - ตัวอย่าง: โมเดลทำนายราคาบ้านที่ train กับบ้านในเมือง แต่ต้องทำนายบ้านในชนบท
@@ -61,7 +62,7 @@ print(f"Pandas version: {pd.__version__}")
 # - Training: P_train(X) ≠ P_test(X)
 # - แต่: P(Y|X) คงที่
 
-#%%
+# %%
 def generate_covariate_shift_data():
     """
     สร้างข้อมูลที่แสดง Covariate Shift
@@ -113,7 +114,7 @@ print(train_covariate.describe())
 print("\n📊 Production Data Summary:")
 print(prod_covariate.describe())
 
-#%%
+# %%
 # Visualize Covariate Shift
 fig, axes = plt.subplots(1, 3, figsize=(15, 4))
 
@@ -148,9 +149,9 @@ plt.show()
 
 print("\n💡 สังเกต: Distribution ของ Age และ Income เปลี่ยนไป แต่ความสัมพันธ์ในการตัดสินใจซื้อยังเหมือนเดิม")
 
-#%% [markdown]
+# %% [markdown]
 # ## ส่วนที่ 3: ทำความเข้าใจ Concept Drift
-# 
+#
 # ### ทฤษฎี Concept Drift:
 # - เกิดขึ้นเมื่อความสัมพันธ์ระหว่าง input และ output เปลี่ยนแปลง
 # - ตัวอย่าง: พฤติกรรมการซื้อของลูกค้าเปลี่ยนหลัง COVID-19
@@ -160,7 +161,7 @@ print("\n💡 สังเกต: Distribution ของ Age และ Income �
 # - P(X) อาจคงที่หรือเปลี่ยนก็ได้
 # - แต่: P(Y|X) เปลี่ยนแปลง
 
-#%%
+# %%
 def generate_concept_drift_data():
     """
     สร้างข้อมูลที่แสดง Concept Drift
@@ -213,7 +214,7 @@ print("\n📊 Production Data Summary:")
 print(f"Purchase Rate: {prod_concept['purchase'].mean():.2%}")
 print(prod_concept.describe())
 
-#%%
+# %%
 # Visualize Concept Drift
 fig, axes = plt.subplots(1, 3, figsize=(15, 4))
 
@@ -276,11 +277,11 @@ print("\n💡 สังเกต: Distribution ของ Income เหมือ�
 print("   - Training: ซื้อเมื่อ income > 45,000")
 print("   - Production: ซื้อเมื่อ income > 55,000")
 
-#%% [markdown]
+# %% [markdown]
 # ## ส่วนที่ 4: Statistical Tests สำหรับ Drift Detection
-# 
+#
 # ### 4.1 Kolmogorov-Smirnov (KS) Test
-# 
+#
 # **ทฤษฎี:**
 # - เปรียบเทียบ cumulative distribution function (CDF) ของ 2 samples
 # - วัดความแตกต่างสูงสุดระหว่าง 2 CDFs
@@ -291,7 +292,7 @@ print("   - Production: ซื้อเมื่อ income > 55,000")
 # - KS Statistic: 0-1 (ยิ่งสูง = ยิ่งต่าง)
 # - p-value < 0.05: reject null hypothesis → มี drift
 
-#%%
+# %%
 def kolmogorov_smirnov_test(data1, data2, feature_name="feature"):
     """
     ทำ KS Test เพื่อตรวจจับ drift
@@ -336,7 +337,7 @@ for result in [ks_age, ks_income]:
     print(f"  P-value: {result['p_value']:.6f}")
     print(f"  Result: {result['interpretation']}")
 
-#%%
+# %%
 # Visualize KS Test
 fig, axes = plt.subplots(1, 2, figsize=(14, 5))
 
@@ -364,9 +365,9 @@ plt.tight_layout()
 plt.savefig('ks_test_visualization.png', dpi=150, bbox_inches='tight')
 plt.show()
 
-#%% [markdown]
+# %% [markdown]
 # ### 4.2 Population Stability Index (PSI)
-# 
+#
 # **ทฤษฎี:**
 # - วัดการเปลี่ยนแปลงของ distribution โดยเปรียบเทียบ proportions ในแต่ละ bin
 # - นิยมใช้ใน credit scoring และ financial models
@@ -377,7 +378,7 @@ plt.show()
 # - 0.1 ≤ PSI < 0.25: มีการเปลี่ยนแปลงปานกลาง ควรตรวจสอบ
 # - PSI ≥ 0.25: มีการเปลี่ยนแปลงมาก ต้องดำเนินการ
 
-#%%
+# %%
 def calculate_psi(expected, actual, bins=10, eps=1e-6):
     """
     คำนวณ Population Stability Index (PSI)
@@ -443,7 +444,7 @@ for feature in ['age', 'income']:
     print(f"  Severity: {psi_result['severity']}")
     print(f"  Interpretation: {psi_result['interpretation']}")
 
-#%%
+# %%
 # Visualize PSI
 fig, axes = plt.subplots(1, 2, figsize=(14, 5))
 
@@ -466,16 +467,16 @@ plt.tight_layout()
 plt.savefig('psi_visualization.png', dpi=150, bbox_inches='tight')
 plt.show()
 
-#%% [markdown]
+# %% [markdown]
 # ### 4.3 Wasserstein Distance (Earth Mover's Distance)
-# 
+#
 # **ทฤษฎี:**
 # - วัด "งาน" ที่ต้องใช้ในการเปลี่ยน distribution หนึ่งไปเป็นอีก distribution
 # - เหมือนการคำนวณต้นทุนในการขนย้ายดิน (Earth Mover)
 # - ข้อดี: คำนึงถึง distance ระหว่าง bins, sensitive ต่อ shift ในตำแหน่ง
 # - ข้อเสีย: ต้อง normalize ข้อมูลเพื่อให้เปรียบเทียบได้
 
-#%%
+# %%
 def wasserstein_distance_test(data1, data2, feature_name="feature"):
     """
     คำนวณ Wasserstein Distance สำหรับ drift detection
@@ -529,7 +530,7 @@ for feature in ['age', 'income']:
     print(f"  Severity: {wd_result['severity']}")
     print(f"  Interpretation: {wd_result['interpretation']}")
 
-#%%
+# %%
 # Visualize Wasserstein Distance
 fig, axes = plt.subplots(1, 2, figsize=(14, 5))
 
@@ -565,9 +566,9 @@ plt.show()
 
 print("\n💡 ลูกศรสีเขียวแสดงทิศทางของ 'การขนย้าย' จาก Training ไป Production")
 
-#%% [markdown]
+# %% [markdown]
 # ## ส่วนที่ 5: เปรียบเทียบและเลือก Drift Detection Method
-# 
+#
 # ### สรุปข้อดี-ข้อเสียของแต่ละ method:
 #
 # | Method | ข้อดี | ข้อเสีย | ใช้เมื่อ |
@@ -576,7 +577,7 @@ print("\n💡 ลูกศรสีเขียวแสดงทิศทาง
 # | PSI | มี threshold ชัดเจน, industry standard | ต้อง binning | Credit scoring, Risk models |
 # | Wasserstein | คำนึงถึง distance, เข้าใจง่าย | ต้อง normalize | เปรียบเทียบ shift ในตำแหน่ง |
 
-#%%
+# %%
 def comprehensive_drift_analysis(reference_data, current_data, feature_name):
     """
     วิเคราะห์ drift โดยใช้ทุก methods และเปรียบเทียบผลลัพธ์
@@ -624,7 +625,7 @@ for feature in ['age', 'income']:
     print(f"  Wasserstein: {result['wasserstein']['normalized_distance']:.4f} → {result['wasserstein']['severity']}")
     print(f"  📋 CONSENSUS ({result['drift_votes']}/3 votes): {result['consensus']}")
 
-#%%
+# %%
 # สร้าง comparison table
 comparison_df = pd.DataFrame([
     {
@@ -646,9 +647,9 @@ print("📊 SUMMARY TABLE")
 print("=" * 80)
 print(comparison_df.to_string(index=False))
 
-#%% [markdown]
+# %% [markdown]
 # ## ส่วนที่ 6: แนวทางการเลือก Drift Detection Method
-# 
+#
 # ### Decision Tree สำหรับเลือก Method:
 #
 # ```
@@ -669,7 +670,7 @@ print(comparison_df.to_string(index=False))
 #    └── ปกติ → KS หรือ PSI
 # ```
 
-#%%
+# %%
 def recommend_drift_method(data_type, needs_significance, industry, high_sensitivity):
     """
     แนะนำ drift detection method ที่เหมาะสม
@@ -756,22 +757,22 @@ for i, scenario in enumerate(scenarios, 1):
     for j, rec in enumerate(recs, 1):
         print(f"   {j}. {rec['method']} - {rec['reason']}")
 
-#%% [markdown]
+# %% [markdown]
 # ## สรุป LAB 1
-# 
+#
 # ### สิ่งที่เรียนรู้:
 # 1. **Covariate Shift**: P(X) เปลี่ยน แต่ P(Y|X) คงที่
 # 2. **Concept Drift**: P(Y|X) เปลี่ยน (relationship เปลี่ยน)
 # 3. **KS Test**: วัด maximum distance ระหว่าง CDFs, ให้ p-value
 # 4. **PSI**: วัดการเปลี่ยนแปลงของ proportions, มี threshold ชัดเจน
 # 5. **Wasserstein**: วัด "งาน" ในการเปลี่ยน distribution
-# 
+#
 # ### Best Practices:
 # - ใช้หลาย methods เพื่อ cross-validate
 # - เลือก method ตาม data type และ business requirements
 # - ตั้ง threshold ที่เหมาะสมกับ context
 
-#%%
+# %%
 print("=" * 60)
 print("✅ LAB 1 COMPLETED!")
 print("=" * 60)
@@ -784,17 +785,14 @@ print("""
 
 🔜 Next: LAB 2 - Feature Drift Detection
 """)
-```
-
----
 
 ## LAB 2: Feature Drift Detection
 
-```python
-#%% [markdown]
+
+# %% [markdown]
 # # LAB 2: Feature Drift Detection
 # ## การตรวจจับ Drift ในแต่ละ Feature
-# 
+#
 # ### วัตถุประสงค์การเรียนรู้:
 # 1. ตรวจจับ drift ในแต่ละ feature อย่างเป็นระบบ
 # 2. วิเคราะห์ numerical vs categorical feature drift
@@ -806,10 +804,10 @@ print("""
 # - ทำให้เข้าใจว่า feature ไหนเปลี่ยนแปลงมากที่สุด
 # - สามารถ prioritize การแก้ไขได้
 
-#%% [markdown]
+# %% [markdown]
 # ## ส่วนที่ 1: เตรียม Environment
 
-#%%
+# %%
 import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt
@@ -825,15 +823,15 @@ plt.rcParams['figure.figsize'] = (14, 8)
 
 print("✅ Libraries imported successfully!")
 
-#%% [markdown]
+# %% [markdown]
 # ## ส่วนที่ 2: สร้าง Dataset ที่มีหลาย Features
-# 
+#
 # เราจะสร้าง dataset ที่จำลองสถานการณ์จริง:
 # - มีทั้ง numerical และ categorical features
 # - บาง features มี drift บาง features ไม่มี
 # - มี drift ในระดับต่างๆ
 
-#%%
+# %%
 def create_multi_feature_dataset(n_samples=2000, drift_level='mixed'):
     """
     สร้าง dataset ที่มีหลาย features พร้อม simulated drift
@@ -929,7 +927,7 @@ print("\n📋 Expected Drift Levels:")
 for feature, level in feature_info['expected_drift'].items():
     print(f"  {feature}: {level}")
 
-#%%
+# %%
 # แสดง summary statistics
 print("\n" + "=" * 60)
 print("REFERENCE DATA SUMMARY")
@@ -941,12 +939,12 @@ print("CURRENT DATA SUMMARY")
 print("=" * 60)
 print(current_df.describe())
 
-#%% [markdown]
+# %% [markdown]
 # ## ส่วนที่ 3: สร้าง Feature Drift Detector Class
-# 
+#
 # เราจะสร้าง class ที่รวมทุก drift detection methods เพื่อใช้งานได้สะดวก
 
-#%%
+# %%
 class FeatureDriftDetector:
     """
     Class สำหรับตรวจจับ drift ในแต่ละ feature
@@ -1152,7 +1150,7 @@ class FeatureDriftDetector:
         
         return pd.DataFrame(summary)
 
-#%%
+# %%
 # ใช้งาน FeatureDriftDetector
 detector = FeatureDriftDetector(
     reference_data=reference_df,
@@ -1171,12 +1169,12 @@ print("=" * 80)
 summary_df = detector.get_summary_report()
 print(summary_df.to_string(index=False))
 
-#%% [markdown]
+# %% [markdown]
 # ## ส่วนที่ 4: Visualize Feature Distributions
-# 
+#
 # การ visualize ช่วยให้เข้าใจ drift ได้ดีขึ้น
 
-#%%
+# %%
 def plot_numerical_feature_drift(reference, current, feature_name, ax=None):
     """
     สร้าง visualization สำหรับ numerical feature drift
@@ -1242,7 +1240,7 @@ def plot_categorical_feature_drift(reference, current, feature_name, ax=None):
     
     return ax
 
-#%%
+# %%
 # Plot all numerical features
 fig, axes = plt.subplots(2, 3, figsize=(15, 10))
 axes = axes.flatten()
@@ -1259,7 +1257,7 @@ plt.tight_layout()
 plt.savefig('numerical_features_drift.png', dpi=150, bbox_inches='tight')
 plt.show()
 
-#%%
+# %%
 # Plot all categorical features
 fig, axes = plt.subplots(1, 3, figsize=(15, 4))
 
@@ -1271,12 +1269,12 @@ plt.tight_layout()
 plt.savefig('categorical_features_drift.png', dpi=150, bbox_inches='tight')
 plt.show()
 
-#%% [markdown]
+# %% [markdown]
 # ## ส่วนที่ 5: Feature Drift Ranking และ Prioritization
-# 
+#
 # จัดลำดับ features ตามความรุนแรงของ drift
 
-#%%
+# %%
 def rank_features_by_drift(detector):
     """
     จัดลำดับ features ตาม drift severity
@@ -1310,7 +1308,7 @@ for rank, item in enumerate(rankings, 1):
     severity_emoji = {'none': '🟢', 'mild': '🟡', 'severe': '🔴'}[item['severity']]
     print(f"{rank}. {item['feature']:<20} | PSI: {item['psi']:.4f} | {severity_emoji} {item['severity'].upper()}")
 
-#%%
+# %%
 # สร้าง Drift Ranking Visualization
 fig, ax = plt.subplots(figsize=(12, 6))
 
@@ -1337,12 +1335,12 @@ plt.tight_layout()
 plt.savefig('feature_drift_ranking.png', dpi=150, bbox_inches='tight')
 plt.show()
 
-#%% [markdown]
+# %% [markdown]
 # ## ส่วนที่ 6: Time-based Distribution Analysis
-# 
+#
 # วิเคราะห์ว่า distribution เปลี่ยนแปลงอย่างไรเมื่อเวลาผ่านไป
 
-#%%
+# %%
 def simulate_time_series_data(n_periods=6, samples_per_period=500):
     """
     จำลองข้อมูลที่เปลี่ยนแปลงตามเวลา
@@ -1371,7 +1369,7 @@ time_series_data = simulate_time_series_data()
 print(f"📊 Time Series Data Shape: {time_series_data.shape}")
 print(f"📋 Periods: {time_series_data['period'].unique()}")
 
-#%%
+# %%
 # Visualize distribution over time
 fig, axes = plt.subplots(1, 3, figsize=(15, 5))
 
@@ -1396,7 +1394,7 @@ plt.tight_layout()
 plt.savefig('time_series_distributions.png', dpi=150, bbox_inches='tight')
 plt.show()
 
-#%%
+# %%
 # Calculate PSI over time (comparing each period to Period 0)
 def calculate_psi_over_time(data, feature, reference_period=0):
     """
@@ -1450,9 +1448,9 @@ plt.show()
 print("\n💡 สังเกต: Age แสดง gradual drift (PSI เพิ่มขึ้นเรื่อยๆ)")
 print("   ในขณะที่ Income และ Credit Score ค่อนข้าง stable")
 
-#%% [markdown]
+# %% [markdown]
 # ## สรุป LAB 2
-# 
+#
 # ### สิ่งที่เรียนรู้:
 # 1. **FeatureDriftDetector Class**: เครื่องมือสำหรับวิเคราะห์ drift ทุก features
 # 2. **Numerical vs Categorical**: ใช้ methods ที่เหมาะสมกับแต่ละ type
@@ -1460,7 +1458,7 @@ print("   ในขณะที่ Income และ Credit Score ค่อนข
 # 4. **Ranking**: จัดลำดับ features ตาม severity เพื่อ prioritization
 # 5. **Time-based Analysis**: ติดตาม drift เมื่อเวลาผ่านไป
 
-#%%
+# %%
 print("=" * 60)
 print("✅ LAB 2 COMPLETED!")
 print("=" * 60)
@@ -1473,17 +1471,17 @@ print("""
 
 🔜 Next: LAB 3 - Multivariate Drift Analysis
 """)
-```
 
----
+
+
 
 ## LAB 3: Multivariate Drift Analysis
 
-```python
-#%% [markdown]
+
+# %% [markdown]
 # # LAB 3: Multivariate Drift Analysis
 # ## การวิเคราะห์ Drift ที่เกิดจากความสัมพันธ์ระหว่าง Features
-# 
+#
 # ### วัตถุประสงค์การเรียนรู้:
 # 1. ตรวจจับ drift ที่เกิดจากความสัมพันธ์ระหว่าง features
 # 2. ใช้ Dataset-level drift detection
@@ -1495,10 +1493,10 @@ print("""
 # - แต่ความสัมพันธ์ระหว่าง features เปลี่ยนไป
 # - ตัวอย่าง: correlation ระหว่าง age และ income เปลี่ยน
 
-#%% [markdown]
+# %% [markdown]
 # ## ส่วนที่ 1: เตรียม Environment
 
-#%%
+# %%
 import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt
@@ -1515,14 +1513,14 @@ plt.rcParams['figure.figsize'] = (12, 8)
 
 print("✅ Libraries imported successfully!")
 
-#%% [markdown]
+# %% [markdown]
 # ## ส่วนที่ 2: สร้าง Dataset ที่มี Multivariate Drift
-# 
+#
 # เราจะสร้างข้อมูลที่:
 # - Marginal distributions เหมือนกัน (ไม่มี univariate drift)
 # - แต่ correlation structure เปลี่ยน (multivariate drift)
 
-#%%
+# %%
 def create_multivariate_drift_data(n_samples=2000):
     """
     สร้างข้อมูลที่มี multivariate drift
@@ -1567,7 +1565,7 @@ print(ref_multi.describe())
 print("\n📊 Current Data:")
 print(cur_multi.describe())
 
-#%%
+# %%
 # แสดง correlation matrix comparison
 fig, axes = plt.subplots(1, 3, figsize=(15, 4))
 
@@ -1595,12 +1593,12 @@ plt.show()
 
 print("\n💡 สังเกต: Correlation ระหว่าง Age-Income เปลี่ยนจาก ~0.6 เป็น ~0.03")
 
-#%% [markdown]
+# %% [markdown]
 # ## ส่วนที่ 3: Univariate vs Multivariate Drift Detection
-# 
+#
 # เปรียบเทียบว่า univariate methods พลาดอะไรไป
 
-#%%
+# %%
 from scipy import stats
 
 def univariate_drift_check(ref_df, cur_df):
@@ -1642,12 +1640,12 @@ print(univariate_results.to_string(index=False))
 print("\n💡 สังเกต: Univariate methods ไม่พบ drift ที่สำคัญ!")
 print("   แต่เรารู้ว่า correlation structure เปลี่ยนไป")
 
-#%% [markdown]
+# %% [markdown]
 # ## ส่วนที่ 4: Correlation-based Drift Detection
-# 
+#
 # ตรวจจับการเปลี่ยนแปลงของ correlation structure
 
-#%%
+# %%
 def correlation_drift_test(ref_df, cur_df, significance_level=0.05):
     """
     ตรวจจับ drift ใน correlation structure
@@ -1702,7 +1700,7 @@ print("📊 CORRELATION DRIFT DETECTION RESULTS")
 print("=" * 60)
 print(corr_drift_results.to_string(index=False))
 
-#%%
+# %%
 # Visualize correlation changes
 fig, ax = plt.subplots(figsize=(10, 6))
 
@@ -1727,12 +1725,12 @@ plt.tight_layout()
 plt.savefig('correlation_drift.png', dpi=150, bbox_inches='tight')
 plt.show()
 
-#%% [markdown]
+# %% [markdown]
 # ## ส่วนที่ 5: PCA-based Multivariate Drift Detection
-# 
+#
 # ใช้ PCA เพื่อตรวจจับ drift ใน multivariate structure
 
-#%%
+# %%
 def pca_drift_detection(ref_df, cur_df, n_components=None):
     """
     ใช้ PCA เพื่อตรวจจับ multivariate drift
@@ -1819,7 +1817,7 @@ print(f"   Reference: {pca_results['ref_reconstruction_error']:.6f}")
 print(f"   Current: {pca_results['cur_reconstruction_error']:.6f}")
 print(f"   Ratio: {pca_results['reconstruction_error_ratio']:.4f}x")
 
-#%%
+# %%
 # Visualize PCA results
 fig, axes = plt.subplots(2, 2, figsize=(14, 10))
 
@@ -1879,12 +1877,12 @@ plt.tight_layout()
 plt.savefig('pca_drift_analysis.png', dpi=150, bbox_inches='tight')
 plt.show()
 
-#%% [markdown]
+# %% [markdown]
 # ## ส่วนที่ 6: Mahalanobis Distance for Dataset-level Drift
-# 
+#
 # ใช้ Mahalanobis distance เพื่อวัด multivariate drift
 
-#%%
+# %%
 def mahalanobis_drift_detection(ref_df, cur_df, threshold_percentile=95):
     """
     ใช้ Mahalanobis distance เพื่อตรวจจับ multivariate drift
@@ -1945,7 +1943,7 @@ print(f"  Statistic: {maha_results['ks_statistic']:.4f}")
 print(f"  P-value: {maha_results['ks_pvalue']:.4f}")
 print(f"  Drift Detected: {'Yes ✓' if maha_results['drift_detected'] else 'No'}")
 
-#%%
+# %%
 # Visualize Mahalanobis distances
 fig, axes = plt.subplots(1, 2, figsize=(14, 5))
 
@@ -1979,10 +1977,10 @@ plt.tight_layout()
 plt.savefig('mahalanobis_drift.png', dpi=150, bbox_inches='tight')
 plt.show()
 
-#%% [markdown]
+# %% [markdown]
 # ## ส่วนที่ 7: Comprehensive Multivariate Drift Report
 
-#%%
+# %%
 class MultivariateriftDetector:
     """
     Class สำหรับ comprehensive multivariate drift detection
@@ -2078,21 +2076,21 @@ detector = MultivariateriftDetector(ref_multi, cur_multi)
 detector.analyze()
 detector.print_report()
 
-#%% [markdown]
+# %% [markdown]
 # ## สรุป LAB 3
-# 
+#
 # ### สิ่งที่เรียนรู้:
 # 1. **Multivariate Drift**: เกิดขึ้นเมื่อ relationship ระหว่าง features เปลี่ยน
 # 2. **Correlation Analysis**: ตรวจจับการเปลี่ยนแปลงของ pairwise correlations
 # 3. **PCA Analysis**: ตรวจจับการเปลี่ยนแปลงของ multivariate structure
 # 4. **Mahalanobis Distance**: วัด dataset-level drift
-# 
+#
 # ### Key Insights:
 # - Univariate methods อาจพลาด multivariate drift
 # - ใช้หลาย methods ร่วมกันเพื่อความครอบคลุม
 # - Monitor ทั้ง individual features และ relationships
 
-#%%
+# %%
 print("=" * 60)
 print("✅ LAB 3 COMPLETED!")
 print("=" * 60)
@@ -2112,10 +2110,10 @@ print("""
 ## LAB 4: Drift Detection in Production Simulation
 
 ```python
-#%% [markdown]
+# %% [markdown]
 # # LAB 4: Drift Detection in Production Simulation
 # ## การจำลองการตรวจจับ Drift ใน Production Environment
-# 
+#
 # ### วัตถุประสงค์การเรียนรู้:
 # 1. สร้าง simulated data stream ที่มี gradual drift
 # 2. ตรวจจับ sudden vs gradual drift
@@ -2127,10 +2125,10 @@ print("""
 # - Drift อาจเกิดแบบ sudden หรือ gradual
 # - ต้องมี monitoring strategy ที่เหมาะสม
 
-#%% [markdown]
+# %% [markdown]
 # ## ส่วนที่ 1: เตรียม Environment
 
-#%%
+# %%
 import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt
@@ -2145,12 +2143,12 @@ plt.rcParams['figure.figsize'] = (14, 6)
 
 print("✅ Libraries imported successfully!")
 
-#%% [markdown]
+# %% [markdown]
 # ## ส่วนที่ 2: สร้าง Data Stream Simulator
-# 
+#
 # จำลอง data stream ที่มี drift หลายรูปแบบ
 
-#%%
+# %%
 class DataStreamSimulator:
     """
     Simulator สำหรับสร้าง data stream ที่มี drift patterns ต่างๆ
@@ -2240,7 +2238,7 @@ simulator = DataStreamSimulator(base_mean=50, base_std=10)
 
 print("✅ DataStreamSimulator created")
 
-#%%
+# %%
 # สร้างตัวอย่าง drift patterns
 fig, axes = plt.subplots(2, 3, figsize=(15, 8))
 axes = axes.flatten()
@@ -2280,12 +2278,12 @@ plt.tight_layout()
 plt.savefig('drift_types.png', dpi=150, bbox_inches='tight')
 plt.show()
 
-#%% [markdown]
+# %% [markdown]
 # ## ส่วนที่ 3: Sliding Window Drift Detector
-# 
+#
 # Implement sliding window สำหรับ real-time drift detection
 
-#%%
+# %%
 class SlidingWindowDriftDetector:
     """
     Drift detector ที่ใช้ sliding window approach
@@ -2400,7 +2398,7 @@ class SlidingWindowDriftDetector:
         """แปลง history เป็น DataFrame"""
         return pd.DataFrame(self.history)
 
-#%%
+# %%
 # ทดสอบ SlidingWindowDriftDetector กับ sudden drift
 print("=" * 60)
 print("🔍 Testing Sliding Window Detector with SUDDEN DRIFT")
@@ -2424,7 +2422,7 @@ for idx, row in sudden_stream.iterrows():
 
 print(f"\n📊 Total drift points detected: {len(detector.drift_points)}")
 
-#%%
+# %%
 # Visualize detection results
 history_df = detector.get_history_df()
 
@@ -2467,12 +2465,12 @@ plt.tight_layout()
 plt.savefig('sliding_window_detection.png', dpi=150, bbox_inches='tight')
 plt.show()
 
-#%% [markdown]
+# %% [markdown]
 # ## ส่วนที่ 4: Detecting Gradual Drift
-# 
+#
 # Gradual drift ยากกว่า sudden drift เพราะเปลี่ยนช้าๆ
 
-#%%
+# %%
 print("=" * 60)
 print("🔍 Testing Sliding Window Detector with GRADUAL DRIFT")
 print("=" * 60)
@@ -2492,7 +2490,7 @@ history_gradual = detector_gradual.get_history_df()
 print(f"\n📊 Total drift points detected: {len(detector_gradual.drift_points)}")
 print(f"   First detection at index: {detector_gradual.drift_points[0] + 300 if detector_gradual.drift_points else 'N/A'}")
 
-#%%
+# %%
 # Compare detection of sudden vs gradual drift
 fig, axes = plt.subplots(2, 2, figsize=(14, 10))
 
@@ -2535,12 +2533,12 @@ print("\n💡 Observation:")
 print("   - Sudden drift: ตรวจจับได้เร็วและชัดเจน")
 print("   - Gradual drift: ใช้เวลานานกว่าจะ detect ได้")
 
-#%% [markdown]
+# %% [markdown]
 # ## ส่วนที่ 5: Adaptive Reference Window
-# 
+#
 # ปรับ reference window เพื่อ handle gradual drift
 
-#%%
+# %%
 class AdaptiveDriftDetector:
     """
     Drift detector ที่ปรับ reference window อัตโนมัติ
@@ -2659,7 +2657,7 @@ class AdaptiveDriftDetector:
     def get_history_df(self):
         return pd.DataFrame(self.history)
 
-#%%
+# %%
 # ทดสอบ Adaptive Detector
 print("=" * 60)
 print("🔍 Testing ADAPTIVE Drift Detector with GRADUAL DRIFT")
@@ -2681,7 +2679,7 @@ for idx, row in gradual_stream.iterrows():
 print(f"\n📊 Total confirmed drifts: {len(adaptive_detector.confirmed_drifts)}")
 print(f"📊 Total adaptations: {adaptive_detector.adaptation_count}")
 
-#%%
+# %%
 # Visualize adaptive detection
 adaptive_history = adaptive_detector.get_history_df()
 
@@ -2721,12 +2719,12 @@ plt.show()
 print("\n💡 Adaptive detector ปรับ reference window เมื่อ detect drift")
 print("   ทำให้สามารถติดตาม gradual drift ได้ต่อเนื่อง")
 
-#%% [markdown]
+# %% [markdown]
 # ## ส่วนที่ 6: Page-Hinkley Test for Change Detection
-# 
+#
 # Algorithm สำหรับ detect mean shift ใน streaming data
 
-#%%
+# %%
 class PageHinkleyDetector:
     """
     Page-Hinkley test สำหรับ detect mean shift
@@ -2814,7 +2812,7 @@ class PageHinkleyDetector:
     def get_history_df(self):
         return pd.DataFrame(self.history)
 
-#%%
+# %%
 # ทดสอบ Page-Hinkley
 print("=" * 60)
 print("🔍 Testing PAGE-HINKLEY Detector")
@@ -2831,7 +2829,7 @@ for idx, row in sudden_stream.iterrows():
 
 print(f"\n📊 Total drifts detected: {len(ph_detector.drift_points)}")
 
-#%%
+# %%
 # Visualize Page-Hinkley results
 ph_history = ph_detector.get_history_df()
 
@@ -2865,15 +2863,15 @@ plt.tight_layout()
 plt.savefig('page_hinkley_detection.png', dpi=150, bbox_inches='tight')
 plt.show()
 
-#%% [markdown]
+# %% [markdown]
 # ## สรุป LAB 4
-# 
+#
 # ### สิ่งที่เรียนรู้:
 # 1. **Data Stream Simulation**: สร้าง streams ที่มี drift patterns ต่างๆ
 # 2. **Sliding Window**: วิธีมาตรฐานสำหรับ streaming drift detection
 # 3. **Adaptive Detection**: ปรับ reference window เมื่อ detect drift
 # 4. **Page-Hinkley**: Algorithm สำหรับ mean shift detection
-# 
+#
 # ### Comparison:
 # | Method | Pros | Cons | Best For |
 # |--------|------|------|----------|
@@ -2881,7 +2879,7 @@ plt.show()
 # | Adaptive | Handles gradual drift | More complex | Production |
 # | Page-Hinkley | Low memory, fast | Mean shift only | Real-time |
 
-#%%
+# %%
 print("=" * 60)
 print("✅ LAB 4 COMPLETED!")
 print("=" * 60)
@@ -2901,10 +2899,10 @@ print("""
 ## LAB 5: Custom Metrics & Drift Thresholds
 
 ```python
-#%% [markdown]
+# %% [markdown]
 # # LAB 5: Custom Metrics & Drift Thresholds
 # ## การสร้าง Custom Drift Metrics และปรับ Thresholds
-# 
+#
 # ### วัตถุประสงค์การเรียนรู้:
 # 1. สร้าง custom drift metrics ที่เหมาะกับ domain
 # 2. ปรับ threshold ตาม business requirements
@@ -2916,10 +2914,10 @@ print("""
 # - บาง domain ยอมรับ drift ได้ระดับหนึ่ง
 # - Cost of false positive vs false negative ต่างกัน
 
-#%% [markdown]
+# %% [markdown]
 # ## ส่วนที่ 1: เตรียม Environment
 
-#%%
+# %%
 import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt
@@ -2933,12 +2931,12 @@ plt.rcParams['figure.figsize'] = (12, 6)
 
 print("✅ Libraries imported successfully!")
 
-#%% [markdown]
+# %% [markdown]
 # ## ส่วนที่ 2: สร้าง Dataset สำหรับ Threshold Tuning
-# 
+#
 # สร้าง labeled dataset ที่รู้ว่ามี drift หรือไม่
 
-#%%
+# %%
 def create_labeled_drift_dataset(n_scenarios=100):
     """
     สร้าง dataset พร้อม ground truth labels
@@ -2992,7 +2990,7 @@ print(f"📊 Created {len(scenarios)} scenarios")
 print(f"   With drift: {sum(1 for s in scenarios if s['has_drift'])}")
 print(f"   Without drift: {sum(1 for s in scenarios if not s['has_drift'])}")
 
-#%%
+# %%
 # Visualize drift magnitude distribution
 drift_mags = [s['drift_magnitude'] for s in scenarios if s['has_drift']]
 plt.figure(figsize=(10, 4))
@@ -3002,10 +3000,10 @@ plt.ylabel('Count')
 plt.title('Distribution of Drift Magnitudes in Scenarios with Drift')
 plt.show()
 
-#%% [markdown]
+# %% [markdown]
 # ## ส่วนที่ 3: สร้าง Custom Drift Metrics
 
-#%%
+# %%
 class CustomDriftMetrics:
     """
     Class สำหรับคำนวณ custom drift metrics
@@ -3111,7 +3109,7 @@ class CustomDriftMetrics:
         
         return score
 
-#%%
+# %%
 # ทดสอบ custom metrics
 print("=" * 60)
 print("📊 Testing Custom Drift Metrics")
@@ -3138,12 +3136,12 @@ for s in test_scenarios:
 metrics_df = pd.DataFrame(metrics_results)
 print(metrics_df.to_string(index=False))
 
-#%% [markdown]
+# %% [markdown]
 # ## ส่วนที่ 4: Threshold Optimization
-# 
+#
 # หา optimal threshold โดยใช้ labeled data
 
-#%%
+# %%
 def calculate_metrics_for_threshold(scenarios, metric_func, threshold):
     """
     คำนวณ precision, recall, f1 สำหรับ threshold ที่กำหนด
@@ -3186,7 +3184,7 @@ def find_optimal_threshold(scenarios, metric_func, thresholds, optimize_for='f1'
     
     return results_df, optimal
 
-#%%
+# %%
 # หา optimal threshold สำหรับ PSI
 thresholds = np.linspace(0.01, 0.5, 50)
 
@@ -3204,7 +3202,7 @@ print(f"Precision: {psi_optimal['precision']:.3f}")
 print(f"Recall: {psi_optimal['recall']:.3f}")
 print(f"F1 Score: {psi_optimal['f1']:.3f}")
 
-#%%
+# %%
 # Visualize threshold optimization
 fig, axes = plt.subplots(1, 3, figsize=(15, 4))
 
@@ -3226,7 +3224,7 @@ plt.tight_layout()
 plt.savefig('threshold_optimization_psi.png', dpi=150, bbox_inches='tight')
 plt.show()
 
-#%%
+# %%
 # เปรียบเทียบ optimal thresholds ของแต่ละ metric
 print("=" * 60)
 print("📊 Comparing Optimal Thresholds for Different Metrics")
@@ -3254,12 +3252,12 @@ for name, func in metrics_funcs.items():
     print(f"  Optimal threshold: {optimal['threshold']:.3f}")
     print(f"  F1 Score: {optimal['f1']:.3f}")
 
-#%% [markdown]
+# %% [markdown]
 # ## ส่วนที่ 5: Business-driven Threshold Setting
-# 
+#
 # ปรับ threshold ตาม business requirements
 
-#%%
+# %%
 class BusinessDriftThreshold:
     """
     Class สำหรับกำหนด threshold ตาม business context
@@ -3295,7 +3293,7 @@ class BusinessDriftThreshold:
         optimal_idx = cost_df['cost'].idxmin()
         return cost_df, cost_df.iloc[optimal_idx]
 
-#%%
+# %%
 # เปรียบเทียบ threshold สำหรับ scenarios ต่างๆ
 print("=" * 60)
 print("📊 Business-driven Threshold Optimization")
@@ -3328,7 +3326,7 @@ cost_df_3, optimal_3 = balanced_cost.find_cost_optimal_threshold(
 print(f"   Optimal threshold: {optimal_3['threshold']:.3f}")
 print(f"   Total cost: {optimal_3['cost']:.0f}")
 
-#%%
+# %%
 # Visualize cost-based optimization
 fig, axes = plt.subplots(1, 3, figsize=(15, 4))
 
@@ -3358,10 +3356,10 @@ print("   - High FN cost → Lower threshold (detect more, accept false alarms)"
 print("   - High FP cost → Higher threshold (be more conservative)")
 print("   - Balanced → Somewhere in between")
 
-#%% [markdown]
+# %% [markdown]
 # ## ส่วนที่ 6: Handling False Positives/Negatives
 
-#%%
+# %%
 class RobustDriftDetector:
     """
     Drift detector ที่มี mechanisms สำหรับ handle FP/FN
@@ -3478,7 +3476,7 @@ class RobustDriftDetector:
         
         return evaluations
 
-#%%
+# %%
 # ทดสอบ RobustDriftDetector
 print("=" * 60)
 print("📊 Evaluating Robust Drift Detector")
@@ -3499,7 +3497,7 @@ for method, metrics in evaluations.items():
     print(f"  Recall: {metrics['recall']:.3f}")
     print(f"  F1 Score: {metrics['f1']:.3f}")
 
-#%%
+# %%
 # Visualize comparison
 fig, ax = plt.subplots(figsize=(10, 6))
 
@@ -3531,10 +3529,10 @@ plt.tight_layout()
 plt.savefig('detection_methods_comparison.png', dpi=150, bbox_inches='tight')
 plt.show()
 
-#%% [markdown]
+# %% [markdown]
 # ## ส่วนที่ 7: สรุปและ Best Practices
 
-#%%
+# %%
 print("=" * 70)
 print("📋 THRESHOLD SETTING BEST PRACTICES")
 print("=" * 70)
@@ -3573,16 +3571,16 @@ best_practices = """
 
 print(best_practices)
 
-#%% [markdown]
+# %% [markdown]
 # ## สรุป LAB 5
-# 
+#
 # ### สิ่งที่เรียนรู้:
 # 1. **Custom Metrics**: PSI, Wasserstein, Mean Shift, Combined Score
 # 2. **Threshold Optimization**: ใช้ labeled data หา optimal threshold
 # 3. **Cost-based Approach**: ปรับ threshold ตาม FP/FN costs
 # 4. **Robust Detection**: Ensemble + Confirmation mechanisms
 
-#%%
+# %%
 print("=" * 60)
 print("✅ LAB 5 COMPLETED!")
 print("=" * 60)
@@ -3603,10 +3601,10 @@ print("""
 ## LAB 6: End-to-End Monitoring Pipeline
 
 ```python
-#%% [markdown]
+# %% [markdown]
 # # LAB 6: End-to-End Monitoring Pipeline
 # ## สร้าง Pipeline สำหรับ Drift Monitoring แบบครบวงจร
-# 
+#
 # ### วัตถุประสงค์การเรียนรู้:
 # 1. รวมทุก components เข้าด้วยกัน
 # 2. สร้าง automated monitoring workflow
@@ -3620,10 +3618,10 @@ print("""
 # - Experiment tracking
 # - Dashboard และ reporting
 
-#%% [markdown]
+# %% [markdown]
 # ## ส่วนที่ 1: เตรียม Environment
 
-#%%
+# %%
 import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt
@@ -3653,10 +3651,10 @@ os.makedirs('monitoring_output', exist_ok=True)
 os.makedirs('monitoring_output/reports', exist_ok=True)
 os.makedirs('monitoring_output/alerts', exist_ok=True)
 
-#%% [markdown]
+# %% [markdown]
 # ## ส่วนที่ 2: สร้าง Data Classes และ Utilities
 
-#%%
+# %%
 from dataclasses import dataclass, field
 from typing import List, Dict, Optional, Callable
 from enum import Enum
@@ -3733,10 +3731,10 @@ class MonitoringConfig:
     alert_cooldown_minutes: int = 30
     features_to_monitor: List[str] = field(default_factory=list)
 
-#%% [markdown]
+# %% [markdown]
 # ## ส่วนที่ 3: สร้าง Core Monitoring Components
 
-#%%
+# %%
 class DriftCalculator:
     """
     Component สำหรับคำนวณ drift metrics
@@ -3778,7 +3776,7 @@ class DriftCalculator:
             return DriftType.MILD
         return DriftType.NONE
 
-#%%
+# %%
 class DataBuffer:
     """
     Buffer สำหรับเก็บ reference และ current data
@@ -3840,7 +3838,7 @@ class DataBuffer:
                 self.current_data[feature].clear()
         logger.info("Reference data updated with current window")
 
-#%%
+# %%
 class AlertManager:
     """
     Component สำหรับจัดการ alerts
@@ -3915,10 +3913,10 @@ class AlertManager:
         with open(filepath, 'w') as f:
             json.dump(alerts_data, f, indent=2)
 
-#%% [markdown]
+# %% [markdown]
 # ## ส่วนที่ 4: สร้าง Main Monitoring Pipeline
 
-#%%
+# %%
 class DriftMonitoringPipeline:
     """
     Main pipeline สำหรับ drift monitoring
@@ -4042,10 +4040,10 @@ class DriftMonitoringPipeline:
         
         logger.info(f"Results saved to {output_dir}")
 
-#%% [markdown]
+# %% [markdown]
 # ## ส่วนที่ 5: สร้าง Report Generator
 
-#%%
+# %%
 class ReportGenerator:
     """
     Component สำหรับสร้าง reports และ visualizations
@@ -4213,10 +4211,10 @@ class ReportGenerator:
         
         logger.info(f"HTML report saved to {output_path}")
 
-#%% [markdown]
+# %% [markdown]
 # ## ส่วนที่ 6: ทดสอบ Full Pipeline
 
-#%%
+# %%
 # สร้าง test data
 def generate_test_data(n_samples=5000):
     """สร้างข้อมูลทดสอบที่มี drift"""
@@ -4257,7 +4255,7 @@ test_data = generate_test_data(5000)
 print(f"📊 Test data shape: {test_data.shape}")
 print(test_data.head())
 
-#%%
+# %%
 # Visualize test data
 fig, axes = plt.subplots(3, 1, figsize=(14, 8), sharex=True)
 
@@ -4273,7 +4271,7 @@ axes[-1].set_xlabel('Time')
 plt.tight_layout()
 plt.show()
 
-#%%
+# %%
 # Configure และ run pipeline
 config = MonitoringConfig(
     reference_window_size=1000,
@@ -4310,7 +4308,7 @@ for i in range(0, len(remaining_data), batch_size):
             if r.drift_detected:
                 print(f"   ⚠️ {r.feature}: PSI={r.psi:.4f}, Type={r.drift_type.value}")
 
-#%%
+# %%
 # Generate summary
 print("\n" + "=" * 60)
 print("📊 FINAL SUMMARY REPORT")
@@ -4329,7 +4327,7 @@ for feature, data in summary['feature_summary'].items():
     print(f"    Drift Count: {data['drift_count']}/{data['total_checks']}")
     print(f"    Drift Rate: {data['drift_rate']:.1%}")
 
-#%%
+# %%
 # Generate reports
 report_generator = ReportGenerator(pipeline)
 
@@ -4344,10 +4342,10 @@ pipeline.save_results()
 
 print("\n✅ All reports generated and saved to monitoring_output/")
 
-#%% [markdown]
+# %% [markdown]
 # ## ส่วนที่ 7: Integration กับ MLflow (Optional)
 
-#%%
+# %%
 # Note: ส่วนนี้ต้อง install mlflow ก่อน: pip install mlflow
 
 try:
@@ -4427,9 +4425,9 @@ if MLFLOW_AVAILABLE:
     tracker.end_run()
     print("✅ Results logged to MLflow")
 
-#%% [markdown]
+# %% [markdown]
 # ## สรุป LAB 6
-# 
+#
 # ### สิ่งที่เรียนรู้:
 # 1. **Pipeline Architecture**: แยก components ชัดเจน
 # 2. **Data Classes**: ใช้ dataclasses สำหรับ type safety
@@ -4437,7 +4435,7 @@ if MLFLOW_AVAILABLE:
 # 4. **Report Generation**: HTML reports และ visualizations
 # 5. **MLflow Integration**: Track experiments
 
-#%%
+# %%
 print("=" * 60)
 print("✅ LAB 6 COMPLETED!")
 print("=" * 60)
@@ -4466,7 +4464,7 @@ print("""
 - Add A/B testing capabilities
 """)
 
-#%%
+# %%
 # Final cleanup and summary
 print("\n📁 Output files created:")
 for root, dirs, files in os.walk('monitoring_output'):
