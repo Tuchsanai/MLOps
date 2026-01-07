@@ -840,7 +840,9 @@ git status
 
 # ลองรัน - จะเกิด Error
 python train.py
+```
 
+```bash
 # 💡 กู้คืนไฟล์
 git restore train.py
 
