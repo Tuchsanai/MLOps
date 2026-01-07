@@ -897,14 +897,17 @@ git log --oneline
 
 #### ขั้นตอน 3.2: กู้คืนจาก commit เดิม
 
+##### หมายเหตุ code ด้านล่างเลือกใช้เพียง วิธีเดียว
 ```bash
-# หา commit hash ของเวอร์ชันที่ต้องการ
+# หา commit hash ของเวอร์ชันที่ต้องการ วิธี 1
 # แล้วกู้คืน
 git restore --source=<commit_hash> evaluate.py
 
-# หรือใช้ HEAD~N
+# หรือใช้ HEAD~N  วิธี 2
 git restore --source=HEAD~2 evaluate.py
+```
 
+```bash
 # Commit การเปลี่ยนแปลง
 git add evaluate.py
 git commit -m "revert: restore simple evaluation module"
