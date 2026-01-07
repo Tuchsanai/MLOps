@@ -936,7 +936,8 @@ cat data_prep.py
 ```bash
 # กู้คืนทุกไฟล์พร้อมกัน
 git restore .
-
+``` 
+```bash
 # ตรวจสอบ
 git status  # ควรเป็น clean
 python train.py  # ควรทำงานได้
