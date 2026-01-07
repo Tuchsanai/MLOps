@@ -925,7 +925,9 @@ git commit -m "revert: restore simple evaluation module"
 # เขียนทับไฟล์หลายไฟล์ (อุบัติเหตุ!)
 echo "# BROKEN!" > data_prep.py
 echo "# BROKEN!" > train.py
+```
 
+```bash
 # ตรวจสอบ
 git status
 cat data_prep.py
