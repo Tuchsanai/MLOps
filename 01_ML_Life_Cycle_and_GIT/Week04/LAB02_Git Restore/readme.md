@@ -636,7 +636,9 @@ if __name__ == "__main__":
     
     X_train, X_test, y_train, y_test = prepare_data(df)
 EOF
+```
 
+```bash
 # Commit
 git add data_prep.py
 git commit -m "feat: add data preparation module"
@@ -688,7 +690,9 @@ if __name__ == "__main__":
     model, scaler = train_model(X_train, y_train)
     save_model(model, scaler)
 EOF
+```
 
+```bash
 # Commit
 git add train.py
 git commit -m "feat: add model training module"
@@ -764,7 +768,9 @@ if __name__ == "__main__":
     metrics, y_pred = evaluate_model(model, scaler, X_test, y_test)
     print_evaluation_report(metrics, y_test, y_pred)
 EOF
+```
 
+```bash
 # Commit
 git add evaluate.py
 git commit -m "feat: add model evaluation module"
@@ -834,7 +840,9 @@ git status
 
 # ลองรัน - จะเกิด Error
 python train.py
+```
 
+```bash
 # 💡 กู้คืนไฟล์
 git restore train.py
 
@@ -863,10 +871,14 @@ git status
 ```bash
 # Unstage evaluate.py
 git restore --staged evaluate.py
+```
 
+```bash
 # Commit เฉพาะ data_prep.py
 git commit -m "feat: add feature engineering to data_prep"
+```
 
+```bash
 # กู้คืน evaluate.py กลับเป็นเวอร์ชันเดิม
 git restore evaluate.py
 ```
@@ -885,14 +897,17 @@ git log --oneline
 
 #### ขั้นตอน 3.2: กู้คืนจาก commit เดิม
 
+##### !!!!  (อ่าน )หมายเหตุ code ด้านล่างเลือกใช้เพียง วิธีเดียว 
 ```bash
-# หา commit hash ของเวอร์ชันที่ต้องการ
+# หา commit hash ของเวอร์ชันที่ต้องการ วิธี 1
 # แล้วกู้คืน
 git restore --source=<commit_hash> evaluate.py
 
-# หรือใช้ HEAD~N
+# หรือใช้ HEAD~N  วิธี 2
 git restore --source=HEAD~2 evaluate.py
+```
 
+```bash
 # Commit การเปลี่ยนแปลง
 git add evaluate.py
 git commit -m "revert: restore simple evaluation module"
@@ -910,7 +925,9 @@ git commit -m "revert: restore simple evaluation module"
 # เขียนทับไฟล์หลายไฟล์ (อุบัติเหตุ!)
 echo "# BROKEN!" > data_prep.py
 echo "# BROKEN!" > train.py
+```
 
+```bash
 # ตรวจสอบ
 git status
 cat data_prep.py
@@ -921,7 +938,8 @@ cat data_prep.py
 ```bash
 # กู้คืนทุกไฟล์พร้อมกัน
 git restore .
-
+``` 
+```bash
 # ตรวจสอบ
 git status  # ควรเป็น clean
 python train.py  # ควรทำงานได้

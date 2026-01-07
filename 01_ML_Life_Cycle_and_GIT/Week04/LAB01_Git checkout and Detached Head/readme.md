@@ -368,7 +368,10 @@ git log --oneline --graph --all
 ```bash
 # ดู commit hash ก่อน
 git log --oneline
+```
 
+
+```bash
 # checkout ไปที่ commit แรก (ใส่ hash ที่ได้จาก git log เช่น ghi9012)
 git checkout ghi9012
 ```
@@ -444,7 +447,9 @@ nothing to commit, working tree clean
 ```bash
 # ดูว่า HEAD ชี้ไปที่ไหน
 git log --oneline -1
+```
 
+```bash
 # ทดสอบรันโค้ด v1.0
 python train_model.py
 # จะเห็น Logistic Regression
@@ -500,7 +505,9 @@ EOF
 ```bash
 # ทดสอบการทดลอง
 python train_model.py
+```
 
+```bash
 # Commit การทดลอง
 git add train_model.py
 git commit -m "Experiment: Try saga solver"
