@@ -1,4 +1,4 @@
-1#%% [markdown]
+#%% [markdown]
 # 🔬 LAB: Model Monitoring with Scikit-Learn
 # การติดตามและเฝ้าระวังโมเดล Machine Learning
 

@@ -1,39 +1,39 @@
-1#%% [markdown]
+# %% [markdown]
 # 🔬 LAB: Model Monitoring with Scikit-Learn
 # การติดตามและเฝ้าระวังโมเดล Machine Learning
 
-#%% [markdown]
-## 📚 บทนำ (Introduction)
-# 
-# ### Model Monitoring คืออะไร?
-# 
-# **Model Monitoring** คือกระบวนการติดตามและเฝ้าระวังประสิทธิภาพของโมเดล Machine Learning 
+# %% [markdown]
+# 📚 บทนำ (Introduction)
+#
+# ## Model Monitoring คืออะไร?
+#
+# Model Monitoring คือกระบวนการติดตามและเฝ้าระวังประสิทธิภาพของโมเดล Machine Learning
 # หลังจากที่ได้ deploy ไปใช้งานจริง (Production) เพื่อให้มั่นใจว่าโมเดลยังคงทำงานได้อย่างถูกต้อง
-# 
-# ### ทำไมต้อง Monitor โมเดล?
-# 
-# 1. **Data Drift** - ข้อมูลในโลกจริงเปลี่ยนแปลงตลอดเวลา
-# 2. **Concept Drift** - ความสัมพันธ์ระหว่าง features และ target เปลี่ยนไป
-# 3. **Model Degradation** - ประสิทธิภาพโมเดลลดลงเมื่อเวลาผ่านไป
-# 4. **Data Quality Issues** - ปัญหาคุณภาพข้อมูล เช่น missing values, outliers
-# 
-# ### สิ่งที่จะเรียนรู้ใน LAB นี้
-# 
+#
+# ## ทำไมต้อง Monitor โมเดล?
+#
+# 1. Data Drift - ข้อมูลในโลกจริงเปลี่ยนแปลงตลอดเวลา
+# 2. Concept Drift - ความสัมพันธ์ระหว่าง features และ target เปลี่ยนไป
+# 3. Model Degradation - ประสิทธิภาพโมเดลลดลงเมื่อเวลาผ่านไป
+# 4. Data Quality Issues - ปัญหาคุณภาพข้อมูล เช่น missing values, outliers
+#
+# ## สิ่งที่จะเรียนรู้ใน LAB นี้
+#
 # - ✅ Data Quality Monitoring
 # - ✅ Model Performance Tracking
 # - ✅ Target Drift Detection
 # - ✅ Building Monitoring Dashboard
 
-#%% [markdown]
+# %% [markdown]
 # ---
-# ## 🛠️ Section 0: Environment Setup
-# ### การติดตั้งและเตรียมสภาพแวดล้อม
+# # 🛠️ Section 0: Environment Setup
+# ## การติดตั้งและเตรียมสภาพแวดล้อม
 
-#%%
+# %%
 # ติดตั้ง libraries ที่จำเป็น (รันครั้งเดียว)
 # !pip install scikit-learn pandas numpy matplotlib seaborn scipy
 
-#%%
+# %%
 # Import libraries ที่จำเป็น
 import numpy as np
 import pandas as pd
@@ -68,32 +68,32 @@ plt.rcParams['font.size'] = 10
 print("✅ Import libraries สำเร็จ!")
 print(f"📅 วันที่รัน: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}")
 
-#%% [markdown]
+# %% [markdown]
 # ---
-# ## 📊 Section 1: Data Quality Monitoring
-# ### การตรวจสอบคุณภาพข้อมูล
-# 
-# **ทฤษฎี:**
-# 
+# # 📊 Section 1: Data Quality Monitoring
+# ## การตรวจสอบคุณภาพข้อมูล
+#
+# ทฤษฎี:
+#
 # Data Quality Monitoring เป็นขั้นตอนแรกและสำคัญที่สุดในการ monitor โมเดล
 # เพราะ "Garbage In, Garbage Out" - ถ้าข้อมูลไม่ดี โมเดลก็ไม่สามารถทำนายได้ดี
-# 
-# **สิ่งที่ต้องตรวจสอบ:**
+#
+# สิ่งที่ต้องตรวจสอบ:
 # 1. Missing Values - ค่าที่หายไป
 # 2. Duplicates - ข้อมูลซ้ำ
 # 3. Data Types - ประเภทข้อมูล
 # 4. Value Ranges - ช่วงค่าของข้อมูล
 # 5. Outliers - ค่าผิดปกติ
 
-#%% [markdown]
-# ### 1.1 สร้างข้อมูลตัวอย่าง (Synthetic Data)
-# 
+# %% [markdown]
+# ## 1.1 สร้างข้อมูลตัวอย่าง (Synthetic Data)
+#
 # เราจะสร้างข้อมูลจำลองสำหรับปัญหา Credit Risk Classification
 # โดยมี 2 ชุด:
-# - **Reference Data** - ข้อมูลที่ใช้ train โมเดล (ข้อมูลในอดีต)
-# - **Current Data** - ข้อมูลใหม่ที่เข้ามา (ข้อมูลปัจจุบัน)
+# - Reference Data - ข้อมูลที่ใช้ train โมเดล (ข้อมูลในอดีต)
+# - Current Data - ข้อมูลใหม่ที่เข้ามา (ข้อมูลปัจจุบัน)
 
-#%%
+# %%
 def create_credit_data(n_samples=1000, seed=42, drift_level=0.0):
     """
     สร้างข้อมูล Credit Risk จำลอง
@@ -103,13 +103,13 @@ def create_credit_data(n_samples=1000, seed=42, drift_level=0.0):
     n_samples : int - จำนวนตัวอย่าง
     seed : int - random seed
     drift_level : float - ระดับ drift (0.0 = ไม่มี drift, 1.0 = drift มาก)
-    
+
     Returns:
     --------
     DataFrame - ข้อมูล credit risk
     """
     np.random.seed(seed)
-    
+
     # สร้าง features
     data = {
         'customer_id': range(1, n_samples + 1),
@@ -126,16 +126,16 @@ def create_credit_data(n_samples=1000, seed=42, drift_level=0.0):
         'employment_type': np.random.choice(['Full-time', 'Part-time', 'Self-employed', 'Unemployed'],
                                             n_samples, p=[0.6, 0.15, 0.2, 0.05])
     }
-    
+
     df = pd.DataFrame(data)
-    
+
     # จำกัดค่าให้อยู่ในช่วงที่เหมาะสม
     df['age'] = df['age'].clip(18, 80)
     df['credit_score'] = df['credit_score'].clip(300, 850)
     df['income'] = df['income'].clip(10000, 200000)
     df['loan_amount'] = df['loan_amount'].clip(1000, 100000)
     df['employment_years'] = df['employment_years'].clip(0, 40)
-    
+
     # สร้าง target (default: 1 = ผิดนัดชำระ, 0 = ไม่ผิดนัด)
     default_prob = (
         0.1 +
@@ -147,8 +147,9 @@ def create_credit_data(n_samples=1000, seed=42, drift_level=0.0):
     )
     default_prob = default_prob.clip(0.01, 0.99)
     df['default'] = (np.random.random(n_samples) < default_prob).astype(int)
-    
+
     return df
+
 
 # สร้าง Reference Data (ข้อมูลในอดีต - ไม่มี drift)
 print("📊 กำลังสร้างข้อมูลตัวอย่าง...")
@@ -163,7 +164,7 @@ print(f"✅ Current Data: {len(current_data)} rows")
 print("\n📋 ตัวอย่าง Reference Data:")
 reference_data.head()
 
-#%%
+# %%
 # แสดงข้อมูลเบื้องต้น
 print("=" * 60)
 print("📊 REFERENCE DATA INFO")
@@ -172,12 +173,12 @@ print(f"Shape: {reference_data.shape}")
 print(f"\nData Types:\n{reference_data.dtypes}")
 print(f"\nTarget Distribution:\n{reference_data['default'].value_counts(normalize=True)}")
 
-#%% [markdown]
-# ### 1.2 สร้าง Data Quality Report Class
-# 
+# %% [markdown]
+# ## 1.2 สร้าง Data Quality Report Class
+#
 # เราจะสร้าง class สำหรับตรวจสอบคุณภาพข้อมูลอย่างครบถ้วน
 
-#%%
+# %%
 class DataQualityMonitor:
     """
     Class สำหรับตรวจสอบคุณภาพข้อมูล
@@ -188,7 +189,7 @@ class DataQualityMonitor:
     - วิเคราะห์ data integrity
     - สร้าง quality report
     """
-    
+
     def __init__(self, data, data_name="Data"):
         """
         Parameters:
@@ -221,7 +222,7 @@ class DataQualityMonitor:
         }
         
         return missing_df
-    
+
     def check_duplicates(self):
         """ตรวจสอบข้อมูลซ้ำ"""
         # ตรวจสอบ duplicate rows ทั้งหมด
@@ -243,7 +244,7 @@ class DataQualityMonitor:
         }
         
         return self.report['duplicates']
-    
+
     def check_data_types(self):
         """ตรวจสอบประเภทข้อมูล"""
         dtypes_df = pd.DataFrame({
@@ -264,7 +265,7 @@ class DataQualityMonitor:
         }
         
         return dtypes_df
-    
+
     def check_value_ranges(self):
         """ตรวจสอบช่วงค่าของข้อมูล numeric"""
         numeric_cols = self.data.select_dtypes(include=[np.number]).columns
@@ -285,7 +286,7 @@ class DataQualityMonitor:
         
         self.report['value_ranges'] = range_stats
         return pd.DataFrame(range_stats)
-    
+
     def detect_outliers(self, method='iqr', threshold=1.5):
         """
         ตรวจหา outliers ด้วยวิธี IQR
@@ -323,7 +324,7 @@ class DataQualityMonitor:
         
         self.report['outliers'] = outlier_info
         return pd.DataFrame(outlier_info)
-    
+
     def generate_full_report(self):
         """สร้าง report ฉบับเต็ม"""
         print("=" * 70)
@@ -397,28 +398,27 @@ class DataQualityMonitor:
         
         return self.report
 
-#%%
+
+# %%
 # ทดสอบ Data Quality Monitor กับ Reference Data
 print("🔍 ตรวจสอบคุณภาพ Reference Data")
 print()
-
 ref_monitor = DataQualityMonitor(reference_data, "Reference Data")
 ref_report = ref_monitor.generate_full_report()
 
-#%%
+# %%
 # ทดสอบกับ Current Data
 print("\n🔍 ตรวจสอบคุณภาพ Current Data")
 print()
-
 curr_monitor = DataQualityMonitor(current_data, "Current Data")
 curr_report = curr_monitor.generate_full_report()
 
-#%% [markdown]
-# ### 1.3 จำลองข้อมูลที่มีปัญหาคุณภาพ
-# 
+# %% [markdown]
+# ## 1.3 จำลองข้อมูลที่มีปัญหาคุณภาพ
+#
 # เพื่อทดสอบระบบ monitoring เราจะสร้างข้อมูลที่มีปัญหาคุณภาพ
 
-#%%
+# %%
 def introduce_data_quality_issues(data, missing_rate=0.05, duplicate_rate=0.02):
     """
     เพิ่มปัญหาคุณภาพข้อมูลเพื่อทดสอบระบบ
@@ -431,23 +431,24 @@ def introduce_data_quality_issues(data, missing_rate=0.05, duplicate_rate=0.02):
     """
     df = data.copy()
     n_rows = len(df)
-    
+
     # เพิ่ม missing values
     missing_cols = ['income', 'credit_score', 'employment_years']
     for col in missing_cols:
         missing_idx = np.random.choice(n_rows, int(n_rows * missing_rate), replace=False)
         df.loc[missing_idx, col] = np.nan
-    
+
     # เพิ่ม duplicates
     n_duplicates = int(n_rows * duplicate_rate)
     duplicate_rows = df.sample(n=n_duplicates, random_state=42)
     df = pd.concat([df, duplicate_rows], ignore_index=True)
-    
+
     # เพิ่ม outliers
     outlier_idx = np.random.choice(len(df), 20, replace=False)
     df.loc[outlier_idx, 'income'] = df.loc[outlier_idx, 'income'] * 10  # รายได้สูงผิดปกติ
-    
+
     return df
+
 
 # สร้างข้อมูลที่มีปัญหา
 problematic_data = introduce_data_quality_issues(current_data.copy())
@@ -458,19 +459,19 @@ print("\n🔍 ตรวจสอบข้อมูลที่มีปัญห
 problem_monitor = DataQualityMonitor(problematic_data, "Problematic Data")
 problem_report = problem_monitor.generate_full_report()
 
-#%% [markdown]
-# ### 1.4 Data Quality Alert System
-# 
+# %% [markdown]
+# ## 1.4 Data Quality Alert System
+#
 # ระบบแจ้งเตือนเมื่อคุณภาพข้อมูลต่ำกว่าเกณฑ์ที่กำหนด
 
-#%%
+# %%
 class DataQualityAlert:
     """
     ระบบแจ้งเตือนคุณภาพข้อมูล
     
     ตั้งค่า threshold และแจ้งเตือนเมื่อเกินค่าที่กำหนด
     """
-    
+
     def __init__(self):
         # Default thresholds
         self.thresholds = {
@@ -479,13 +480,13 @@ class DataQualityAlert:
             'outlier_rate': 0.05       # ไม่เกิน 5% outliers
         }
         self.alerts = []
-    
+
     def set_threshold(self, metric, value):
         """ตั้งค่า threshold"""
         if metric in self.thresholds:
             self.thresholds[metric] = value
             print(f"✅ ตั้งค่า {metric} threshold = {value}")
-    
+
     def check_alerts(self, data, data_name="Data"):
         """ตรวจสอบและสร้าง alerts"""
         self.alerts = []
@@ -537,7 +538,7 @@ class DataQualityAlert:
         self._display_alerts(data_name)
         
         return self.alerts
-    
+
     def _display_alerts(self, data_name):
         """แสดงผล alerts"""
         print("=" * 70)
@@ -558,7 +559,8 @@ class DataQualityAlert:
         
         print("=" * 70)
 
-#%%
+
+# %%
 # ทดสอบ Alert System
 alert_system = DataQualityAlert()
 
@@ -572,17 +574,17 @@ print("\n")
 print("🔍 ตรวจสอบ Problematic Data:")
 alerts_problem = alert_system.check_alerts(problematic_data, "Problematic Data")
 
-#%% [markdown]
-# ### 1.5 Visualization: Data Quality Dashboard
+# %% [markdown]
+# ## 1.5 Visualization: Data Quality Dashboard
 
-#%%
+# %%
 def plot_data_quality_summary(data, title="Data Quality Summary"):
     """
     สร้าง visualization สรุปคุณภาพข้อมูล
     """
     fig, axes = plt.subplots(2, 2, figsize=(14, 10))
     fig.suptitle(f'📊 {title}', fontsize=14, fontweight='bold')
-    
+
     # 1. Missing Values by Column
     ax1 = axes[0, 0]
     missing = data.isnull().sum()
@@ -595,7 +597,7 @@ def plot_data_quality_summary(data, title="Data Quality Summary"):
     else:
         ax1.text(0.5, 0.5, '✅ No Missing Values', ha='center', va='center', fontsize=12)
         ax1.set_title('Missing Values by Column')
-    
+
     # 2. Data Types Distribution
     ax2 = axes[0, 1]
     dtype_counts = data.dtypes.astype(str).value_counts()
@@ -603,7 +605,7 @@ def plot_data_quality_summary(data, title="Data Quality Summary"):
     dtype_counts.plot(kind='pie', ax=ax2, autopct='%1.1f%%', colors=colors)
     ax2.set_title('Data Types Distribution')
     ax2.set_ylabel('')
-    
+
     # 3. Numeric Columns Distribution (Box plots)
     ax3 = axes[1, 0]
     numeric_cols = data.select_dtypes(include=[np.number]).columns[:6]  # แสดงแค่ 6 columns
@@ -613,32 +615,32 @@ def plot_data_quality_summary(data, title="Data Quality Summary"):
         normalized.boxplot(ax=ax3)
         ax3.set_title('Numeric Columns Distribution (Normalized)')
         ax3.tick_params(axis='x', rotation=45)
-    
+
     # 4. Quality Score Gauge
     ax4 = axes[1, 1]
-    
+
     # คำนวณ quality score
     missing_score = max(0, 100 - (data.isnull().sum().sum() / (len(data) * len(data.columns)) * 100 * 10))
     duplicate_score = max(0, 100 - (data.duplicated().sum() / len(data) * 100 * 10))
     completeness_score = (1 - data.isnull().any(axis=1).sum() / len(data)) * 100
-    
+
     overall_score = (missing_score + duplicate_score + completeness_score) / 3
-    
+
     # สร้าง gauge chart ด้วย pie chart
     sizes = [overall_score, 100 - overall_score]
     colors_gauge = ['green' if overall_score >= 80 else 'orange' if overall_score >= 60 else 'red', 'lightgray']
     ax4.pie(sizes, colors=colors_gauge, startangle=90, counterclock=False)
-    
+
     # วาดวงกลมตรงกลาง
     centre_circle = plt.Circle((0, 0), 0.70, fc='white')
     ax4.add_patch(centre_circle)
     ax4.text(0, 0, f'{overall_score:.1f}%', ha='center', va='center', fontsize=20, fontweight='bold')
     ax4.text(0, -0.2, 'Quality Score', ha='center', va='center', fontsize=10)
     ax4.set_title('Overall Data Quality Score')
-    
+
     plt.tight_layout()
     plt.show()
-    
+
     return {
         'missing_score': missing_score,
         'duplicate_score': duplicate_score,
@@ -646,40 +648,41 @@ def plot_data_quality_summary(data, title="Data Quality Summary"):
         'overall_score': overall_score
     }
 
-#%%
+
+# %%
 # แสดง visualization สำหรับ Reference Data
 print("📊 Reference Data Quality Summary:")
 ref_scores = plot_data_quality_summary(reference_data, "Reference Data Quality Summary")
 
-#%%
+# %%
 # แสดง visualization สำหรับ Problematic Data
 print("📊 Problematic Data Quality Summary:")
 problem_scores = plot_data_quality_summary(problematic_data, "Problematic Data Quality Summary")
 
-#%% [markdown]
+# %% [markdown]
 # ---
-# ## 📈 Section 2: Model Performance Tracking
-# ### การติดตามประสิทธิภาพโมเดล
-# 
-# **ทฤษฎี:**
-# 
+# # 📈 Section 2: Model Performance Tracking
+# ## การติดตามประสิทธิภาพโมเดล
+#
+# ทฤษฎี:
+#
 # Model Performance Tracking คือการติดตามว่าโมเดลทำนายได้ดีแค่ไหนเมื่อเวลาผ่านไป
-# 
-# **Classification Metrics:**
-# - **Accuracy** - ความถูกต้องโดยรวม
-# - **Precision** - ความแม่นยำ (จากที่ทำนาย positive มีกี่ % ที่ถูก)
-# - **Recall** - ความครอบคลุม (จาก positive จริง ทำนายถูกกี่ %)
-# - **F1-Score** - ค่าเฉลี่ยฮาร์โมนิกของ Precision และ Recall
-# 
-# **Regression Metrics:**
-# - **MAE (Mean Absolute Error)** - ค่าเฉลี่ยความคลาดเคลื่อนสัมบูรณ์
-# - **RMSE (Root Mean Squared Error)** - รากของค่าเฉลี่ยความคลาดเคลื่อนกำลังสอง
-# - **R² (R-squared)** - สัดส่วนความแปรปรวนที่อธิบายได้
+#
+# Classification Metrics:
+# - Accuracy - ความถูกต้องโดยรวม
+# - Precision - ความแม่นยำ (จากที่ทำนาย positive มีกี่ % ที่ถูก)
+# - Recall - ความครอบคลุม (จาก positive จริง ทำนายถูกกี่ %)
+# - F1-Score - ค่าเฉลี่ยฮาร์โมนิกของ Precision และ Recall
+#
+# Regression Metrics:
+# - MAE (Mean Absolute Error) - ค่าเฉลี่ยความคลาดเคลื่อนสัมบูรณ์
+# - RMSE (Root Mean Squared Error) - รากของค่าเฉลี่ยความคลาดเคลื่อนกำลังสอง
+# - R² (R-squared) - สัดส่วนความแปรปรวนที่อธิบายได้
 
-#%% [markdown]
-# ### 2.1 เตรียมข้อมูลและ Train โมเดล
+# %% [markdown]
+# ## 2.1 เตรียมข้อมูลและ Train โมเดล
 
-#%%
+# %%
 def prepare_features(data, target_col='default'):
     """
     เตรียม features สำหรับ modeling
@@ -688,34 +691,35 @@ def prepare_features(data, target_col='default'):
     -----------
     data : DataFrame - ข้อมูลดิบ
     target_col : str - ชื่อ column ที่เป็น target
-    
+
     Returns:
     --------
     X : DataFrame - features
     y : Series - target
     """
     df = data.copy()
-    
+
     # ลบ columns ที่ไม่ใช้
     drop_cols = ['customer_id']
     df = df.drop(columns=[col for col in drop_cols if col in df.columns])
-    
+
     # แยก X และ y
     y = df[target_col]
     X = df.drop(columns=[target_col])
-    
+
     # Encode categorical columns
     categorical_cols = X.select_dtypes(include=['object']).columns
     for col in categorical_cols:
         le = LabelEncoder()
         X[col] = le.fit_transform(X[col].astype(str))
-    
+
     # Handle missing values
     X = X.fillna(X.median())
-    
+
     return X, y
 
-#%%
+
+# %%
 # เตรียมข้อมูล Reference
 X_ref, y_ref = prepare_features(reference_data)
 
@@ -730,7 +734,7 @@ print(f"\n📋 Features: {list(X_train.columns)}")
 print(f"\n📊 Target distribution (train):")
 print(y_train.value_counts(normalize=True))
 
-#%%
+# %%
 # Train โมเดล
 print("🔧 กำลัง train โมเดล Random Forest...")
 
@@ -758,17 +762,17 @@ y_prob_test = rf_model.predict_proba(X_test_scaled)[:, 1]
 print(f"\n📊 Training Accuracy: {accuracy_score(y_train, y_pred_train):.4f}")
 print(f"📊 Test Accuracy: {accuracy_score(y_test, y_pred_test):.4f}")
 
-#%% [markdown]
-# ### 2.2 สร้าง Model Performance Monitor Class
+# %% [markdown]
+# ## 2.2 สร้าง Model Performance Monitor Class
 
-#%%
+# %%
 class ModelPerformanceMonitor:
     """
     Class สำหรับติดตามประสิทธิภาพโมเดล
     
     รองรับทั้ง Classification และ Regression
     """
-    
+
     def __init__(self, model, model_name="Model"):
         """
         Parameters:
@@ -801,7 +805,7 @@ class ModelPerformanceMonitor:
         metrics['specificity'] = tn / (tn + fp) if (tn + fp) > 0 else 0
         
         return metrics
-    
+
     def calculate_regression_metrics(self, y_true, y_pred):
         """คำนวณ metrics สำหรับ regression"""
         metrics = {
@@ -812,7 +816,7 @@ class ModelPerformanceMonitor:
             'mape': np.mean(np.abs((y_true - y_pred) / (y_true + 1e-10))) * 100
         }
         return metrics
-    
+
     def set_baseline(self, y_true, y_pred, y_prob=None, task='classification'):
         """ตั้งค่า baseline metrics"""
         if task == 'classification':
@@ -827,7 +831,7 @@ class ModelPerformanceMonitor:
         self._print_metrics(self.baseline_metrics)
         
         return self.baseline_metrics
-    
+
     def evaluate(self, X, y_true, data_name="Current", task='classification'):
         """
         ประเมินประสิทธิภาพโมเดลกับข้อมูลใหม่
@@ -858,7 +862,7 @@ class ModelPerformanceMonitor:
         self._display_evaluation(current_metrics, comparison, data_name, task)
         
         return current_metrics, comparison
-    
+
     def _compare_with_baseline(self, current_metrics, task):
         """เปรียบเทียบกับ baseline"""
         if self.baseline_metrics is None:
@@ -896,7 +900,7 @@ class ModelPerformanceMonitor:
             }
         
         return comparison
-    
+
     def _print_metrics(self, metrics):
         """แสดง metrics"""
         for key, value in metrics.items():
@@ -905,7 +909,7 @@ class ModelPerformanceMonitor:
                     print(f"   {key}: {value:.4f}")
                 else:
                     print(f"   {key}: {value}")
-    
+
     def _display_evaluation(self, metrics, comparison, data_name, task):
         """แสดงผลการประเมิน"""
         print("=" * 70)
@@ -941,7 +945,8 @@ class ModelPerformanceMonitor:
         
         print("=" * 70)
 
-#%%
+
+# %%
 # สร้าง Performance Monitor
 perf_monitor = ModelPerformanceMonitor(rf_model, "Random Forest Credit Risk")
 
@@ -949,28 +954,28 @@ perf_monitor = ModelPerformanceMonitor(rf_model, "Random Forest Credit Risk")
 print("📊 ตั้งค่า Baseline Metrics:")
 baseline = perf_monitor.set_baseline(y_test, y_pred_test, y_prob_test, task='classification')
 
-#%%
+# %%
 # ประเมินกับ Current Data (ข้อมูลใหม่ที่มี drift)
 X_curr, y_curr = prepare_features(current_data)
 X_curr_scaled = scaler.transform(X_curr)
 
 print("\n📊 ประเมินกับ Current Data (มี Drift):")
 curr_metrics, comparison = perf_monitor.evaluate(
-    X_curr_scaled, y_curr, 
-    data_name="Current Data (with drift)", 
+    X_curr_scaled, y_curr,
+    data_name="Current Data (with drift)",
     task='classification'
 )
 
-#%% [markdown]
-# ### 2.3 จำลองการ Monitor หลายช่วงเวลา
+# %% [markdown]
+# ## 2.3 จำลองการ Monitor หลายช่วงเวลา
 
-#%%
+# %%
 def simulate_time_series_monitoring(model, scaler, n_periods=10):
     """
     จำลองการ monitor โมเดลข้ามหลายช่วงเวลา
     """
     performance_over_time = []
-    
+
     for period in range(n_periods):
         # สร้างข้อมูลจำลองแต่ละช่วงเวลา โดย drift เพิ่มขึ้นเรื่อยๆ
         drift_level = period * 0.05  # drift เพิ่มขึ้น 5% ต่อ period
@@ -1000,27 +1005,29 @@ def simulate_time_series_monitoring(model, scaler, n_periods=10):
         }
         
         performance_over_time.append(metrics)
-    
+
     return pd.DataFrame(performance_over_time)
 
-#%%
+
+# %%
 # จำลองการ monitor 10 ช่วงเวลา
 print("🔄 จำลองการ Monitor ข้ามหลายช่วงเวลา...")
 time_series_perf = simulate_time_series_monitoring(rf_model, scaler, n_periods=10)
+
 print("\n📊 Performance Over Time:")
 print(time_series_perf.to_string(index=False))
 
-#%% [markdown]
-# ### 2.4 Visualization: Performance Over Time
+# %% [markdown]
+# ## 2.4 Visualization: Performance Over Time
 
-#%%
+# %%
 def plot_performance_over_time(perf_df):
     """
     แสดงกราฟประสิทธิภาพโมเดลตามเวลา
     """
     fig, axes = plt.subplots(2, 2, figsize=(14, 10))
     fig.suptitle('📈 Model Performance Over Time', fontsize=14, fontweight='bold')
-    
+
     # 1. Main Metrics Over Time
     ax1 = axes[0, 0]
     metrics_to_plot = ['accuracy', 'precision', 'recall', 'f1']
@@ -1033,7 +1040,7 @@ def plot_performance_over_time(perf_df):
     ax1.set_ylim([0.5, 1.0])
     ax1.axhline(y=0.8, color='red', linestyle='--', alpha=0.5, label='Threshold')
     ax1.grid(True, alpha=0.3)
-    
+
     # 2. Accuracy vs Drift Level
     ax2 = axes[0, 1]
     ax2.scatter(perf_df['drift_level'], perf_df['accuracy'], s=100, c=perf_df['period'], cmap='viridis')
@@ -1041,13 +1048,13 @@ def plot_performance_over_time(perf_df):
     ax2.set_xlabel('Drift Level')
     ax2.set_ylabel('Accuracy')
     ax2.set_title('Accuracy vs Data Drift Level')
-    
+
     # เพิ่ม colorbar
     sm = plt.cm.ScalarMappable(cmap='viridis', norm=plt.Normalize(vmin=1, vmax=len(perf_df)))
     sm.set_array([])
     cbar = plt.colorbar(sm, ax=ax2)
     cbar.set_label('Period')
-    
+
     # 3. Default Rate Over Time
     ax3 = axes[1, 0]
     ax3.bar(perf_df['period'], perf_df['default_rate'], color='coral', alpha=0.7)
@@ -1057,14 +1064,14 @@ def plot_performance_over_time(perf_df):
     ax3.axhline(y=perf_df['default_rate'].iloc[0], color='green', linestyle='--', 
                 label=f"Baseline: {perf_df['default_rate'].iloc[0]:.2%}")
     ax3.legend()
-    
+
     # 4. Performance Degradation Alert
     ax4 = axes[1, 1]
-    
+
     # คำนวณ degradation จาก baseline
     baseline_accuracy = perf_df['accuracy'].iloc[0]
     degradation = (baseline_accuracy - perf_df['accuracy']) / baseline_accuracy * 100
-    
+
     colors = ['green' if d < 5 else 'orange' if d < 10 else 'red' for d in degradation]
     ax4.bar(perf_df['period'], degradation, color=colors, alpha=0.7)
     ax4.set_xlabel('Time Period')
@@ -1073,16 +1080,16 @@ def plot_performance_over_time(perf_df):
     ax4.axhline(y=5, color='orange', linestyle='--', alpha=0.7, label='Warning (5%)')
     ax4.axhline(y=10, color='red', linestyle='--', alpha=0.7, label='Critical (10%)')
     ax4.legend()
-    
+
     plt.tight_layout()
     plt.show()
-    
+
     # สรุปผล
     print("\n📊 Performance Summary:")
     print(f"   Baseline Accuracy: {baseline_accuracy:.4f}")
     print(f"   Final Accuracy: {perf_df['accuracy'].iloc[-1]:.4f}")
     print(f"   Total Degradation: {degradation.iloc[-1]:.2f}%")
-    
+
     if degradation.iloc[-1] > 10:
         print("   🔴 Status: CRITICAL - ต้อง retrain โมเดล!")
     elif degradation.iloc[-1] > 5:
@@ -1090,22 +1097,23 @@ def plot_performance_over_time(perf_df):
     else:
         print("   🟢 Status: HEALTHY - โมเดลทำงานปกติ")
 
-#%%
+
+# %%
 # แสดงกราฟ
 plot_performance_over_time(time_series_perf)
 
-#%% [markdown]
-# ### 2.5 Confusion Matrix Visualization
+# %% [markdown]
+# ## 2.5 Confusion Matrix Visualization
 
-#%%
-def plot_confusion_matrix_comparison(y_true_baseline, y_pred_baseline, 
+# %%
+def plot_confusion_matrix_comparison(y_true_baseline, y_pred_baseline,
                                       y_true_current, y_pred_current):
     """
     เปรียบเทียบ Confusion Matrix ระหว่าง Baseline และ Current
     """
     fig, axes = plt.subplots(1, 2, figsize=(12, 5))
     fig.suptitle('📊 Confusion Matrix Comparison', fontsize=14, fontweight='bold')
-    
+
     # Baseline
     cm_baseline = confusion_matrix(y_true_baseline, y_pred_baseline)
     sns.heatmap(cm_baseline, annot=True, fmt='d', cmap='Blues', ax=axes[0],
@@ -1114,7 +1122,7 @@ def plot_confusion_matrix_comparison(y_true_baseline, y_pred_baseline,
     axes[0].set_title('Baseline (Test Data)')
     axes[0].set_xlabel('Predicted')
     axes[0].set_ylabel('Actual')
-    
+
     # Current
     cm_current = confusion_matrix(y_true_current, y_pred_current)
     sns.heatmap(cm_current, annot=True, fmt='d', cmap='Oranges', ax=axes[1],
@@ -1123,40 +1131,41 @@ def plot_confusion_matrix_comparison(y_true_baseline, y_pred_baseline,
     axes[1].set_title('Current Data (with Drift)')
     axes[1].set_xlabel('Predicted')
     axes[1].set_ylabel('Actual')
-    
+
     plt.tight_layout()
     plt.show()
 
-#%%
+
+# %%
 # ทำนาย current data
 y_pred_curr = rf_model.predict(X_curr_scaled)
 
 # แสดง confusion matrix comparison
 plot_confusion_matrix_comparison(y_test, y_pred_test, y_curr, y_pred_curr)
 
-#%% [markdown]
+# %% [markdown]
 # ---
-# ## 🎯 Section 3: Target Drift Detection
-# ### การตรวจจับการเปลี่ยนแปลงของ Target Distribution
-# 
-# **ทฤษฎี:**
-# 
-# **Target Drift** (หรือ Concept Drift) คือการเปลี่ยนแปลงของ distribution ของ target variable
-# 
-# **ประเภทของ Drift:**
-# 1. **Sudden Drift** - เปลี่ยนแปลงอย่างกะทันหัน
-# 2. **Gradual Drift** - เปลี่ยนแปลงทีละน้อย
-# 3. **Recurring Drift** - เปลี่ยนแปลงเป็นรอบ (เช่น seasonal)
-# 
-# **วิธีการตรวจจับ:**
-# 1. **Statistical Tests** - Chi-square, KS test, PSI
-# 2. **Distribution Comparison** - เปรียบเทียบ histogram
-# 3. **Threshold-based Alerts** - แจ้งเตือนเมื่อเกินค่าที่กำหนด
+# # 🎯 Section 3: Target Drift Detection
+# ## การตรวจจับการเปลี่ยนแปลงของ Target Distribution
+#
+# ทฤษฎี:
+#
+# Target Drift (หรือ Concept Drift) คือการเปลี่ยนแปลงของ distribution ของ target variable
+#
+# ประเภทของ Drift:
+# 1. Sudden Drift - เปลี่ยนแปลงอย่างกะทันหัน
+# 2. Gradual Drift - เปลี่ยนแปลงทีละน้อย
+# 3. Recurring Drift - เปลี่ยนแปลงเป็นรอบ (เช่น seasonal)
+#
+# วิธีการตรวจจับ:
+# 1. Statistical Tests - Chi-square, KS test, PSI
+# 2. Distribution Comparison - เปรียบเทียบ histogram
+# 3. Threshold-based Alerts - แจ้งเตือนเมื่อเกินค่าที่กำหนด
 
-#%% [markdown]
-# ### 3.1 สร้าง Drift Detection Class
+# %% [markdown]
+# ## 3.1 สร้าง Drift Detection Class
 
-#%%
+# %%
 class DriftDetector:
     """
     Class สำหรับตรวจจับ Data Drift และ Target Drift
@@ -1167,7 +1176,7 @@ class DriftDetector:
     - Population Stability Index (PSI)
     - Wasserstein Distance
     """
-    
+
     def __init__(self, reference_data, reference_name="Reference"):
         """
         Parameters:
@@ -1193,7 +1202,7 @@ class DriftDetector:
             'p_value': p_value,
             'drift_detected': p_value < 0.05
         }
-    
+
     def chi_square_test(self, reference_col, current_col):
         """
         Chi-Square Test สำหรับ categorical variables
@@ -1219,7 +1228,7 @@ class DriftDetector:
             'degrees_of_freedom': dof,
             'drift_detected': p_value < 0.05
         }
-    
+
     def calculate_psi(self, reference_col, current_col, bins=10):
         """
         Population Stability Index (PSI)
@@ -1252,7 +1261,7 @@ class DriftDetector:
             'interpretation': 'No Drift' if psi < 0.1 else 'Slight Drift' if psi < 0.25 else 'Significant Drift',
             'drift_detected': psi >= 0.1
         }
-    
+
     def wasserstein_distance_test(self, reference_col, current_col):
         """
         Wasserstein Distance (Earth Mover's Distance)
@@ -1269,7 +1278,7 @@ class DriftDetector:
             'normalized_distance': normalized_distance,
             'drift_detected': normalized_distance > 0.1
         }
-    
+
     def detect_feature_drift(self, current_data, columns=None):
         """
         ตรวจจับ drift สำหรับทุก features
@@ -1312,7 +1321,7 @@ class DriftDetector:
         
         self.drift_results['feature_drift'] = results
         return pd.DataFrame(results)
-    
+
     def detect_target_drift(self, current_data, target_col):
         """
         ตรวจจับ Target Drift โดยเฉพาะ
@@ -1352,7 +1361,7 @@ class DriftDetector:
         
         self.drift_results['target_drift'] = result
         return result
-    
+
     def generate_drift_report(self, current_data, target_col=None):
         """
         สร้าง Drift Report ฉบับเต็ม
@@ -1414,7 +1423,8 @@ class DriftDetector:
             'target_drift': self.drift_results.get('target_drift')
         }
 
-#%%
+
+# %%
 # ทดสอบ Drift Detection
 print("🔍 ตรวจจับ Drift ระหว่าง Reference และ Current Data:")
 print()
@@ -1422,10 +1432,10 @@ print()
 drift_detector = DriftDetector(reference_data, "Reference Data")
 drift_report = drift_detector.generate_drift_report(current_data, target_col='default')
 
-#%% [markdown]
-# ### 3.2 Visualization: Drift Analysis
+# %% [markdown]
+# ## 3.2 Visualization: Drift Analysis
 
-#%%
+# %%
 def plot_drift_analysis(reference_data, current_data, columns_to_plot=None, target_col='default'):
     """
     Visualization สำหรับ Drift Analysis
@@ -1433,19 +1443,19 @@ def plot_drift_analysis(reference_data, current_data, columns_to_plot=None, targ
     if columns_to_plot is None:
         numeric_cols = reference_data.select_dtypes(include=[np.number]).columns
         columns_to_plot = [col for col in numeric_cols if col != target_col][:6]
-    
+
     n_cols = min(len(columns_to_plot), 3)
     n_rows = (len(columns_to_plot) + n_cols - 1) // n_cols
-    
+
     fig, axes = plt.subplots(n_rows, n_cols, figsize=(5*n_cols, 4*n_rows))
     fig.suptitle('📊 Feature Distribution Comparison: Reference vs Current', 
                  fontsize=14, fontweight='bold')
-    
+
     if n_rows == 1:
         axes = [axes] if n_cols == 1 else axes
     else:
         axes = axes.flatten()
-    
+
     for idx, col in enumerate(columns_to_plot):
         ax = axes[idx] if isinstance(axes, (list, np.ndarray)) else axes
         
@@ -1464,57 +1474,58 @@ def plot_drift_analysis(reference_data, current_data, columns_to_plot=None, targ
         # เพิ่มสี background ตาม drift status
         if ks_pval < 0.05:
             ax.set_facecolor('#ffcccc')  # สีแดงอ่อนถ้ามี drift
-    
+
     # ซ่อน axes ที่ไม่ใช้
     for idx in range(len(columns_to_plot), len(axes)):
         axes[idx].set_visible(False)
-    
+
     plt.tight_layout()
     plt.show()
 
-#%%
+
+# %%
 # แสดง Feature Distribution Comparison
 plot_drift_analysis(reference_data, current_data, target_col='default')
 
-#%%
+# %%
 def plot_target_drift(reference_data, current_data, target_col='default'):
     """
     Visualization สำหรับ Target Drift
     """
     fig, axes = plt.subplots(1, 3, figsize=(15, 5))
     fig.suptitle('🎯 Target Drift Analysis', fontsize=14, fontweight='bold')
-    
+
     # 1. Distribution Comparison
     ax1 = axes[0]
     ref_counts = reference_data[target_col].value_counts(normalize=True)
     curr_counts = current_data[target_col].value_counts(normalize=True)
-    
+
     x = np.arange(len(ref_counts))
     width = 0.35
-    
+
     ax1.bar(x - width/2, ref_counts.values, width, label='Reference', color='blue', alpha=0.7)
     ax1.bar(x + width/2, curr_counts.values, width, label='Current', color='orange', alpha=0.7)
-    
+
     ax1.set_xlabel('Target Value')
     ax1.set_ylabel('Proportion')
     ax1.set_title('Target Distribution Comparison')
     ax1.set_xticks(x)
     ax1.set_xticklabels(['No Default (0)', 'Default (1)'])
     ax1.legend()
-    
+
     # เพิ่ม % labels
     for i, (ref_v, curr_v) in enumerate(zip(ref_counts.values, curr_counts.values)):
         ax1.text(i - width/2, ref_v + 0.01, f'{ref_v:.1%}', ha='center', fontsize=9)
         ax1.text(i + width/2, curr_v + 0.01, f'{curr_v:.1%}', ha='center', fontsize=9)
-    
+
     # 2. Cumulative Distribution
     ax2 = axes[1]
     ref_sorted = np.sort(reference_data[target_col])
     curr_sorted = np.sort(current_data[target_col])
-    
+
     ref_cdf = np.arange(1, len(ref_sorted) + 1) / len(ref_sorted)
     curr_cdf = np.arange(1, len(curr_sorted) + 1) / len(curr_sorted)
-    
+
     ax2.plot(ref_sorted, ref_cdf, label='Reference', color='blue')
     ax2.plot(curr_sorted, curr_cdf, label='Current', color='orange')
     ax2.set_xlabel('Target Value')
@@ -1522,58 +1533,59 @@ def plot_target_drift(reference_data, current_data, target_col='default'):
     ax2.set_title('Cumulative Distribution Function (CDF)')
     ax2.legend()
     ax2.grid(True, alpha=0.3)
-    
+
     # 3. Drift Summary
     ax3 = axes[2]
     ax3.axis('off')
-    
+
     # คำนวณ metrics
     ref_mean = reference_data[target_col].mean()
     curr_mean = current_data[target_col].mean()
     change = curr_mean - ref_mean
     change_pct = (change / ref_mean) * 100 if ref_mean != 0 else 0
-    
+
     # Chi-square test
     contingency = np.array([
         [reference_data[target_col].sum(), len(reference_data) - reference_data[target_col].sum()],
         [current_data[target_col].sum(), len(current_data) - current_data[target_col].sum()]
     ])
     chi2, p_value, _, _ = chi2_contingency(contingency)
-    
+
     summary_text = f"""
-    📊 TARGET DRIFT SUMMARY
-    ─────────────────────────────
-    
-    Reference Default Rate: {ref_mean:.2%}
-    Current Default Rate:   {curr_mean:.2%}
-    
-    Absolute Change: {change:+.2%}
-    Relative Change: {change_pct:+.1f}%
-    
-    ─────────────────────────────
-    Statistical Test (Chi-Square):
-    Chi² Statistic: {chi2:.4f}
-    P-value: {p_value:.4f}
-    
-    ─────────────────────────────
-    Status: {'🔴 DRIFT DETECTED' if p_value < 0.05 else '🟢 NO SIGNIFICANT DRIFT'}
-    """
-    
+📊 TARGET DRIFT SUMMARY
+─────────────────────────────
+
+Reference Default Rate: {ref_mean:.2%}
+Current Default Rate:   {curr_mean:.2%}
+
+Absolute Change: {change:+.2%}
+Relative Change: {change_pct:+.1f}%
+
+─────────────────────────────
+Statistical Test (Chi-Square):
+Chi² Statistic: {chi2:.4f}
+P-value: {p_value:.4f}
+
+─────────────────────────────
+Status: {'🔴 DRIFT DETECTED' if p_value < 0.05 else '🟢 NO SIGNIFICANT DRIFT'}
+"""
+
     ax3.text(0.1, 0.5, summary_text, transform=ax3.transAxes, 
              fontsize=11, verticalalignment='center', fontfamily='monospace',
              bbox=dict(boxstyle='round', facecolor='wheat', alpha=0.5))
-    
+
     plt.tight_layout()
     plt.show()
 
-#%%
+
+# %%
 # แสดง Target Drift Analysis
 plot_target_drift(reference_data, current_data, target_col='default')
 
-#%% [markdown]
-# ### 3.3 Prediction Drift Detection
+# %% [markdown]
+# ## 3.3 Prediction Drift Detection
 
-#%%
+# %%
 def detect_prediction_drift(model, scaler, reference_data, current_data, target_col='default'):
     """
     ตรวจจับ Prediction Drift
@@ -1582,26 +1594,26 @@ def detect_prediction_drift(model, scaler, reference_data, current_data, target_
     # เตรียมข้อมูล
     X_ref, _ = prepare_features(reference_data, target_col)
     X_curr, _ = prepare_features(current_data, target_col)
-    
+
     X_ref_scaled = scaler.transform(X_ref)
     X_curr_scaled = scaler.transform(X_curr)
-    
+
     # ทำนาย probability
     ref_proba = model.predict_proba(X_ref_scaled)[:, 1]
     curr_proba = model.predict_proba(X_curr_scaled)[:, 1]
-    
+
     # ทำนาย class
     ref_pred = model.predict(X_ref_scaled)
     curr_pred = model.predict(X_curr_scaled)
-    
+
     # Statistical tests
     ks_stat, ks_pval = ks_2samp(ref_proba, curr_proba)
     wasserstein = wasserstein_distance(ref_proba, curr_proba)
-    
+
     # Prediction distribution
     ref_positive_rate = ref_pred.mean()
     curr_positive_rate = curr_pred.mean()
-    
+
     print("=" * 70)
     print("🔮 PREDICTION DRIFT ANALYSIS")
     print("=" * 70)
@@ -1620,18 +1632,18 @@ def detect_prediction_drift(model, scaler, reference_data, current_data, target_
     print(f"   KS P-value: {ks_pval:.4f}")
     print(f"   Wasserstein Distance: {wasserstein:.4f}")
     print()
-    
+
     if ks_pval < 0.05:
         print("   🔴 Status: PREDICTION DRIFT DETECTED!")
     else:
         print("   🟢 Status: No significant prediction drift")
-    
+
     print("=" * 70)
-    
+
     # Visualization
     fig, axes = plt.subplots(1, 2, figsize=(14, 5))
     fig.suptitle('🔮 Prediction Drift Analysis', fontsize=14, fontweight='bold')
-    
+
     # 1. Probability Distribution
     ax1 = axes[0]
     ax1.hist(ref_proba, bins=50, alpha=0.5, label='Reference', color='blue', density=True)
@@ -1641,16 +1653,16 @@ def detect_prediction_drift(model, scaler, reference_data, current_data, target_
     ax1.set_title(f'Prediction Probability Distribution\nKS stat: {ks_stat:.3f}, p-value: {ks_pval:.4f}')
     ax1.legend()
     ax1.axvline(x=0.5, color='red', linestyle='--', alpha=0.5, label='Threshold')
-    
+
     # 2. Predicted Class Distribution
     ax2 = axes[1]
     categories = ['No Default', 'Default']
     ref_dist = [(ref_pred == 0).sum(), (ref_pred == 1).sum()]
     curr_dist = [(curr_pred == 0).sum(), (curr_pred == 1).sum()]
-    
+
     x = np.arange(len(categories))
     width = 0.35
-    
+
     ax2.bar(x - width/2, ref_dist, width, label='Reference', color='blue', alpha=0.7)
     ax2.bar(x + width/2, curr_dist, width, label='Current', color='orange', alpha=0.7)
     ax2.set_xlabel('Predicted Class')
@@ -1659,10 +1671,10 @@ def detect_prediction_drift(model, scaler, reference_data, current_data, target_
     ax2.set_xticks(x)
     ax2.set_xticklabels(categories)
     ax2.legend()
-    
+
     plt.tight_layout()
     plt.show()
-    
+
     return {
         'ks_statistic': ks_stat,
         'ks_pvalue': ks_pval,
@@ -1672,19 +1684,20 @@ def detect_prediction_drift(model, scaler, reference_data, current_data, target_
         'drift_detected': ks_pval < 0.05
     }
 
-#%%
+
+# %%
 # ตรวจจับ Prediction Drift
 prediction_drift = detect_prediction_drift(rf_model, scaler, reference_data, current_data)
 
-#%% [markdown]
-# ### 3.4 Drift Alert System
+# %% [markdown]
+# ## 3.4 Drift Alert System
 
-#%%
+# %%
 class DriftAlertSystem:
     """
     ระบบแจ้งเตือน Drift
     """
-    
+
     def __init__(self):
         self.thresholds = {
             'psi': 0.1,              # PSI threshold
@@ -1693,7 +1706,7 @@ class DriftAlertSystem:
             'prediction_change': 0.05  # Prediction rate change
         }
         self.alerts = []
-    
+
     def check_drift_alerts(self, drift_results, data_name="Current Data"):
         """
         ตรวจสอบและสร้าง alerts จากผลการตรวจจับ drift
@@ -1733,7 +1746,7 @@ class DriftAlertSystem:
         self._display_alerts(data_name)
         
         return self.alerts
-    
+
     def _display_alerts(self, data_name):
         """แสดงผล alerts"""
         print("=" * 70)
@@ -1759,37 +1772,38 @@ class DriftAlertSystem:
         
         print("=" * 70)
 
-#%%
+
+# %%
 # ทดสอบ Drift Alert System
 drift_alert = DriftAlertSystem()
 alerts = drift_alert.check_drift_alerts(drift_report, "Current Data")
 
-#%% [markdown]
+# %% [markdown]
 # ---
-# ## 📊 Section 4: Building Monitoring Dashboard
-# ### การสร้าง Dashboard สำหรับ Monitoring
-# 
-# **ทฤษฎี:**
-# 
+# # 📊 Section 4: Building Monitoring Dashboard
+# ## การสร้าง Dashboard สำหรับ Monitoring
+#
+# ทฤษฎี:
+#
 # Monitoring Dashboard รวมข้อมูลจากหลายแหล่งเพื่อให้เห็นภาพรวมของสถานะโมเดล
-# 
-# **องค์ประกอบสำคัญ:**
+#
+# องค์ประกอบสำคัญ:
 # 1. Data Quality Summary
 # 2. Model Performance Metrics
 # 3. Drift Detection Results
 # 4. Alert Summary
 # 5. Historical Trends
 
-#%% [markdown]
-# ### 4.1 สร้าง Comprehensive Dashboard Class
+# %% [markdown]
+# ## 4.1 สร้าง Comprehensive Dashboard Class
 
-#%%
+# %%
 class ModelMonitoringDashboard:
     """
     Dashboard สำหรับ Model Monitoring
     รวม Data Quality, Performance, และ Drift Detection
     """
-    
+
     def __init__(self, model, model_name="ML Model"):
         self.model = model
         self.model_name = model_name
@@ -1800,7 +1814,7 @@ class ModelMonitoringDashboard:
             'alerts': []
         }
         self.history = []
-    
+
     def run_full_monitoring(self, reference_data, current_data, target_col, scaler=None):
         """
         รัน monitoring ทั้งหมด
@@ -1875,7 +1889,7 @@ class ModelMonitoringDashboard:
         })
         
         return self.reports
-    
+
     def _generate_alerts(self):
         """สร้าง alerts จากผลการ monitoring"""
         self.reports['alerts'] = []
@@ -1934,7 +1948,7 @@ class ModelMonitoringDashboard:
                     'category': 'Drift',
                     'message': f"พบ Feature Drift ใน {len(drifted)} features"
                 })
-    
+
     def display_dashboard(self):
         """แสดง Dashboard"""
         print()
@@ -1989,7 +2003,7 @@ class ModelMonitoringDashboard:
         
         print("║")
         print("╚" + "═" * 78 + "╝")
-    
+
     def plot_dashboard(self):
         """สร้าง Visual Dashboard"""
         fig = plt.figure(figsize=(16, 12))
@@ -2113,7 +2127,7 @@ class ModelMonitoringDashboard:
         
         plt.tight_layout()
         plt.show()
-    
+
     def export_report(self, filename=None):
         """Export report เป็น dictionary"""
         if filename is None:
@@ -2142,9 +2156,11 @@ class ModelMonitoringDashboard:
         print(f"📄 Report exported: {filename}")
         return report
 
-#%%
+
+# %%
 # สร้างและรัน Dashboard
 print("🖥️ สร้าง Monitoring Dashboard...")
+
 dashboard = ModelMonitoringDashboard(rf_model, "Credit Risk Random Forest")
 
 # รัน Full Monitoring
@@ -2155,15 +2171,15 @@ reports = dashboard.run_full_monitoring(
     scaler=scaler
 )
 
-#%%
+# %%
 # แสดง Text Dashboard
 dashboard.display_dashboard()
 
-#%%
+# %%
 # แสดง Visual Dashboard
 dashboard.plot_dashboard()
 
-#%%
+# %%
 # Export Report
 exported_report = dashboard.export_report()
 print("\n📋 Exported Report Summary:")
@@ -2171,60 +2187,60 @@ for key, value in exported_report.items():
     if key != 'alerts':
         print(f"   {key}: {value}")
 
-#%% [markdown]
+# %% [markdown]
 # ---
-# ## 🎓 Section 5: สรุปและแนวทางปฏิบัติ
-# ### Summary and Best Practices
+# # 🎓 Section 5: สรุปและแนวทางปฏิบัติ
+# ## Summary and Best Practices
 
-#%% [markdown]
-# ### 5.1 สรุปสิ่งที่เรียนรู้
-# 
+# %% [markdown]
+# ## 5.1 สรุปสิ่งที่เรียนรู้
+#
 # ใน LAB นี้ เราได้เรียนรู้เกี่ยวกับ Model Monitoring ดังนี้:
-# 
-# #### 1. Data Quality Monitoring
+#
+# ### 1. Data Quality Monitoring
 # - ตรวจสอบ missing values, duplicates, outliers
 # - สร้าง quality scores และ alerts
 # - ใช้ threshold-based monitoring
-# 
-# #### 2. Model Performance Tracking
+#
+# ### 2. Model Performance Tracking
 # - ติดตาม classification metrics (Accuracy, Precision, Recall, F1)
 # - เปรียบเทียบ baseline vs current performance
 # - ตรวจจับ performance degradation
-# 
-# #### 3. Drift Detection
+#
+# ### 3. Drift Detection
 # - ใช้ statistical tests (KS, Chi-square, PSI)
 # - ตรวจจับ feature drift และ target drift
 # - สร้าง prediction drift analysis
-# 
-# #### 4. Monitoring Dashboard
+#
+# ### 4. Monitoring Dashboard
 # - รวม metrics ทั้งหมดใน single view
 # - สร้าง alerts และ recommendations
 # - Export reports สำหรับ stakeholders
 
-#%% [markdown]
-# ### 5.2 Best Practices สำหรับ Model Monitoring
-# 
-# 1. **กำหนด Baseline ที่ชัดเจน**
-#    - บันทึก performance metrics เมื่อ deploy
-#    - เก็บ reference data distribution
-# 
-# 2. **Monitor อย่างสม่ำเสมอ**
-#    - ตั้ง schedule สำหรับ monitoring (รายวัน/รายสัปดาห์)
-#    - Automate monitoring pipeline
-# 
-# 3. **ตั้ง Threshold ที่เหมาะสม**
-#    - ไม่ sensitive เกินไป (false alarms)
-#    - ไม่ loose เกินไป (miss real issues)
-# 
-# 4. **มี Action Plan**
-#    - กำหนดว่าจะทำอะไรเมื่อเกิด alert
-#    - Retrain strategy เมื่อ performance ต่ำกว่าเกณฑ์
-# 
-# 5. **Document Everything**
-#    - บันทึก monitoring results
-#    - Track model versions และ changes
+# %% [markdown]
+# ## 5.2 Best Practices สำหรับ Model Monitoring
+#
+# 1. กำหนด Baseline ที่ชัดเจน
+# - บันทึก performance metrics เมื่อ deploy
+# - เก็บ reference data distribution
+#
+# 2. Monitor อย่างสม่ำเสมอ
+# - ตั้ง schedule สำหรับ monitoring (รายวัน/รายสัปดาห์)
+# - Automate monitoring pipeline
+#
+# 3. ตั้ง Threshold ที่เหมาะสม
+# - ไม่ sensitive เกินไป (false alarms)
+# - ไม่ loose เกินไป (miss real issues)
+#
+# 4. มี Action Plan
+# - กำหนดว่าจะทำอะไรเมื่อเกิด alert
+# - Retrain strategy เมื่อ performance ต่ำกว่าเกณฑ์
+#
+# 5. Document Everything
+# - บันทึก monitoring results
+# - Track model versions และ changes
 
-#%%
+# %%
 # สรุป Code สำหรับ Quick Monitoring
 def quick_model_monitor(model, scaler, reference_data, current_data, target_col):
     """
@@ -2233,28 +2249,28 @@ def quick_model_monitor(model, scaler, reference_data, current_data, target_col)
     """
     print("🚀 Quick Model Monitoring")
     print("=" * 50)
-    
+
     # Prepare data
     X_ref, y_ref = prepare_features(reference_data, target_col)
     X_curr, y_curr = prepare_features(current_data, target_col)
-    
+
     X_ref_scaled = scaler.transform(X_ref)
     X_curr_scaled = scaler.transform(X_curr)
-    
+
     # Predictions
     y_pred_ref = model.predict(X_ref_scaled)
     y_pred_curr = model.predict(X_curr_scaled)
-    
+
     # Calculate metrics
     ref_acc = accuracy_score(y_ref, y_pred_ref)
     curr_acc = accuracy_score(y_curr, y_pred_curr)
     degradation = (ref_acc - curr_acc) / ref_acc * 100
-    
+
     # Target drift
     ref_rate = y_ref.mean()
     curr_rate = y_curr.mean()
     rate_change = abs(curr_rate - ref_rate)
-    
+
     # Print summary
     print(f"📊 Reference Accuracy: {ref_acc:.4f}")
     print(f"📊 Current Accuracy:   {curr_acc:.4f}")
@@ -2264,7 +2280,7 @@ def quick_model_monitor(model, scaler, reference_data, current_data, target_col)
     print(f"🎯 Current Target Rate:   {curr_rate:.2%}")
     print(f"📈 Rate Change:           {rate_change:.2%}")
     print()
-    
+
     # Status
     if degradation > 10 or rate_change > 0.1:
         print("🔴 Status: CRITICAL - Consider retraining!")
@@ -2272,9 +2288,9 @@ def quick_model_monitor(model, scaler, reference_data, current_data, target_col)
         print("🟡 Status: WARNING - Monitor closely")
     else:
         print("🟢 Status: HEALTHY - Model performing well")
-    
+
     print("=" * 50)
-    
+
     return {
         'reference_accuracy': ref_acc,
         'current_accuracy': curr_acc,
@@ -2284,25 +2300,26 @@ def quick_model_monitor(model, scaler, reference_data, current_data, target_col)
         'rate_change': rate_change
     }
 
-#%%
+
+# %%
 # ทดสอบ Quick Monitor
 print("\n📊 ทดสอบ Quick Model Monitor:")
 quick_results = quick_model_monitor(rf_model, scaler, reference_data, current_data, 'default')
 
-#%% [markdown]
-# ### 5.3 แบบฝึกหัด (Exercises)
-# 
+# %% [markdown]
+# ## 5.3 แบบฝึกหัด (Exercises)
+#
 # ลองทำแบบฝึกหัดต่อไปนี้เพื่อทดสอบความเข้าใจ:
-# 
-# 1. **Exercise 1**: เพิ่ม drift level เป็น 0.5 และ 0.7 แล้วดูผลกระทบต่อ performance
-# 
-# 2. **Exercise 2**: ปรับ threshold ของ alerts และดูว่า alerts เปลี่ยนแปลงอย่างไร
-# 
-# 3. **Exercise 3**: เพิ่ม metric ใหม่ เช่น AUC-ROC ใน performance monitoring
-# 
-# 4. **Exercise 4**: สร้าง monitoring สำหรับ regression model แทน classification
+#
+# 1. Exercise 1: เพิ่ม drift level เป็น 0.5 และ 0.7 แล้วดูผลกระทบต่อ performance
+#
+# 2. Exercise 2: ปรับ threshold ของ alerts และดูว่า alerts เปลี่ยนแปลงอย่างไร
+#
+# 3. Exercise 3: เพิ่ม metric ใหม่ เช่น AUC-ROC ใน performance monitoring
+#
+# 4. Exercise 4: สร้าง monitoring สำหรับ regression model แทน classification
 
-#%%
+# %%
 # Exercise 1: ทดสอบกับ drift level ที่สูงขึ้น
 print("📝 Exercise 1: ทดสอบกับ High Drift Data")
 print()
@@ -2311,36 +2328,36 @@ high_drift_data = create_credit_data(n_samples=1000, seed=456, drift_level=0.7)
 print("High Drift Data (drift_level=0.7):")
 quick_results_high = quick_model_monitor(rf_model, scaler, reference_data, high_drift_data, 'default')
 
-#%% [markdown]
+# %% [markdown]
 # ---
-# ## 🎉 จบ LAB: Model Monitoring with Scikit-Learn
-# 
-# ### สิ่งที่ได้เรียนรู้:
-# 
+# # 🎉 จบ LAB: Model Monitoring with Scikit-Learn
+#
+# ## สิ่งที่ได้เรียนรู้:
+#
 # 1. ✅ Data Quality Monitoring
-#    - ตรวจสอบ missing values, duplicates, outliers
-#    - สร้าง quality reports และ alerts
-# 
+# - ตรวจสอบ missing values, duplicates, outliers
+# - สร้าง quality reports และ alerts
+#
 # 2. ✅ Model Performance Tracking
-#    - ติดตาม classification/regression metrics
-#    - เปรียบเทียบ reference vs current performance
-# 
+# - ติดตาม classification/regression metrics
+# - เปรียบเทียบ reference vs current performance
+#
 # 3. ✅ Drift Detection
-#    - ใช้ statistical tests (KS, Chi-square, PSI)
-#    - ตรวจจับ feature drift และ target drift
-# 
+# - ใช้ statistical tests (KS, Chi-square, PSI)
+# - ตรวจจับ feature drift และ target drift
+#
 # 4. ✅ Monitoring Dashboard
-#    - สร้าง comprehensive dashboard
-#    - Generate alerts และ reports
-# 
-# ### ขั้นตอนถัดไป:
-# 
+# - สร้าง comprehensive dashboard
+# - Generate alerts และ reports
+#
+# ## ขั้นตอนถัดไป:
+#
 # - นำ monitoring ไปใช้กับ production model
 # - ตั้ง automated monitoring pipeline
 # - เชื่อมต่อกับ alerting system (email, Slack)
 # - สร้าง retraining pipeline เมื่อ performance ต่ำ
 
-#%%
+# %%
 print("🎉 จบ LAB: Model Monitoring with Scikit-Learn")
 print()
 print("ขอบคุณที่เรียนรู้ไปด้วยกัน!")
