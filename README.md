@@ -16,7 +16,7 @@
 | **CLO2** | ใช้ระบบควบคุมเวอร์ชัน (Git และ DVC) ในการจัดการโค้ดและข้อมูลของ ML Projects ได้ |
 | **CLO3** | ออกแบบและสร้าง Build Pipeline สำหรับนำเข้าข้อมูล สอนแบบจำลอง และทดสอบแบบจำลองได้ |
 | **CLO4** | บันทึกและจัดการ Experiment รวมถึงลงทะเบียนแบบจำลองด้วย MLflow ได้ |
-| **CLO5** | สร้าง Container ด้วย Docker และพัฒนา REST API ด้วย FastAPI สำหรับ Deploy แบบจำลองได้ |
+| **CLO5** | สร้าง Container ด้วย Docker และพัฒนา REST API สำหรับ Deploy แบบจำลองได้ |
 | **CLO6** | ตรวจสอบและวิเคราะห์ประสิทธิภาพของแบบจำลองที่ Deploy แล้วได้ |
 | **CLO7** | ตรวจจับ Data Drift และ Model Drift เพื่อกำกับควบคุมการใช้แบบจำลองได้ |
 
@@ -219,7 +219,7 @@
 - Access Control และ Permissions
 - Audit Logging และ Compliance
 
-**📌 CLO ที่เกี่ยวข้อง:** CLO4, CLO8
+**📌 CLO ที่เกี่ยวข้อง:** CLO4, CLO7
 
 ---
 
@@ -247,7 +247,7 @@
 - Unit Testing สำหรับ Model Service
 - Integration Testing Concepts
 
-**📌 CLO ที่เกี่ยวข้อง:** CLO4, CLO6
+**📌 CLO ที่เกี่ยวข้อง:** CLO4, CLO5
 
 ---
 
@@ -285,7 +285,7 @@
 - การรวม Multiple Metrics
 - Export และ Share Reports
 
-**📌 CLO ที่เกี่ยวข้อง:** CLO7, CLO8
+**📌 CLO ที่เกี่ยวข้อง:** CLO6, CLO7
 
 ---
 
@@ -315,7 +315,7 @@
 - Mahalanobis Distance
 - Dataset-level Drift
 
-**📌 CLO ที่เกี่ยวข้อง:** CLO7, CLO8
+**📌 CLO ที่เกี่ยวข้อง:** CLO6, CLO7
 
 ---
 
@@ -388,7 +388,7 @@
 - Multi-container Applications
 - Networking ระหว่าง Containers
 
-**📌 CLO ที่เกี่ยวข้อง:** CLO6
+**📌 CLO ที่เกี่ยวข้อง:** CLO5
 
 ---
 
@@ -418,7 +418,7 @@
 ### 5. Container Orchestration Intro
 - แนะนำ Kubernetes Concepts
 
-**📌 CLO ที่เกี่ยวข้อง:** CLO6
+**📌 CLO ที่เกี่ยวข้อง:** CLO5
 
 ---
 
@@ -446,7 +446,7 @@
 - Environment Variables Configuration
 - Health Checks สำหรับ API Container
 
-**📌 CLO ที่เกี่ยวข้อง:** CLO6
+**📌 CLO ที่เกี่ยวข้อง:** CLO5
 
 ---
 
@@ -506,23 +506,23 @@
 
 ## 📊 CLO-Week Mapping Matrix
 
-| Week | CLO1 | CLO2 | CLO3 | CLO4 | CLO5 | CLO6 | CLO7 | CLO8 |
-|:----:|:----:|:----:|:----:|:----:|:----:|:----:|:----:|:----:|
-| 1 | ✓ | ✓ | ✓ | | | | | |
-| 2 | | ✓ | ✓ | | | | | |
-| 3 | | ✓ | | | | | | |
-| 4 | | ✓ | ✓ | | | | | |
-| 5 | | | ✓ | ✓ | | | | |
-| 6 | | | | ✓ | | | | ✓ |
-| 7 | | | | ✓ | | ✓ | | |
-| 8 | | | | | | | ✓ | ✓ |
-| 9 | | | | | | | ✓ | ✓ |
-| 10 | | | | | ✓ | | | |
-| 11 | | | | | | ✓ | | |
-| 12 | | | | | | ✓ | | |
-| 13 | | | | | | ✓ | | |
-| 14 | | | | | ✓ | ✓ | | |
-| 15 | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ |
+| Week | CLO1 | CLO2 | CLO3 | CLO4 | CLO5 | CLO6 | CLO7 |
+|:----:|:----:|:----:|:----:|:----:|:----:|:----:|:----:|
+| 1 | ✓ | ✓ | ✓ | | | | |
+| 2 | | ✓ | ✓ | | | | |
+| 3 | | ✓ | | | | | |
+| 4 | | ✓ | ✓ | | | | |
+| 5 | | | ✓ | ✓ | | | |
+| 6 | | | | ✓ | | | ✓ |
+| 7 | | | | ✓ | ✓ | | |
+| 8 | | | | | | ✓ | ✓ |
+| 9 | | | | | | ✓ | ✓ |
+| 10 | | ✓ | ✓ | | | | |
+| 11 | | | | | ✓ | | |
+| 12 | | | | | ✓ | | |
+| 13 | | | | | ✓ | | |
+| 14 | ✓ | | | | ✓ | | |
+| 15 | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ |
 
 ---
 
