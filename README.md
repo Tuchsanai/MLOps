@@ -78,13 +78,6 @@
 - สิ่งที่ควร Track vs ไม่ควร Track
 - การเขียน Commit Message ที่ดี
 
-### 4. DVC (Data Version Control) ⭐
-- แนวคิด Data Versioning
-- ข้อจำกัดของ Git กับไฟล์ขนาดใหญ่
-- การติดตั้งและตั้งค่า DVC
-- คำสั่งพื้นฐาน: `dvc init`, `dvc add`, `dvc push/pull`
-- การเชื่อมต่อ Remote Storage (Google Drive, S3, GCS)
-
 **📌 CLO ที่เกี่ยวข้อง:** CLO2, CLO3
 
 ---
@@ -104,18 +97,12 @@
 - `tune/` branches สำหรับ Hyperparameter Tuning
 - `fix/` branches สำหรับแก้ไข Bug
 
-### 3. DVC Pipeline ⭐
-- การสร้าง DVC Pipeline ด้วย `dvc.yaml`
-- การกำหนด Stages และ Dependencies
-- `dvc repro` สำหรับ Reproduce Pipeline
-- การใช้ DVC กับ Git Branch
-
-### 4. Git Merge
+### 3. Git Merge
 - Fast-Forward Merge
 - 3-Way Merge
 - การแก้ไข Merge Conflicts
 
-### 5. Remote Repository
+### 4. Remote Repository
 - การ Push/Pull จาก Remote
 - การจัดการ Remote Branches
 - การตั้ง Upstream Tracking
@@ -329,11 +316,6 @@
 - Mahalanobis Distance
 - Dataset-level Drift
 
-### 5. Automated Monitoring Pipeline ⭐
-- การตั้งค่า Scheduled Monitoring
-- Alert Thresholds และ Notifications
-- Integration กับ CI/CD
-
 **📌 CLO ที่เกี่ยวข้อง:** CLO7, CLO8
 
 ---
@@ -342,9 +324,9 @@
 
 ---
 
-## Week 10: Google Cloud Platform สำหรับ MLOps
+## Week 10: Google Cloud Platform และ DVC สำหรับ MLOps
 
-> **วัตถุประสงค์:** ใช้งาน Google Cloud Platform สำหรับ ML Workloads
+> **วัตถุประสงค์:** ใช้งาน Google Cloud Platform และ DVC สำหรับ ML Workloads
 
 ### 1. GCP Overview
 - แนะนำ Google Cloud Platform
@@ -361,17 +343,19 @@
 - การ Upload/Download ข้อมูล
 - gsutil Commands
 
-### 4. Container Registry / Artifact Registry
-- การ Push Docker Images ไป GCP
-- การจัดการ Container Images
-- Version Control สำหรับ Containers
+### 4. DVC (Data Version Control)
+- แนวคิด Data Versioning
+- ข้อจำกัดของ Git กับไฟล์ขนาดใหญ่
+- การติดตั้งและตั้งค่า DVC
+- คำสั่งพื้นฐาน: `dvc init`, `dvc add`, `dvc push/pull`
 
-### 5. Cloud Run Basics
-- การ Deploy Container บน Cloud Run
-- Serverless Container Concepts
-- Auto-scaling และ Cost Optimization
+### 5. DVC กับ Google Cloud Storage
+- การเชื่อมต่อ DVC กับ GCS
+- การสร้าง DVC Pipeline ด้วย `dvc.yaml`
+- การกำหนด Stages และ Dependencies
+- `dvc repro` สำหรับ Reproduce Pipeline
 
-**📌 CLO ที่เกี่ยวข้อง:** CLO5
+**📌 CLO ที่เกี่ยวข้อง:** CLO2, CLO3, CLO5
 
 ---
 
@@ -421,7 +405,6 @@
 ### 2. ML Model Containerization
 - การ Package Model กับ Dependencies
 - Model Loading ใน Container
-- GPU Support กับ nvidia-docker
 
 ### 3. Container Testing
 - การทดสอบ Container Image
@@ -435,8 +418,6 @@
 
 ### 5. Container Orchestration Intro
 - แนะนำ Kubernetes Concepts
-- Docker Swarm Basics
-- When to use Orchestration
 
 **📌 CLO ที่เกี่ยวข้อง:** CLO6
 
@@ -451,33 +432,16 @@
 - Path Operations (GET, POST)
 - Request และ Response Models
 
-### 2. Pydantic สำหรับ Data Validation
-- การสร้าง Request/Response Schemas
-- Data Type Validation
-- Custom Validators
-
-### 3. ML Model Integration
+### 2. ML Model Integration
 - การ Load Model ใน FastAPI
-- Prediction Endpoint
-- Batch Prediction API
 
-### 4. API Documentation
-- Swagger UI (OpenAPI)
-- ReDoc
-- API Versioning
-
-### 5. Error Handling และ Logging
-- Exception Handling
-- Structured Logging
-- Request Logging
-
-### 6. Dockerize FastAPI Application
+### 3. Dockerize FastAPI Application
 - การเขียน Dockerfile สำหรับ FastAPI
 - การจัดการ Dependencies ใน Container
 - Multi-stage Build สำหรับ Production
 - การตั้งค่า Uvicorn ใน Docker
 
-### 7. Docker Compose สำหรับ ML Service
+### 4. Docker Compose สำหรับ ML Service
 - การเขียน docker-compose.yml
 - Volume Mounting สำหรับ Models
 - Environment Variables Configuration
@@ -493,28 +457,17 @@
 
 ### 1. Production-Ready API
 - Gunicorn/Uvicorn Configuration
-- CORS Settings
-- Rate Limiting
 
 ### 2. Application Testing
 - Unit Testing สำหรับ FastAPI
-- Integration Testing
-- Load Testing กับ Locust
 
 ### 3. Containerized Deployment
 - การ Dockerize FastAPI App
 - Docker Compose สำหรับ ML Service
 - Environment Configuration
 
-### 4. Deployment on Cloud
-- Deploy บน Cloud Run
-- Deploy บน Compute Engine
-- Cost Comparison และ Best Practices
-
-### 5. End-to-End Pipeline Review
+### 4. End-to-End Pipeline Review
 - การรวม Build, Deploy, Monitoring Pipeline
-- Best Practices และ Lessons Learned
-- Common Pitfalls และวิธีแก้ไข
 
 **📌 CLO ที่เกี่ยวข้อง:** CLO1, CLO5, CLO6
 
@@ -573,4 +526,3 @@
 | 15 | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ |
 
 ---
-
