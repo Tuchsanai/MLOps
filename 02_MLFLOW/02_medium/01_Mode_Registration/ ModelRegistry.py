@@ -308,7 +308,6 @@ mlflow.set_experiment("model-registry-lab")
 # %%
 # Train และลงทะเบียน Model Version 1 (RandomForest n=50)
 with mlflow.start_run(run_name="sklearn-rf-v1"):
-    
     # Hyperparameters
     n_estimators = 50
     max_depth = 5
@@ -358,6 +357,9 @@ with mlflow.start_run(run_name="sklearn-rf-v1"):
     print(f"📊 Accuracy: {accuracy:.4f}")
     print(f"📊 F1 Score: {f1:.4f}")
     print(f"🆔 Run ID: {sklearn_run_id_v1}")
+
+
+# %%
 
 # เพิ่ม Description และ Tags ให้ Registered Model (ทำครั้งเดียวหลังสร้าง Model แรก)
 client.update_registered_model(
@@ -442,6 +444,9 @@ with mlflow.start_run(run_name="sklearn-rf-v2"):
     print(f"📊 F1 Score: {f1:.4f}")
     print(f"🆔 Run ID: {sklearn_run_id_v2}")
 
+
+
+# %%
 # เพิ่ม Description และ Tags ให้ Version 2
 client.update_model_version(
     name=SKLEARN_MODEL_NAME,
@@ -675,39 +680,6 @@ print(f"   Run ID: {champion_version.run_id}")
 model_info = client.get_registered_model(SKLEARN_MODEL_NAME)
 print(f"\n📝 Aliases ของ '{SKLEARN_MODEL_NAME}':")
 print(f"   {model_info.aliases}")
-
-# %% [markdown]
-# ### 4.2 การใช้ Model Stages (Legacy - ยังใช้งานได้)
-#
-# **หมายเหตุ:** Model Stages (`Staging`, `Production`, `Archived`) ยังคงใช้งานได้
-# แต่ MLflow แนะนำให้ใช้ Aliases แทนในโปรเจกต์ใหม่
-
-# %%
-# ตัวอย่างการใช้ Stages (Legacy)
-# Uncomment เพื่อทดลอง
-
-# # เปลี่ยน Stage เป็น Staging
-# client.transition_model_version_stage(
-#     name=SKLEARN_MODEL_NAME,
-#     version="2",
-#     stage="Staging"
-# )
-
-# # เปลี่ยน Stage เป็น Production
-# client.transition_model_version_stage(
-#     name=SKLEARN_MODEL_NAME,
-#     version="3",
-#     stage="Production"
-# )
-
-# # เปลี่ยน Stage เป็น Archived
-# client.transition_model_version_stage(
-#     name=SKLEARN_MODEL_NAME,
-#     version="1",
-#     stage="Archived"
-# )
-
-print("💡 Legacy Stages ยังใช้งานได้ แต่แนะนำให้ใช้ Aliases ใน MLflow 2.x")
 
 # %% [markdown]
 # ---

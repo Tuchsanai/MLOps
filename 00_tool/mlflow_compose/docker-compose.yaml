@@ -1,0 +1,32 @@
+services:
+  jupyter:
+    image: tuchsanai/mlops_2568_2:latest
+    container_name: mlops-container
+    ports:
+      - "8083:8888"
+      - "5001:5000"
+    environment:
+      - MLFLOW_TRACKING_URI=http://localhost:5000
+      - MLFLOW_HOST=0.0.0.0
+      - MLFLOW_ALLOWED_HOSTS=all
+      - MLFLOW_DISABLE_HOST_CHECK=true
+    restart: unless-stopped
+    volumes:
+       - "C:/Users/oishi/Documents/GitHub/MLOps:/home/student/workspace/"
+
+    command:
+      - bash
+      - -c
+      - |
+        mkdir -p /home/student/workspace/mlflowserver-lab/mlruns_db
+        mkdir -p /home/student/workspace/mlflowserver-lab/mlartifacts
+        (mlflow server \
+          --host 0.0.0.0 \
+          --port 5000 \
+          --backend-store-uri sqlite:////home/student/workspace/mlflowserver-lab/mlruns_db/mlflow.db \
+          --artifacts-destination /home/student/workspace/mlflowserver-lab/mlartifacts \
+          --serve-artifacts \
+          --gunicorn-opts "--timeout 120" \
+          > /home/student/workspace/mlflowserver-lab/mlflow.log 2>&1) &
+        sleep 2
+        exec jupyter lab --ip=0.0.0.0 --port=8888 --no-browser --allow-root --notebook-dir=/home/student/workspace --IdentityProvider.token=mlops

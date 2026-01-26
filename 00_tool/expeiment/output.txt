@@ -1,1234 +1,2047 @@
-# 📚 Data Drift Detection: Complete Guide for MLOps
+# %% [markdown]
+# # 🥊 Pose Time Series Analysis Lab: การวิเคราะห์ท่ามวยไทยด้วย Time Series และ Angle Analysis
+#
+# ---
+#
+# ## 📋 Lab Overview
+#
+# **วัตถุประสงค์การเรียนรู้ (Learning Objectives):**
+# 1. เข้าใจโครงสร้างข้อมูล Pose Estimation ในรูปแบบ Time Series
+# 2. วิเคราะห์และเปรียบเทียบการเคลื่อนไหวของบุคคลต่างๆ ข้ามเวลา
+# 3. คำนวณ Joint Angles จาก Keypoint Coordinates
+# 4. สร้าง Visualization เพื่อเปรียบเทียบท่าทางต่างๆ (Actions)
+# 5. วิเคราะห์ Pattern ของท่ามวยไทยผ่าน Time Series และ Angle Analysis
+#
+# **Prerequisites:**
+# - Python 3.8+
+# - ความเข้าใจพื้นฐานเรื่อง Pandas DataFrame
+# - ความเข้าใจพื้นฐานเรื่อง Trigonometry (สำหรับการคำนวณมุม)
+#
+# **Estimated Time:** 2-3 hours
+#
+# ---
 
-## สารบัญ
-1. [บทนำ: ทำความเข้าใจ Data Drift](#บทนำ-ทำความเข้าใจ-data-drift)
-2. [LAB 1: Understanding Data Drift Concepts](#lab-1-understanding-data-drift-concepts)
-3. [LAB 2: Feature Drift Detection](#lab-2-feature-drift-detection)
-4. [LAB 3: Multivariate Drift Analysis](#lab-3-multivariate-drift-analysis)
-5. [LAB 4: Drift Detection in Production Simulation](#lab-4-drift-detection-in-production-simulation)
-6. [LAB 5: Custom Metrics & Drift Thresholds](#lab-5-custom-metrics--drift-thresholds)
-7. [LAB 6: End-to-End Monitoring Pipeline](#lab-6-end-to-end-monitoring-pipeline)
-8. [สรุปและ Best Practices](#สรุปและ-best-practices)
+# %% [markdown]
+# ## 📚 Part 1: Environment Setup และ Data Loading
+#
+# ในส่วนนี้เราจะเตรียมสภาพแวดล้อมสำหรับการวิเคราะห์ โดยการ import libraries ที่จำเป็น
+# และโหลดข้อมูล Pose Estimation จากไฟล์ CSV
+#
+# ### 1.1 Import Libraries
+#
+# **อธิบาย:** นำเข้า libraries ที่จำเป็นสำหรับการวิเคราะห์ Time Series และการสร้าง Visualization
+#
+# | Library | หน้าที่ |
+# |---------|--------|
+# | pandas | จัดการข้อมูลในรูปแบบ DataFrame |
+# | numpy | การคำนวณเชิงตัวเลขและ array operations |
+# | matplotlib | สร้างกราฟและ visualization พื้นฐาน |
+# | seaborn | สร้างกราฟสถิติที่สวยงาม |
+# | scipy | Signal processing และ smoothing |
 
----
+# %%
+# =====================================================
+# STEP 1.1: Import Required Libraries
+# =====================================================
+# 📝 Description: 
+# นำเข้า libraries ทั้งหมดที่จำเป็นสำหรับการวิเคราะห์
+# - pandas: สำหรับจัดการข้อมูล DataFrame
+# - numpy: สำหรับการคำนวณเชิงตัวเลข
+# - matplotlib & seaborn: สำหรับสร้างกราฟ
+# - scipy: สำหรับ signal processing (smoothing)
+#
+# 💡 Tip: ถ้ายังไม่มี library ใดๆ ให้รัน: 
+#     pip install pandas numpy matplotlib seaborn scipy
+# =====================================================
 
-## บทนำ: ทำความเข้าใจ Data Drift
+import pandas as pd
+import numpy as np
+import matplotlib.pyplot as plt
+import seaborn as sns
+from scipy import signal
+from scipy.ndimage import uniform_filter1d
+import warnings
 
-### Data Drift คืออะไร?
+# ตั้งค่า Visualization ให้แสดงผลสวยงาม
+plt.rcParams['figure.figsize'] = (14, 8)      # ขนาดรูปเริ่มต้น
+plt.rcParams['font.size'] = 11                 # ขนาดตัวอักษร
+plt.rcParams['axes.titlesize'] = 14            # ขนาดหัวข้อกราฟ
+plt.rcParams['axes.labelsize'] = 12            # ขนาด label แกน
+sns.set_style("whitegrid")                     # สไตล์กราฟแบบมี grid
+warnings.filterwarnings('ignore')              # ปิด warnings
 
-**Data Drift** (หรือ Dataset Shift) คือปรากฏการณ์ที่ข้อมูลในระบบ production มีการเปลี่ยนแปลงไปจากข้อมูลที่ใช้ train โมเดล ซึ่งเป็นหนึ่งในสาเหตุหลักที่ทำให้ ML Model มีประสิทธิภาพลดลงเมื่อเวลาผ่านไป
+# สำหรับแสดงผลภาษาไทย (ถ้ามี font)
+try:
+    plt.rcParams['font.family'] = 'DejaVu Sans'
+except:
+    pass
 
-```
-Training Time                    Production Time
-     │                                │
-     ▼                                ▼
-┌─────────────┐               ┌─────────────┐
-│ Training    │               │ Production  │
-│ Data        │──── Drift ───▶│ Data        │
-│ P(X,Y)_train│               │ P(X,Y)_prod │
-└─────────────┘               └─────────────┘
-     │                                │
-     ▼                                ▼
-┌─────────────┐               ┌─────────────┐
-│ Good Model  │               │ Degraded    │
-│ Performance │               │ Performance │
-└─────────────┘               └─────────────┘
-```
+print("✅ Libraries imported successfully!")
+print(f"   📊 Pandas version: {pd.__version__}")
+print(f"   🔢 NumPy version: {np.__version__}")
 
-### ทำไม Drift Detection ถึงสำคัญ?
+# %% [markdown]
+# ### 1.2 Load Pose Data
+#
+# **อธิบาย:** โหลดข้อมูล Pose Estimation จากไฟล์ CSV
+#
+# **โครงสร้างข้อมูล (Data Structure):**
+#
+# ```
+# ┌─────────────────────────────────────────────────────────────┐
+# │                    POSE DATA STRUCTURE                      │
+# ├─────────────────────────────────────────────────────────────┤
+# │ frame_idx      : หมายเลขเฟรม (ดัชนีเวลา)                    │
+# │ timestamp      : เวลาในหน่วยวินาที                          │
+# │ person_id      : รหัสบุคคลที่ถูกติดตาม                      │
+# │ avg_confidence : ความเชื่อมั่นเฉลี่ยของ keypoints           │
+# │ keypoint_x     : พิกัด X ของแต่ละ keypoint                  │
+# │ keypoint_y     : พิกัด Y ของแต่ละ keypoint                  │
+# │ keypoint_conf  : ความเชื่อมั่นของแต่ละ keypoint             │
+# │ action         : ป้ายกำกับท่าทาง (Label)                    │
+# └─────────────────────────────────────────────────────────────┘
+# ```
+#
+# **Keypoints ทั้งหมด 17 จุด:**
+# ```
+#        nose (0)
+#     left_eye (1)  right_eye (2)
+#     left_ear (3)  right_ear (4)
+#         |
+#   left_shoulder (5) ─── right_shoulder (6)
+#         |                    |
+#    left_elbow (7)      right_elbow (8)
+#         |                    |
+#    left_wrist (9)      right_wrist (10)
+#         |                    |
+#     left_hip (11) ──── right_hip (12)
+#         |                    |
+#    left_knee (13)      right_knee (14)
+#         |                    |
+#   left_ankle (15)     right_ankle (16)
+# ```
 
-1. **Model Degradation**: โมเดลที่ train ด้วยข้อมูลเก่าอาจทำนายผิดพลาดกับข้อมูลใหม่
-2. **Business Impact**: การตัดสินใจผิดพลาดส่งผลต่อธุรกิจโดยตรง
-3. **Regulatory Compliance**: หลายอุตสาหกรรมต้องการ monitoring อย่างต่อเนื่อง
-4. **Resource Optimization**: รู้เวลาที่ต้อง retrain ช่วยประหยัดทรัพยากร
+# %%
+# =====================================================
+# STEP 1.2: Load Pose Data from CSV
+# =====================================================
+# 📝 Description: 
+# โหลดข้อมูลจากไฟล์ CSV ที่เตรียมไว้
+# ไฟล์นี้ประกอบด้วยข้อมูล pose estimation ของหลายคน
+# ที่ถูก track ข้ามเฟรม พร้อม action labels
+#
+# 🔄 Process:
+# 1. อ่านไฟล์ CSV ด้วย pd.read_csv()
+# 2. แสดงข้อมูลเบื้องต้นเพื่อตรวจสอบความถูกต้อง
+# 3. ดูโครงสร้างและขนาดของข้อมูล
+#
+# ⚠️ Note: ตรวจสอบว่าไฟล์ 'pose_data.csv' อยู่ใน directory เดียวกัน
+# =====================================================
 
----
+# โหลดข้อมูล
+df_pose = pd.read_csv('pose_data.csv')
 
-## LAB 1: Understanding Data Drift Concepts
+# แสดงข้อมูลเบื้องต้น
+print("=" * 70)
+print("📊 POSE DATA OVERVIEW")
+print("=" * 70)
+print(f"\n📁 Dataset Shape: {df_pose.shape[0]:,} rows × {df_pose.shape[1]} columns")
+print(f"📅 Frame Range: {df_pose['frame_idx'].min()} to {df_pose['frame_idx'].max()}")
+print(f"⏱️  Time Range: {df_pose['timestamp'].min():.2f}s to {df_pose['timestamp'].max():.2f}s")
+print(f"👥 Unique Persons: {df_pose['person_id'].nunique()}")
+print(f"🎯 Actions: {df_pose['action'].nunique()}")
 
-### 🎯 วัตถุประสงค์
-- เข้าใจความแตกต่างระหว่าง Covariate Shift และ Concept Drift
-- เรียนรู้ Statistical tests สำหรับ drift detection
-- สามารถเลือก drift detection method ที่เหมาะสม
+print("\n" + "=" * 70)
+print("📋 DATA SAMPLE (First 5 rows)")
+print("=" * 70)
+display(df_pose.head())
 
-### ทฤษฎี: ประเภทของ Data Drift
+# %%
+# =====================================================
+# STEP 1.3: Data Info Summary
+# =====================================================
+# 📝 Description: 
+# แสดงรายละเอียดของ columns ทั้งหมด
+# เพื่อให้เข้าใจโครงสร้างข้อมูล
+#
+# 🔍 สิ่งที่ต้องตรวจสอบ:
+# - จำนวน Non-Null Count ของแต่ละ column
+# - Dtype ของแต่ละ column
+# - Memory usage
+# =====================================================
 
-#### 1. Covariate Shift (Feature Drift)
+print("=" * 70)
+print("📋 DATA STRUCTURE INFO")
+print("=" * 70)
+print(f"\n📊 Column Types:")
+print(f"   - float64 (coordinates & confidence): 53 columns")
+print(f"   - int64 (frame_idx, person_id): 2 columns")
+print(f"   - object (action label): 1 column")
+print(f"\n💾 Memory Usage: ~14.9 MB")
+print("\n" + "-" * 70)
+df_pose.info()
 
-**นิยาม**: การเปลี่ยนแปลงของ distribution ของ input features P(X) โดยที่ความสัมพันธ์ P(Y|X) ยังคงเดิม
+# %% [markdown]
+# ### 1.3 Define Constants
+#
+# **อธิบาย:** กำหนดค่าคงที่สำหรับ COCO Keypoint format และ Skeleton Connections
+#
+# **COCO Keypoint Format:**
+# - มาตรฐานสากลสำหรับ Human Pose Estimation
+# - ประกอบด้วย 17 keypoints ครอบคลุมทั้งร่างกาย
+# - แต่ละ keypoint มีพิกัด (x, y) และค่า confidence
+#
+# **ภาพประกอบ Skeleton Connections:**
+# ```
+#              ○ nose
+#             /|\
+#     left_eye ○ ○ right_eye
+#            /   \
+#   left_ear ○     ○ right_ear
+#                   
+#    left_shoulder ○───○ right_shoulder
+#                  |   |
+#                  │   │
+#      left_elbow ○   ○ right_elbow
+#                  │   │
+#      left_wrist ○   ○ right_wrist
+#                  │   │
+#        left_hip ○───○ right_hip
+#                  │   │
+#       left_knee ○   ○ right_knee
+#                  │   │
+#      left_ankle ○   ○ right_ankle
+# ```
 
-```
-Covariate Shift:
-├── P(X)_train ≠ P(X)_prod     ← Distribution เปลี่ยน
-└── P(Y|X)_train = P(Y|X)_prod  ← Relationship คงเดิม
-```
+# %%
+# =====================================================
+# STEP 1.4: Define COCO Keypoint Constants
+# =====================================================
+# 📝 Description: 
+# กำหนดชื่อ Keypoints ตามมาตรฐาน COCO
+# COCO format มี 17 keypoints ครอบคลุมทั้งร่างกาย
+#
+# 🎯 Purpose:
+# - ใช้อ้างอิงชื่อ keypoints อย่างเป็นระบบ
+# - จัดกลุ่มส่วนต่างๆ ของร่างกายเพื่อการวิเคราะห์
+# - กำหนดเส้นเชื่อมสำหรับการวาด skeleton
+# =====================================================
 
-**ตัวอย่างในชีวิตจริง**:
-- โมเดลทำนายราคาบ้านที่ train กับบ้านในเมือง แต่ต้องทำนายบ้านในชนบท
-- โมเดลอายุลูกค้าที่ train กับกลุ่มอายุ 20-40 ปี แต่ production มีลูกค้าอายุ 40-60 ปี
+# รายชื่อ Keypoints (17 จุด) พร้อมดัชนี
+KEYPOINT_NAMES = [
+    "nose",           # 0 - จมูก
+    "left_eye",       # 1 - ตาซ้าย
+    "right_eye",      # 2 - ตาขวา
+    "left_ear",       # 3 - หูซ้าย
+    "right_ear",      # 4 - หูขวา
+    "left_shoulder",  # 5 - ไหล่ซ้าย
+    "right_shoulder", # 6 - ไหล่ขวา
+    "left_elbow",     # 7 - ข้อศอกซ้าย
+    "right_elbow",    # 8 - ข้อศอกขวา
+    "left_wrist",     # 9 - ข้อมือซ้าย
+    "right_wrist",    # 10 - ข้อมือขวา
+    "left_hip",       # 11 - สะโพกซ้าย
+    "right_hip",      # 12 - สะโพกขวา
+    "left_knee",      # 13 - เข่าซ้าย
+    "right_knee",     # 14 - เข่าขวา
+    "left_ankle",     # 15 - ข้อเท้าซ้าย
+    "right_ankle"     # 16 - ข้อเท้าขวา
+]
 
-**Code Reference** - การสร้างข้อมูล Covariate Shift:
-```python
-def generate_covariate_shift_data():
-    # Training data: ลูกค้าอายุน้อย (20-40)
-    age_train = np.random.normal(30, 5, n_train)
+# การจัดกลุ่มส่วนต่างๆ ของร่างกาย (สำหรับการวิเคราะห์เฉพาะส่วน)
+BODY_PARTS = {
+    'head': ['nose', 'left_eye', 'right_eye', 'left_ear', 'right_ear'],
+    'upper_body': ['left_shoulder', 'right_shoulder', 'left_elbow', 
+                   'right_elbow', 'left_wrist', 'right_wrist'],
+    'lower_body': ['left_hip', 'right_hip', 'left_knee', 
+                   'right_knee', 'left_ankle', 'right_ankle'],
+    'left_arm': ['left_shoulder', 'left_elbow', 'left_wrist'],
+    'right_arm': ['right_shoulder', 'right_elbow', 'right_wrist'],
+    'left_leg': ['left_hip', 'left_knee', 'left_ankle'],
+    'right_leg': ['right_hip', 'right_knee', 'right_ankle'],
+    'torso': ['left_shoulder', 'right_shoulder', 'left_hip', 'right_hip']
+}
+
+# เส้นเชื่อมสำหรับ Skeleton Visualization
+SKELETON_CONNECTIONS = [
+    # Head connections
+    ('nose', 'left_eye'), ('nose', 'right_eye'),
+    ('left_eye', 'left_ear'), ('right_eye', 'right_ear'),
+    # Upper body
+    ('left_shoulder', 'right_shoulder'),  # shoulders
+    ('left_shoulder', 'left_elbow'), ('left_elbow', 'left_wrist'),
+    ('right_shoulder', 'right_elbow'), ('right_elbow', 'right_wrist'),
+    # Torso
+    ('left_shoulder', 'left_hip'), ('right_shoulder', 'right_hip'),
+    ('left_hip', 'right_hip'),
+    # Lower body
+    ('left_hip', 'left_knee'), ('left_knee', 'left_ankle'),
+    ('right_hip', 'right_knee'), ('right_knee', 'right_ankle')
+]
+
+print("✅ Constants defined!")
+print(f"   📍 Total Keypoints: {len(KEYPOINT_NAMES)}")
+print(f"   🦴 Body Parts Groups: {list(BODY_PARTS.keys())}")
+print(f"   🔗 Skeleton Connections: {len(SKELETON_CONNECTIONS)}")
+
+# แสดงตารางสรุป Keypoints
+print("\n" + "=" * 70)
+print("📋 KEYPOINT REFERENCE TABLE")
+print("=" * 70)
+keypoint_df = pd.DataFrame({
+    'Index': range(len(KEYPOINT_NAMES)),
+    'Keypoint Name': KEYPOINT_NAMES,
+    'Thai Name': ['จมูก', 'ตาซ้าย', 'ตาขวา', 'หูซ้าย', 'หูขวา',
+                  'ไหล่ซ้าย', 'ไหล่ขวา', 'ข้อศอกซ้าย', 'ข้อศอกขวา',
+                  'ข้อมือซ้าย', 'ข้อมือขวา', 'สะโพกซ้าย', 'สะโพกขวา',
+                  'เข่าซ้าย', 'เข่าขวา', 'ข้อเท้าซ้าย', 'ข้อเท้าขวา']
+})
+print(keypoint_df.to_string(index=False))
+
+# %% [markdown]
+# ---
+#
+# ## 📚 Part 2: Exploratory Data Analysis (EDA)
+#
+# ในส่วนนี้เราจะสำรวจข้อมูลเพื่อเข้าใจลักษณะและการกระจายตัวของข้อมูล
+#
+# ### 2.1 Action Distribution Analysis
+#
+# **อธิบาย:** วิเคราะห์การกระจายตัวของ Actions ต่างๆ ในข้อมูล
+#
+# **ทำไมต้องวิเคราะห์ Action Distribution?**
+# - เพื่อดูความสมดุลของข้อมูล (Class Balance)
+# - ระบุ Actions ที่มีข้อมูลมาก/น้อย
+# - วางแผนการวิเคราะห์และ sampling strategy
+
+# %%
+# =====================================================
+# STEP 2.1: Action Distribution Analysis
+# =====================================================
+# 📝 Description: 
+# วิเคราะห์จำนวนและสัดส่วนของแต่ละ Action
+# เพื่อเข้าใจความสมดุลของข้อมูล
+#
+# 📊 Output:
+# - ตารางแสดงจำนวน frames ต่อ action
+# - Bar chart แสดงการกระจายตัว
+# - Pie chart แสดงสัดส่วน
+#
+# 💡 Insight:
+# ถ้า action ใดมีข้อมูลน้อยเกินไป อาจต้องระวัง
+# เรื่อง bias ในการวิเคราะห์
+# =====================================================
+
+# นับจำนวนแต่ละ Action
+action_counts = df_pose['action'].value_counts()
+action_percentages = df_pose['action'].value_counts(normalize=True) * 100
+
+print("=" * 70)
+print("🎯 ACTION DISTRIBUTION")
+print("=" * 70)
+
+# แสดงตาราง
+action_summary = pd.DataFrame({
+    'Action': action_counts.index,
+    'Count': action_counts.values,
+    'Percentage (%)': action_percentages.values.round(2)
+})
+print("\n📋 Summary Table:")
+print(action_summary.to_string(index=False))
+
+# สร้าง Visualization
+fig, axes = plt.subplots(1, 2, figsize=(14, 5))
+
+# Bar Chart
+colors = plt.cm.Set3(np.linspace(0, 1, len(action_counts)))
+bars = axes[0].barh(action_counts.index, action_counts.values, color=colors)
+axes[0].set_xlabel('Number of Frames')
+axes[0].set_title('📊 Action Distribution (Bar Chart)')
+axes[0].invert_yaxis()
+
+# เพิ่มตัวเลขบน bar
+for bar, count in zip(bars, action_counts.values):
+    axes[0].text(bar.get_width() + 50, bar.get_y() + bar.get_height()/2, 
+                 f'{count:,}', va='center', fontsize=10)
+
+# Pie Chart
+axes[1].pie(action_counts.values, labels=action_counts.index, 
+            autopct='%1.1f%%', colors=colors, startangle=90)
+axes[1].set_title('📊 Action Distribution (Pie Chart)')
+
+plt.tight_layout()
+plt.show()
+
+# %% [markdown]
+# ### 2.2 Person ID Analysis
+#
+# **อธิบาย:** วิเคราะห์จำนวน Frames ต่อ Person และ Person ต่อ Action
+#
+# **คำถามที่ต้องการตอบ:**
+# 1. แต่ละ Person มีกี่ frames?
+# 2. แต่ละ Action มี Person กี่คนที่ทำ?
+# 3. ข้อมูลกระจายตัวสม่ำเสมอหรือไม่?
+
+# %%
+# =====================================================
+# STEP 2.2: Person ID Analysis
+# =====================================================
+# 📝 Description: 
+# วิเคราะห์ว่าแต่ละ Person มีกี่ frames
+# และแต่ละ Action มี Person กี่คน
+#
+# 🎯 Purpose:
+# - ตรวจสอบความครอบคลุมของข้อมูล
+# - หา Persons ที่มีข้อมูลเพียงพอสำหรับการวิเคราะห์
+# - ดูความหลากหลายของผู้ทำแต่ละ action
+# =====================================================
+
+# นับ frames ต่อ person
+person_frame_counts = df_pose.groupby('person_id').size().reset_index(name='frame_count')
+person_frame_counts = person_frame_counts.sort_values('frame_count', ascending=False)
+
+print("=" * 70)
+print("👥 PERSON ID ANALYSIS")
+print("=" * 70)
+
+print("\n📋 Frames per Person (Top 10):")
+print(person_frame_counts.head(10).to_string(index=False))
+
+print(f"\n📊 Statistics:")
+print(f"   Total Unique Persons: {len(person_frame_counts)}")
+print(f"   Max Frames per Person: {person_frame_counts['frame_count'].max():,}")
+print(f"   Min Frames per Person: {person_frame_counts['frame_count'].min():,}")
+print(f"   Mean Frames per Person: {person_frame_counts['frame_count'].mean():.2f}")
+print(f"   Median Frames per Person: {person_frame_counts['frame_count'].median():.2f}")
+
+# Person distribution per action
+print("\n" + "=" * 70)
+print("🎯 PERSONS PER ACTION")
+print("=" * 70)
+
+person_per_action = df_pose.groupby('action')['person_id'].nunique().reset_index()
+person_per_action.columns = ['Action', 'Unique Persons']
+print(person_per_action.to_string(index=False))
+
+# Visualization
+fig, axes = plt.subplots(1, 2, figsize=(14, 5))
+
+# Frames per person (top 15)
+top_persons = person_frame_counts.head(15)
+axes[0].bar(top_persons['person_id'].astype(str), top_persons['frame_count'], 
+            color='steelblue', edgecolor='navy')
+axes[0].set_xlabel('Person ID')
+axes[0].set_ylabel('Number of Frames')
+axes[0].set_title('👥 Frames per Person (Top 15)')
+axes[0].tick_params(axis='x', rotation=45)
+
+# Persons per action
+colors = plt.cm.Set2(np.linspace(0, 1, len(person_per_action)))
+axes[1].bar(person_per_action['Action'], person_per_action['Unique Persons'], 
+            color=colors, edgecolor='black')
+axes[1].set_xlabel('Action')
+axes[1].set_ylabel('Number of Unique Persons')
+axes[1].set_title('🎯 Unique Persons per Action')
+axes[1].tick_params(axis='x', rotation=45)
+
+plt.tight_layout()
+plt.show()
+
+# %% [markdown]
+# ### 2.3 Select 3 Representative Person IDs for Analysis
+#
+# **อธิบาย:** เลือก 3 Person IDs ที่มีข้อมูลครบถ้วนสำหรับการวิเคราะห์เปรียบเทียบ
+#
+# **เกณฑ์การเลือก:**
+# 1. มี labeled frames มากที่สุด (ไม่ใช่ 'Unknown')
+# 2. ปรากฏในหลาย actions
+# 3. มีช่วงเวลาต่อเนื่องยาวพอสำหรับ time series analysis
+#
+# ```
+# ┌─────────────────────────────────────────────┐
+# │          SELECTION CRITERIA                 │
+# ├─────────────────────────────────────────────┤
+# │ ✓ Labeled frames (not 'Unknown')           │
+# │ ✓ Multiple actions performed               │
+# │ ✓ Continuous time series                   │
+# │ ✓ High confidence keypoints                │
+# └─────────────────────────────────────────────┘
+# ```
+
+# %%
+# =====================================================
+# STEP 2.3: Select 3 Representative Person IDs
+# =====================================================
+# 📝 Description: 
+# เลือก 3 Person IDs ที่มี frames มากที่สุด
+# และปรากฏใน Action labels (ไม่ใช่ Unknown)
+# เพื่อใช้ในการวิเคราะห์เปรียบเทียบ
+#
+# 🔄 Process:
+# 1. กรองเฉพาะ frames ที่มี label
+# 2. นับ frames ต่อ person
+# 3. เลือก top 3 persons
+# 4. แสดงรายละเอียด
+#
+# 💡 Note: 
+# การเลือก persons ที่มีข้อมูลมากช่วยให้การวิเคราะห์
+# มีความน่าเชื่อถือมากขึ้น
+# =====================================================
+
+# กรองเฉพาะ frames ที่มี label (ไม่ใช่ Unknown)
+df_labeled = df_pose[df_pose['action'] != 'Unknown'].copy()
+
+print(f"📊 Filtered Data: {len(df_labeled):,} frames with labels (excluded 'Unknown')")
+
+# นับ frames ต่อ person สำหรับข้อมูลที่มี label
+person_labeled_counts = df_labeled.groupby('person_id').agg({
+    'frame_idx': 'count',
+    'action': lambda x: x.nunique()
+}).reset_index()
+person_labeled_counts.columns = ['person_id', 'labeled_frames', 'actions_count']
+person_labeled_counts = person_labeled_counts.sort_values('labeled_frames', ascending=False)
+
+print("\n" + "=" * 70)
+print("🎯 SELECTING REPRESENTATIVE PERSON IDs")
+print("=" * 70)
+
+print("\n📋 Persons with Labeled Frames (Top 10):")
+print(person_labeled_counts.head(10).to_string(index=False))
+
+# เลือก 3 person IDs ที่มี frames มากที่สุด
+SELECTED_PERSON_IDS = person_labeled_counts.head(3)['person_id'].tolist()
+
+print(f"\n✅ Selected Person IDs for Analysis: {SELECTED_PERSON_IDS}")
+
+# แสดงรายละเอียดของ selected persons
+print("\n" + "=" * 70)
+print("📊 SELECTED PERSONS DETAILS")
+print("=" * 70)
+
+for pid in SELECTED_PERSON_IDS:
+    person_data = df_labeled[df_labeled['person_id'] == pid]
+    actions = person_data['action'].unique()
+    print(f"\n👤 Person ID: {pid}")
+    print(f"   📈 Total Labeled Frames: {len(person_data):,}")
+    print(f"   🎯 Actions: {list(actions)}")
+    print(f"   📅 Frame Range: {person_data['frame_idx'].min()} - {person_data['frame_idx'].max()}")
+    print(f"   ⏱️  Time Range: {person_data['timestamp'].min():.2f}s - {person_data['timestamp'].max():.2f}s")
+    print(f"   📊 Duration: {person_data['timestamp'].max() - person_data['timestamp'].min():.2f}s")
+
+# %% [markdown]
+# ---
+#
+# ## 📚 Part 3: Time Series Analysis
+#
+# ในส่วนนี้เราจะวิเคราะห์การเคลื่อนไหวตามเวลา (Time Series) ของ keypoints ต่างๆ
+#
+# ### 3.1 Keypoint Position Time Series
+#
+# **อธิบาย:** วิเคราะห์การเปลี่ยนแปลงตำแหน่ง Keypoints ตามเวลาสำหรับแต่ละ Action
+#
+# **Key Keypoints สำหรับการวิเคราะห์ท่ามวย:**
+#
+# | Keypoint | ความสำคัญ |
+# |----------|----------|
+# | right_wrist | การเคลื่อนไหวของหมัดขวา |
+# | left_wrist | การเคลื่อนไหวของหมัดซ้าย |
+# | right_ankle | การเคลื่อนไหวของเตะขวา |
+# | left_ankle | การเคลื่อนไหวของเตะซ้าย |
+# | nose | การเคลื่อนไหวของศีรษะ/ลำตัว |
+#
+# **ภาพประกอบ Coordinate System:**
+# ```
+# (0,0) ────────────────→ X (เพิ่มไปทางขวา)
+#   │
+#   │    ○ nose
+#   │   /|\
+#   │  ○ │ ○
+#   │    │
+#   ↓    │
+#   Y    │
+# (เพิ่มลงล่าง)
+# ```
+
+# %%
+# =====================================================
+# STEP 3.1: Keypoint Position Time Series Analysis
+# =====================================================
+# 📝 Description: 
+# วิเคราะห์การเคลื่อนที่ของ keypoints หลักๆ ตามเวลา
+# เพื่อเข้าใจ pattern การเคลื่อนไหวในแต่ละท่า
+# 
+# 🎯 Key Keypoints:
+# - wrists: การเคลื่อนไหวของมือ (สำคัญสำหรับหมัด)
+# - ankles: การเคลื่อนไหวของเท้า (สำคัญสำหรับการเตะ)
+# - nose: การเคลื่อนไหวของศีรษะ
+#
+# 📊 Output:
+# - กราฟ X coordinate ตามเวลา
+# - กราฟ Y coordinate ตามเวลา
+# - แยกสีตาม action
+# =====================================================
+
+# Keypoints ที่น่าสนใจสำหรับการวิเคราะห์ท่ามวย
+ANALYSIS_KEYPOINTS = ['right_wrist', 'left_wrist', 'right_ankle', 'left_ankle', 'nose']
+
+def plot_keypoint_timeseries(df, person_id, keypoints, figsize=(16, 12)):
+    """
+    สร้างกราฟ Time Series ของตำแหน่ง Keypoints
     
-    # Production data: ลูกค้าอายุมากขึ้น (40-60) - Covariate Shift!
-    age_prod = np.random.normal(50, 5, n_prod)
+    Parameters:
+    -----------
+    df : DataFrame - ข้อมูล pose
+    person_id : int - Person ID ที่ต้องการวิเคราะห์
+    keypoints : list - รายชื่อ keypoints
+    figsize : tuple - ขนาดรูป
     
-    # กฎการซื้อเหมือนเดิม (ไม่มี Concept Drift)
-    # P(Y|X) ยังคงเดิม
-```
-
-#### 2. Concept Drift (Label Drift)
-
-**นิยาม**: การเปลี่ยนแปลงของความสัมพันธ์ระหว่าง input และ output P(Y|X)
-
-```
-Concept Drift:
-├── P(X) อาจคงที่หรือเปลี่ยนก็ได้
-└── P(Y|X)_train ≠ P(Y|X)_prod  ← Relationship เปลี่ยน!
-```
-
-**ตัวอย่างในชีวิตจริง**:
-- พฤติกรรมการซื้อของลูกค้าเปลี่ยนหลัง COVID-19
-- ความหมายของ "spam email" เปลี่ยนไปตามเวลา
-
-**Code Reference** - การสร้างข้อมูล Concept Drift:
-```python
-def generate_concept_drift_data():
-    # Training: กฎการซื้อเดิม - ซื้อถ้า income > 45000
-    purchase_train = (income_train > 45000).astype(int)
+    Returns:
+    --------
+    fig : matplotlib figure object
+    """
+    # กรองข้อมูลสำหรับ person นี้
+    person_data = df[df['person_id'] == person_id].copy()
+    person_data = person_data.sort_values('frame_idx')
     
-    # Production: กฎการซื้อเปลี่ยน - ซื้อถ้า income > 55000
-    # Threshold เปลี่ยน = Concept Drift!
-    purchase_prod = (income_prod > 55000).astype(int)
-```
-
-#### เปรียบเทียบ Covariate Shift vs Concept Drift
-
-| ลักษณะ | Covariate Shift | Concept Drift |
-|--------|-----------------|---------------|
-| สิ่งที่เปลี่ยน | P(X) | P(Y\|X) |
-| ตัวอย่าง | กลุ่มลูกค้าเปลี่ยน | พฤติกรรมเปลี่ยน |
-| การตรวจจับ | เปรียบเทียบ feature distributions | ต้องมี labels หรือ performance |
-| วิธีแก้ | Sample weighting, Retrain | Retrain with new data |
-
----
-
-### Statistical Tests สำหรับ Drift Detection
-
-#### 1. Kolmogorov-Smirnov (KS) Test
-
-**ทฤษฎี**:
-- เปรียบเทียบ Cumulative Distribution Function (CDF) ของ 2 samples
-- วัดความแตกต่างสูงสุดระหว่าง 2 CDFs
-
-```
-KS Statistic = max|F₁(x) - F₂(x)|
-
-โดยที่:
-- F₁(x) = CDF ของ reference data
-- F₂(x) = CDF ของ current data
-```
-
-**การตีความ**:
-- KS Statistic: 0-1 (ยิ่งสูง = ยิ่งแตกต่าง)
-- p-value < 0.05: reject null hypothesis → มี drift
-
-**ข้อดี**:
-- ไม่ต้องสมมติ distribution (non-parametric)
-- Sensitive ต่อการเปลี่ยนแปลง
-
-**ข้อเสีย**:
-- ใช้ได้กับ continuous variables เท่านั้น
-
-**Code Reference**:
-```python
-def kolmogorov_smirnov_test(data1, data2, feature_name="feature"):
-    statistic, p_value = stats.ks_2samp(data1, data2)
-    drift_detected = p_value < 0.05
+    # สร้าง figure
+    fig, axes = plt.subplots(len(keypoints), 2, figsize=figsize)
+    fig.suptitle(f'👤 Keypoint Time Series - Person ID: {person_id}', 
+                 fontsize=16, fontweight='bold')
     
-    return {
-        'statistic': statistic,
-        'p_value': p_value,
-        'drift_detected': drift_detected
-    }
-```
-
-#### 2. Population Stability Index (PSI)
-
-**ทฤษฎี**:
-- วัดการเปลี่ยนแปลงของ distribution โดยเปรียบเทียบ proportions ในแต่ละ bin
-- นิยมใช้ใน credit scoring และ financial models
-
-**สูตร**:
-```
-PSI = Σ (Actual% - Expected%) × ln(Actual% / Expected%)
-
-โดยที่:
-- Expected% = proportion ใน reference data
-- Actual% = proportion ใน current data
-```
-
-**การตีความ PSI**:
-
-| ค่า PSI | ความหมาย | Action |
-|---------|----------|--------|
-| < 0.1 | ไม่มีการเปลี่ยนแปลงสำคัญ | ปกติ |
-| 0.1 - 0.25 | การเปลี่ยนแปลงปานกลาง | ตรวจสอบเพิ่ม |
-| ≥ 0.25 | การเปลี่ยนแปลงมาก | ต้องดำเนินการ |
-
-**Code Reference**:
-```python
-def calculate_psi(expected, actual, bins=10, eps=1e-6):
-    # สร้าง bins จาก expected data
-    breakpoints = np.percentile(expected, np.linspace(0, 100, bins + 1))
+    # สร้าง color map สำหรับ actions
+    actions = person_data['action'].unique()
+    action_colors = dict(zip(actions, plt.cm.Set2(np.linspace(0, 1, len(actions)))))
     
-    # นับจำนวนในแต่ละ bin
-    expected_counts, _ = np.histogram(expected, bins=breakpoints)
-    actual_counts, _ = np.histogram(actual, bins=breakpoints)
-    
-    # คำนวณ proportions
-    expected_props = expected_counts / len(expected) + eps
-    actual_props = actual_counts / len(actual) + eps
-    
-    # คำนวณ PSI
-    psi = np.sum((actual_props - expected_props) * np.log(actual_props / expected_props))
-    return psi
-```
-
-#### 3. Wasserstein Distance (Earth Mover's Distance)
-
-**ทฤษฎี**:
-- วัด "งาน" ที่ต้องใช้ในการเปลี่ยน distribution หนึ่งไปเป็นอีก distribution
-- คล้ายกับการคำนวณต้นทุนในการขนย้ายดิน
-
-```
-Wasserstein Distance = inf ∫|F₁⁻¹(u) - F₂⁻¹(u)| du
-
-เปรียบเสมือน:
-┌─────────────┐         ┌─────────────┐
-│   Pile A    │  move   │   Pile B    │
-│   (sand)    │ ──────▶ │   (sand)    │
-└─────────────┘  cost   └─────────────┘
-```
-
-**ข้อดี**:
-- คำนึงถึง distance ระหว่าง bins
-- Sensitive ต่อ shift ในตำแหน่ง
-
-**Code Reference**:
-```python
-def wasserstein_distance_test(data1, data2, feature_name="feature"):
-    distance = stats.wasserstein_distance(data1, data2)
-    
-    # Normalize โดยใช้ standard deviation
-    std_ref = np.std(data1)
-    normalized_distance = distance / std_ref if std_ref > 0 else distance
-    
-    return {
-        'distance': distance,
-        'normalized_distance': normalized_distance
-    }
-```
-
-### การเลือก Drift Detection Method
-
-```
-Decision Tree:
-
-1. Data Type?
-   ├── Continuous → ไปข้อ 2
-   └── Categorical → Chi-squared หรือ PSI
-
-2. ต้องการ Statistical Significance?
-   ├── ใช่ → KS Test
-   └── ไม่จำเป็น → PSI หรือ Wasserstein
-
-3. Industry Requirement?
-   ├── Finance/Credit → PSI (regulatory standards)
-   └── อื่นๆ → เลือกตามความเหมาะสม
-
-4. ต้องการ Sensitivity สูง?
-   ├── ใช่ → Wasserstein
-   └── ปกติ → KS หรือ PSI
-```
-
----
-
-## LAB 2: Feature Drift Detection
-
-### 🎯 วัตถุประสงค์
-- ตรวจจับ drift ในแต่ละ feature อย่างเป็นระบบ
-- วิเคราะห์ numerical vs categorical feature drift
-- สร้าง visualization สำหรับ feature distributions
-
-### ทฤษฎี: Per-Feature Analysis
-
-การวิเคราะห์ drift ในแต่ละ feature มีความสำคัญเพราะ:
-1. ช่วยระบุ root cause ของ model performance degradation
-2. ทำให้เข้าใจว่า feature ไหนเปลี่ยนแปลงมากที่สุด
-3. สามารถ prioritize การแก้ไขได้
-
-### Numerical Features vs Categorical Features
-
-#### Numerical Features
-```
-Methods ที่ใช้:
-├── KS Test - compare CDFs
-├── PSI - compare bin proportions
-└── Wasserstein - measure distribution distance
-```
-
-#### Categorical Features
-```
-Methods ที่ใช้:
-├── Chi-squared Test - compare frequency distributions
-└── PSI (category-based) - compare category proportions
-```
-
-### Feature Drift Detector Class
-
-**Architecture**:
-```
-FeatureDriftDetector
-├── __init__()
-│   ├── reference_data
-│   ├── current_data
-│   ├── numerical_features
-│   └── categorical_features
-│
-├── Numerical Methods
-│   ├── ks_test()
-│   ├── calculate_psi()
-│   └── wasserstein_test()
-│
-├── Categorical Methods
-│   ├── chi_squared_test()
-│   └── categorical_psi()
-│
-└── Analysis
-    ├── analyze_numerical_feature()
-    ├── analyze_categorical_feature()
-    ├── analyze_all_features()
-    └── get_summary_report()
-```
-
-**Code Reference**:
-```python
-class FeatureDriftDetector:
-    def __init__(self, reference_data, current_data, 
-                 numerical_features=None, categorical_features=None):
-        self.reference = reference_data
-        self.current = current_data
-        self.numerical_features = numerical_features
-        self.categorical_features = categorical_features
-    
-    def analyze_numerical_feature(self, feature):
-        results = {
-            'ks_test': self.ks_test(feature),
-            'psi': self.calculate_psi(feature),
-            'wasserstein': self.wasserstein_test(feature)
-        }
-        # สรุปผล
-        ks_drift = results['ks_test']['p_value'] < 0.05
-        psi_value = results['psi']['psi']
+    for idx, kpt in enumerate(keypoints):
+        # Plot X coordinate
+        ax_x = axes[idx, 0]
+        for action in actions:
+            action_data = person_data[person_data['action'] == action]
+            ax_x.scatter(action_data['timestamp'], action_data[f'{kpt}_x'], 
+                        label=action, alpha=0.6, s=2, color=action_colors[action])
         
-        if psi_value < 0.1:
-            psi_severity = 'none'
-        elif psi_value < 0.25:
-            psi_severity = 'mild'
-        else:
-            psi_severity = 'severe'
+        ax_x.set_ylabel(f'{kpt}\nX Position (pixels)')
+        ax_x.set_title(f'{kpt.replace("_", " ").title()} - X Coordinate')
+        if idx == 0:
+            ax_x.legend(loc='upper right', fontsize=8, markerscale=5)
         
-        results['drift_detected'] = ks_drift or psi_severity != 'none'
-        return results
-```
-
-### Feature Drift Ranking
-
-จัดลำดับ features ตามความรุนแรงของ drift เพื่อ prioritization:
-
-```
-Ranking Algorithm:
-1. คำนวณ PSI สำหรับทุก features
-2. เรียงลำดับจากมากไปน้อย
-3. กำหนด severity level (none/mild/severe)
-4. Focus แก้ไข features ที่มี severe drift ก่อน
-```
-
-### Time-based Distribution Analysis
-
-การติดตาม drift เมื่อเวลาผ่านไป:
-
-```
-Period 0 (Reference)
-    │
-    ▼
-Period 1 ──── PSI = 0.02 (none)
-    │
-    ▼
-Period 2 ──── PSI = 0.08 (none)
-    │
-    ▼
-Period 3 ──── PSI = 0.15 (mild) ⚠️
-    │
-    ▼
-Period 4 ──── PSI = 0.28 (severe) 🔴
-```
-
----
-
-## LAB 3: Multivariate Drift Analysis
-
-### 🎯 วัตถุประสงค์
-- ตรวจจับ drift ที่เกิดจากความสัมพันธ์ระหว่าง features
-- ใช้ Dataset-level drift detection
-- วิเคราะห์ Correlation changes
-
-### ทฤษฎี: Multivariate Drift
-
-**ปัญหา**: Univariate methods อาจพลาด drift ที่เกิดจากการเปลี่ยนแปลงของความสัมพันธ์ระหว่าง features
-
-```
-ตัวอย่าง:
-Reference:                    Current:
-- Age mean = 35              - Age mean = 35      (เหมือนเดิม)
-- Income mean = 50000        - Income mean = 50000 (เหมือนเดิม)
-- Corr(Age, Income) = 0.8    - Corr(Age, Income) = 0.1 ← เปลี่ยน!
-
-Univariate test: ไม่พบ drift
-Multivariate test: พบ drift ในความสัมพันธ์
-```
-
-### Methods สำหรับ Multivariate Drift
-
-#### 1. Correlation-based Analysis
-
-**ทฤษฎี**: เปรียบเทียบ correlation matrix ระหว่าง reference และ current data
-
-**Fisher's Z Transformation** สำหรับเปรียบเทียบ correlations:
-```
-Z = arctanh(r)
-
-Z-test statistic = (Z_ref - Z_cur) / SE
-where SE = sqrt(1/(n₁-3) + 1/(n₂-3))
-```
-
-**Code Reference**:
-```python
-def correlation_drift_test(ref_df, cur_df, significance_level=0.05):
-    ref_corr = ref_df.corr()
-    cur_corr = cur_df.corr()
+        # Plot Y coordinate
+        ax_y = axes[idx, 1]
+        for action in actions:
+            action_data = person_data[person_data['action'] == action]
+            ax_y.scatter(action_data['timestamp'], action_data[f'{kpt}_y'], 
+                        label=action, alpha=0.6, s=2, color=action_colors[action])
+        
+        ax_y.set_ylabel(f'{kpt}\nY Position (pixels)')
+        ax_y.set_title(f'{kpt.replace("_", " ").title()} - Y Coordinate')
+        
+        # กลับแกน Y เพราะ pixel coordinate มี Y เพิ่มขึ้นเมื่อไปทางล่าง
+        ax_y.invert_yaxis()
     
-    for col1, col2 in feature_pairs:
-        r_ref = ref_corr.loc[col1, col2]
-        r_cur = cur_corr.loc[col1, col2]
-        
-        # Fisher's Z transformation
-        z_ref = np.arctanh(r_ref)
-        z_cur = np.arctanh(r_cur)
-        
-        # Z-test
-        se = np.sqrt(1/(n_ref-3) + 1/(n_cur-3))
-        z_stat = (z_ref - z_cur) / se
-        p_value = 2 * (1 - stats.norm.cdf(abs(z_stat)))
-```
-
-#### 2. PCA-based Analysis
-
-**ทฤษฎี**: ใช้ Principal Component Analysis เพื่อตรวจจับการเปลี่ยนแปลงของ multivariate structure
-
-```
-PCA Drift Detection:
-├── Explained Variance Ratio - variance ที่แต่ละ PC อธิบายได้
-├── Component Similarity - ทิศทางของ PC เหมือนเดิมหรือไม่
-└── Reconstruction Error - error เมื่อ reconstruct data
-```
-
-**Metrics ที่ใช้**:
-1. **Explained Variance Comparison**: เปรียบเทียบว่าแต่ละ PC อธิบาย variance เท่าเดิมหรือไม่
-2. **Component Similarity (Cosine Similarity)**: ดูว่า PC directions เหมือนเดิมหรือไม่
-3. **Reconstruction Error**: ใช้ reference PCA กับ current data แล้วดู error
-
-**Code Reference**:
-```python
-def pca_drift_detection(ref_df, cur_df, n_components=None):
-    # Standardize
-    scaler = StandardScaler()
-    ref_scaled = scaler.fit_transform(ref_df)
-    cur_scaled = scaler.transform(cur_df)
+    # Set x labels for bottom row
+    axes[-1, 0].set_xlabel('Time (seconds)')
+    axes[-1, 1].set_xlabel('Time (seconds)')
     
-    # Fit PCA on reference
-    pca_ref = PCA(n_components=n_components)
-    pca_ref.fit(ref_scaled)
+    plt.tight_layout()
+    return fig
+
+# สร้างกราฟสำหรับ Person ID แรกที่เลือก
+print("=" * 70)
+print("📈 KEYPOINT TIME SERIES VISUALIZATION")
+print("=" * 70)
+print("\n💡 Interpretation Guide:")
+print("   - แต่ละสีแทน action ที่แตกต่างกัน")
+print("   - แกน X: เวลา (วินาที)")
+print("   - แกน Y ซ้าย: ตำแหน่ง X (pixels) - ซ้าย/ขวา")
+print("   - แกน Y ขวา: ตำแหน่ง Y (pixels) - บน/ล่าง (inverted)")
+print("\n" + "-" * 70)
+
+for pid in SELECTED_PERSON_IDS[:1]:  # แสดงเฉพาะ person แรก
+    print(f"\n📊 Generating plot for Person ID: {pid}")
+    fig = plot_keypoint_timeseries(df_labeled, pid, ANALYSIS_KEYPOINTS)
+    plt.show()
+
+# %% [markdown]
+# ### 3.2 Compare Keypoint Trajectories Across Actions
+#
+# **อธิบาย:** เปรียบเทียบ Trajectory ของ Keypoints ในแต่ละ Action
+#
+# **วัตถุประสงค์:**
+# - เห็นความแตกต่างของการเคลื่อนไหวในแต่ละท่า
+# - เปรียบเทียบระหว่าง persons
+# - หา pattern ที่เป็นเอกลักษณ์ของแต่ละ action
+#
+# **การอ่านกราฟ:**
+# ```
+# ─── เส้นทึบ: X coordinate
+# --- เส้นประ: Y coordinate
+# สีต่างกัน: Person ID ต่างกัน
+# ```
+
+# %%
+# =====================================================
+# STEP 3.2: Compare Keypoint Trajectories Across Actions
+# =====================================================
+# 📝 Description: 
+# เปรียบเทียบการเคลื่อนที่ของ keypoints
+# ในแต่ละ action เพื่อหา pattern ที่แตกต่างกัน
+#
+# 🔍 What to look for:
+# - รูปแบบการเคลื่อนไหวที่ซ้ำๆ (repetitive patterns)
+# - ความแตกต่างระหว่าง actions
+# - ความคล้ายคลึงระหว่าง persons ทำท่าเดียวกัน
+# =====================================================
+
+def plot_action_comparison(df, person_ids, keypoint, figsize=(16, 10)):
+    """
+    เปรียบเทียบ trajectory ของ keypoint ในแต่ละ action
+    สำหรับ selected persons
     
-    # Component similarities (using cosine similarity)
-    for i in range(n_components):
-        cos_sim = abs(np.dot(pca_ref.components_[i], pca_cur.components_[i]))
-        # ถ้า cos_sim < 0.9 = structure เปลี่ยน
-```
-
-#### 3. Mahalanobis Distance
-
-**ทฤษฎี**: วัดว่าข้อมูลใหม่อยู่ห่างจาก distribution ของ reference data เท่าไร โดยคำนึงถึง covariance
-
-```
-Mahalanobis Distance = √((x - μ)ᵀ Σ⁻¹ (x - μ))
-
-โดยที่:
-- x = data point
-- μ = mean ของ reference
-- Σ = covariance matrix ของ reference
-```
-
-**การใช้งาน**:
-1. Fit covariance บน reference data
-2. คำนวณ Mahalanobis distance สำหรับทุก points
-3. เปรียบเทียบ distribution ของ distances
-
-**Code Reference**:
-```python
-def mahalanobis_drift_detection(ref_df, cur_df, threshold_percentile=95):
-    # Fit covariance on reference
-    cov = EmpiricalCovariance().fit(ref_scaled)
+    Parameters:
+    -----------
+    df : DataFrame - ข้อมูล pose
+    person_ids : list - รายการ person IDs
+    keypoint : str - ชื่อ keypoint
+    figsize : tuple - ขนาดรูป
     
-    # Calculate distances
-    ref_distances = cov.mahalanobis(ref_scaled)
-    cur_distances = cov.mahalanobis(cur_scaled)
+    Returns:
+    --------
+    fig : matplotlib figure object
+    """
+    # กรองข้อมูล
+    df_selected = df[df['person_id'].isin(person_ids)].copy()
+    actions = [a for a in df_selected['action'].unique() if a != 'Unknown']
     
-    # Compare distributions
-    ks_stat, ks_pval = stats.ks_2samp(ref_distances, cur_distances)
-    drift_detected = ks_pval < 0.05
-```
-
-### Comprehensive Multivariate Analysis
-
-```
-MultivariateriftDetector
-├── Correlation Analysis
-│   └── ตรวจจับ pairwise correlation changes
-├── PCA Analysis
-│   └── ตรวจจับ structure changes
-├── Mahalanobis Analysis
-│   └── ตรวจจับ distribution shift
-└── Consensus
-    └── รวมผลจากทุก methods
-```
-
----
-
-## LAB 4: Drift Detection in Production Simulation
-
-### 🎯 วัตถุประสงค์
-- สร้าง simulated data stream ที่มี drift
-- ตรวจจับ sudden vs gradual drift
-- Implement sliding window monitoring
-
-### ทฤษฎี: Drift Patterns ใน Production
-
-#### Types of Drift
-
-```
-1. Sudden Drift (Abrupt)
-   ────────────┬────────────
-               │
-               ▼ Drift Point
-   เปลี่ยนทันที
-
-2. Gradual Drift
-   ────────────╱────────────
-   เปลี่ยนช้าๆ ตามเวลา
-
-3. Incremental Drift
-   ────┬───┬───┬───┬────────
-       │   │   │   │
-   เปลี่ยนเป็นขั้นบันได
-
-4. Seasonal/Recurring Drift
-   ────╲╱────╲╱────╲╱────
-   เปลี่ยนตาม pattern ซ้ำ
-```
-
-**Code Reference** - Data Stream Simulator:
-```python
-class DataStreamSimulator:
-    def generate_stream(self, n_samples, drift_type='no_drift', drift_params=None):
-        if drift_type == 'sudden':
-            # เปลี่ยนทันทีที่ drift_point
-            data[:drift_point] = np.random.normal(base_mean, ...)
-            data[drift_point:] = np.random.normal(new_mean, ...)
-            
-        elif drift_type == 'gradual':
-            # Linear interpolation
-            for i in range(n_samples):
-                if drift_start <= i <= drift_end:
-                    progress = (i - drift_start) / (drift_end - drift_start)
-                    current_mean = base_mean + progress * (final_mean - base_mean)
-```
-
-### Sliding Window Drift Detection
-
-**หลักการ**:
-```
-Time ────────────────────────────────────────────▶
-
-Reference Window          Test Window
-[═══════════════════]     [═════════]
-        ▲                      ▲
-        │                      │
-   Fixed/Slow moving    Current data
-```
-
-**Architecture**:
-```
-SlidingWindowDriftDetector
-├── reference_buffer (deque with maxlen)
-├── test_buffer (deque with maxlen)
-├── update(value)
-│   ├── Add to buffer
-│   ├── Check if ready
-│   └── Run drift detection
-├── Detection Methods
-│   ├── KS Test
-│   └── PSI
-└── Output
-    ├── drift_detected
-    ├── metrics
-    └── history
-```
-
-**Code Reference**:
-```python
-class SlidingWindowDriftDetector:
-    def __init__(self, reference_window_size=200, test_window_size=100):
-        self.reference_buffer = deque(maxlen=reference_window_size)
-        self.test_buffer = deque(maxlen=test_window_size)
+    # สร้าง figure
+    n_actions = len(actions)
+    n_cols = 3
+    n_rows = (n_actions + n_cols - 1) // n_cols
     
-    def update(self, value, timestamp=None):
-        # เพิ่มค่าใน buffers
-        if not self.is_initialized:
-            self.reference_buffer.append(value)
-            return {'status': 'initializing'}
-        
-        self.test_buffer.append(value)
-        
-        if len(self.test_buffer) < self.test_window_size:
-            return {'status': 'collecting'}
-        
-        # ทำ drift detection
-        ref_array = np.array(self.reference_buffer)
-        test_array = np.array(self.test_buffer)
-        
-        psi = self.calculate_psi(ref_array, test_array)
-        drift_detected = psi > self.psi_threshold
-        
-        return {
-            'drift_detected': drift_detected,
-            'psi': psi
-        }
-```
-
-### Adaptive Reference Window
-
-**ปัญหาของ Fixed Reference**:
-- Gradual drift อาจตรวจไม่เจอ เพราะ reference เก่าเกินไป
-- ต้อง adapt reference เมื่อ detect drift
-
-**วิธีแก้**:
-```python
-class AdaptiveDriftDetector:
-    def adapt_reference(self):
-        """ปรับ reference window เมื่อ confirm drift"""
-        # ผสม old reference กับ new data
-        old_weight = 0.5
-        
-        # เพิ่มบางส่วนจาก old reference
-        for val in old_ref[-n_old:]:
-            self.reference_buffer.append(val)
-        
-        # เพิ่ม new data
-        for val in new_data:
-            self.reference_buffer.append(val)
-```
-
-### Page-Hinkley Test
-
-**ทฤษฎี**: Algorithm สำหรับ detect mean shift ใน streaming data
-
-```
-Algorithm:
-1. Update running mean: μ_t = α·μ_{t-1} + (1-α)·x_t
-2. Update cumulative sum: S_t = S_{t-1} + (x_t - μ_t - δ)
-3. Track min/max of S_t
-4. Detect if S_t - min(S) > λ (upward shift)
-         หรือ max(S) - S_t > λ (downward shift)
-```
-
-**Code Reference**:
-```python
-class PageHinkleyDetector:
-    def update(self, value):
-        # Update mean (exponential moving average)
-        self.mean = self.alpha * self.mean + (1 - self.alpha) * value
-        
-        # Update cumulative sum
-        self.sum += value - self.mean - self.delta
-        
-        # Update min/max
-        self.min_sum = min(self.min_sum, self.sum)
-        self.max_sum = max(self.max_sum, self.sum)
-        
-        # Detection
-        ph_positive = self.sum - self.min_sum  # Upward shift
-        ph_negative = self.max_sum - self.sum  # Downward shift
-        
-        drift_detected = (ph_positive > self.lambda_) or (ph_negative > self.lambda_)
-```
-
-### Comparison of Methods
-
-| Method | Pros | Cons | Best For |
-|--------|------|------|----------|
-| Sliding Window | Simple, intuitive | Fixed reference | Sudden drift |
-| Adaptive | Handles gradual drift | More complex | Production |
-| Page-Hinkley | Low memory, fast | Mean shift only | Real-time |
-
----
-
-## LAB 5: Custom Metrics & Drift Thresholds
-
-### 🎯 วัตถุประสงค์
-- สร้าง custom drift metrics
-- ปรับ threshold ตาม business requirements
-- Handle false positives/negatives
-
-### ทฤษฎี: Threshold Selection
-
-**ปัญหา**: Default thresholds อาจไม่เหมาะกับทุก use case
-
-```
-Trade-off:
-                    Threshold
-           Low ◄─────────────────▶ High
-           
-Sensitivity: High                    Low
-False Positive: High                 Low
-False Negative: Low                  High
-```
-
-### Custom Drift Metrics
-
-#### 1. Combined Score
-```python
-def combined_score(reference, current, weights=None):
-    """รวมหลาย metrics เข้าด้วยกัน"""
-    if weights is None:
-        weights = {
-            'psi': 0.3,
-            'wasserstein': 0.3,
-            'mean_shift': 0.2,
-            'percentile': 0.2
-        }
+    fig, axes = plt.subplots(n_rows, n_cols, figsize=figsize)
+    axes = axes.flatten() if n_rows > 1 or n_cols > 1 else [axes]
     
-    # Normalize แต่ละ metric ให้อยู่ในช่วง 0-1
-    psi = min(calculate_psi(reference, current), 1.0)
-    wasserstein = min(normalized_wasserstein(reference, current) / 3, 1.0)
-    mean_shift = min(mean_shift_ratio(reference, current) / 3, 1.0)
-    percentile = min(percentile_shift(reference, current) / 3, 1.0)
+    fig.suptitle(f'🎯 {keypoint.replace("_", " ").title()} Trajectory Comparison\n'
+                 f'Selected Persons: {person_ids}', 
+                 fontsize=14, fontweight='bold')
     
-    score = (weights['psi'] * psi + 
-             weights['wasserstein'] * wasserstein +
-             weights['mean_shift'] * mean_shift +
-             weights['percentile'] * percentile)
+    # Color map สำหรับ persons
+    person_colors = dict(zip(person_ids, ['#e74c3c', '#3498db', '#2ecc71']))
     
-    return score
-```
-
-#### 2. Jensen-Shannon Divergence
-```python
-def jensen_shannon_divergence(reference, current, bins=10):
-    """Symmetric version of KL Divergence"""
-    # สร้าง normalized histograms
-    ref_hist = np.histogram(reference, bins=bins, density=True)[0]
-    cur_hist = np.histogram(current, bins=bins, density=True)[0]
+    for idx, action in enumerate(actions):
+        ax = axes[idx]
+        action_data = df_selected[df_selected['action'] == action]
+        
+        for pid in person_ids:
+            person_data = action_data[action_data['person_id'] == pid]
+            if len(person_data) > 0:
+                # Normalize time to start from 0
+                person_data = person_data.sort_values('timestamp')
+                time_normalized = person_data['timestamp'] - person_data['timestamp'].min()
+                
+                ax.plot(time_normalized, person_data[f'{keypoint}_x'], 
+                       label=f'Person {pid} (X)', linestyle='-', alpha=0.8,
+                       color=person_colors[pid])
+                ax.plot(time_normalized, person_data[f'{keypoint}_y'], 
+                       label=f'Person {pid} (Y)', linestyle='--', alpha=0.8,
+                       color=person_colors[pid])
+        
+        ax.set_title(action.replace('_', ' '), fontsize=11)
+        ax.set_xlabel('Normalized Time (s)')
+        ax.set_ylabel('Position (pixels)')
+        
+        if idx == 0:
+            ax.legend(fontsize=8, loc='upper right')
     
-    # Average distribution
-    m = 0.5 * (ref_hist + cur_hist)
+    # ซ่อน axes ที่ไม่ใช้
+    for idx in range(len(actions), len(axes)):
+        axes[idx].set_visible(False)
     
-    # JS Divergence = 0.5 * (KL(P||M) + KL(Q||M))
-    js = 0.5 * (kl_divergence(ref_hist, m) + kl_divergence(cur_hist, m))
-    return js
-```
+    plt.tight_layout()
+    return fig
 
-### Threshold Optimization
+# สร้างกราฟเปรียบเทียบสำหรับ right_wrist (สำคัญสำหรับหมัด)
+print("=" * 70)
+print("📊 ACTION TRAJECTORY COMPARISON")
+print("=" * 70)
+print("\n💡 Reading Guide:")
+print("   ─── เส้นทึบ: X coordinate (ซ้าย-ขวา)")
+print("   --- เส้นประ: Y coordinate (บน-ล่าง)")
+print("   🔴 แดง: Person 1")
+print("   🔵 น้ำเงิน: Person 2") 
+print("   🟢 เขียว: Person 3")
+print("\n" + "-" * 70)
 
-#### F1-based Optimization
+for kpt in ['right_wrist', 'right_ankle']:
+    print(f"\n📊 Analyzing: {kpt.replace('_', ' ').title()}")
+    fig = plot_action_comparison(df_labeled, SELECTED_PERSON_IDS, kpt)
+    plt.show()
 
-```python
-def find_optimal_threshold(scenarios, metric_func, thresholds, optimize_for='f1'):
-    """หา threshold ที่ให้ F1 score สูงสุด"""
+# %% [markdown]
+# ### 3.3 Velocity Analysis
+#
+# **อธิบาย:** วิเคราะห์ความเร็วของ Keypoints เพื่อหา pattern การเคลื่อนไหวที่รวดเร็ว
+#
+# **สูตรคำนวณความเร็ว:**
+# ```
+# velocity = √((dx/dt)² + (dy/dt)²)
+#
+# โดยที่:
+# - dx = การเปลี่ยนแปลงตำแหน่ง X
+# - dy = การเปลี่ยนแปลงตำแหน่ง Y  
+# - dt = การเปลี่ยนแปลงเวลา
+# ```
+#
+# **การตีความ:**
+# - **ความเร็วสูง** = การเคลื่อนไหวที่รวดเร็ว (หมัด, เตะ)
+# - **ความเร็วต่ำ** = การเคลื่อนไหวช้าๆ (ท่าตั้งรับ, การเตรียมตัว)
+#
+# ```
+#        High Velocity              Low Velocity
+#            ↗                          →
+#           /                           
+#          /                            
+#         ○ ─→ ───→ ────→              ○ → ○ → ○
+#        หมัด/เตะ                      ท่าตั้งรับ
+# ```
+
+# %%
+# =====================================================
+# STEP 3.3: Velocity Analysis
+# =====================================================
+# 📝 Description: 
+# คำนวณความเร็วของ keypoints
+# ความเร็ว = การเปลี่ยนแปลงตำแหน่งต่อเวลา
+# 
+# 📐 Formula: 
+# velocity = sqrt((dx/dt)^2 + (dy/dt)^2)
+# 
+# 🎯 Interpretation:
+# - ความเร็วสูง = การเคลื่อนไหวที่รวดเร็ว (หมัด, เตะ)
+# - ความเร็วต่ำ = การเคลื่อนไหวช้าๆ (ท่าตั้งรับ)
+#
+# 🔧 Smoothing:
+# ใช้ uniform_filter1d เพื่อลด noise ในข้อมูล velocity
+# =====================================================
+
+def calculate_velocity(df, person_id, keypoint, window_size=3):
+    """
+    คำนวณความเร็วของ keypoint
+    
+    Parameters:
+    -----------
+    df : DataFrame - ข้อมูล pose
+    person_id : int - Person ID
+    keypoint : str - ชื่อ keypoint
+    window_size : int - ขนาด window สำหรับ smoothing
+    
+    Returns:
+    --------
+    DataFrame พร้อมคอลัมน์ velocity และ velocity_smooth
+    """
+    # กรองและ sort ข้อมูล
+    person_data = df[df['person_id'] == person_id].copy()
+    person_data = person_data.sort_values('timestamp').reset_index(drop=True)
+    
+    # คำนวณ dx, dy, dt
+    person_data['dx'] = person_data[f'{keypoint}_x'].diff()
+    person_data['dy'] = person_data[f'{keypoint}_y'].diff()
+    person_data['dt'] = person_data['timestamp'].diff()
+    
+    # คำนวณ velocity (Euclidean distance per time)
+    person_data['velocity'] = np.sqrt(
+        (person_data['dx'] / person_data['dt'])**2 + 
+        (person_data['dy'] / person_data['dt'])**2
+    )
+    
+    # Smooth velocity ด้วย moving average
+    if window_size > 1 and len(person_data) > window_size:
+        person_data['velocity_smooth'] = uniform_filter1d(
+            person_data['velocity'].fillna(0), size=window_size
+        )
+    else:
+        person_data['velocity_smooth'] = person_data['velocity']
+    
+    return person_data
+
+def plot_velocity_analysis(df, person_ids, keypoint, figsize=(16, 10)):
+    """
+    สร้างกราฟวิเคราะห์ความเร็วเปรียบเทียบระหว่าง actions
+    
+    Parameters:
+    -----------
+    df : DataFrame - ข้อมูล pose
+    person_ids : list - รายการ person IDs
+    keypoint : str - ชื่อ keypoint
+    figsize : tuple - ขนาดรูป
+    
+    Returns:
+    --------
+    fig : matplotlib figure object
+    """
+    actions = [a for a in df['action'].unique() if a != 'Unknown']
+    
+    fig, axes = plt.subplots(len(person_ids), 1, figsize=figsize, sharex=True)
+    if len(person_ids) == 1:
+        axes = [axes]
+    
+    fig.suptitle(f'⚡ Velocity Analysis - {keypoint.replace("_", " ").title()}\n'
+                 f'Higher velocity = Faster movement (e.g., punch, kick)', 
+                 fontsize=14, fontweight='bold')
+    
+    # Color map สำหรับ actions
+    action_colors = dict(zip(actions, plt.cm.tab10(np.linspace(0, 1, len(actions)))))
+    
+    for idx, pid in enumerate(person_ids):
+        ax = axes[idx]
+        
+        # คำนวณ velocity
+        vel_data = calculate_velocity(df, pid, keypoint, window_size=5)
+        vel_data = vel_data[vel_data['action'] != 'Unknown']
+        
+        # Plot velocity for each action
+        for action in actions:
+            action_data = vel_data[vel_data['action'] == action]
+            if len(action_data) > 0:
+                ax.plot(action_data['timestamp'], action_data['velocity_smooth'],
+                       label=action, alpha=0.7, linewidth=0.8,
+                       color=action_colors[action])
+        
+        ax.set_ylabel(f'Person {pid}\nVelocity (px/s)')
+        ax.set_ylim(0, vel_data['velocity_smooth'].quantile(0.99) * 1.1)
+        
+        if idx == 0:
+            ax.legend(loc='upper right', fontsize=8, ncol=2)
+    
+    axes[-1].set_xlabel('Time (seconds)')
+    
+    plt.tight_layout()
+    return fig
+
+# วิเคราะห์ความเร็วสำหรับ wrists
+print("=" * 70)
+print("⚡ VELOCITY ANALYSIS")
+print("=" * 70)
+print("\n💡 Interpretation:")
+print("   📈 Peak สูง = การเคลื่อนไหวเร็ว (หมัด/เตะ)")
+print("   📉 ค่าต่ำ = การเคลื่อนไหวช้า (เตรียมตัว/ตั้งรับ)")
+print("\n" + "-" * 70)
+
+for kpt in ['right_wrist', 'left_wrist']:
+    print(f"\n📊 Velocity analysis for: {kpt.replace('_', ' ').title()}")
+    fig = plot_velocity_analysis(df_labeled, SELECTED_PERSON_IDS, kpt)
+    plt.show()
+
+# %% [markdown]
+# ### 3.4 Velocity Statistics per Action
+#
+# **อธิบาย:** สรุปสถิติความเร็วเฉลี่ยของแต่ละ Action เพื่อจัดอันดับท่าที่เคลื่อนไหวเร็วที่สุด
+#
+# **สถิติที่คำนวณ:**
+# - **Mean Velocity**: ความเร็วเฉลี่ย - บอกความเร็วโดยทั่วไปของท่า
+# - **Max Velocity**: ความเร็วสูงสุด - บอกความเร็วในจังหวะที่เร็วที่สุด
+# - **Std Velocity**: ค่าเบี่ยงเบนมาตรฐาน - บอกความแปรปรวนของการเคลื่อนไหว
+
+# %%
+# =====================================================
+# STEP 3.4: Velocity Statistics per Action
+# =====================================================
+# 📝 Description: 
+# คำนวณและเปรียบเทียบสถิติความเร็ว
+# ของแต่ละ action เพื่อระบุท่าที่เคลื่อนไหวเร็ว/ช้า
+#
+# 📊 Statistics computed:
+# - Mean Velocity: ความเร็วเฉลี่ย
+# - Max Velocity: ความเร็วสูงสุด
+# - Std Velocity: ค่าเบี่ยงเบนมาตรฐาน
+# - Median Velocity: ค่ามัธยฐาน
+# =====================================================
+
+def calculate_action_velocity_stats(df, person_ids, keypoints):
+    """
+    คำนวณสถิติความเร็วต่อ action
+    
+    Parameters:
+    -----------
+    df : DataFrame - ข้อมูล pose
+    person_ids : list - รายการ person IDs
+    keypoints : list - รายการ keypoints
+    
+    Returns:
+    --------
+    DataFrame ของสถิติความเร็ว
+    """
     results = []
     
-    for t in thresholds:
-        y_true = [s['has_drift'] for s in scenarios]
-        y_pred = [metric_func(s['reference'], s['current']) > t for s in scenarios]
-        
-        precision = precision_score(y_true, y_pred)
-        recall = recall_score(y_true, y_pred)
-        f1 = f1_score(y_true, y_pred)
-        
-        results.append({'threshold': t, 'f1': f1})
-    
-    # หา optimal
-    optimal = max(results, key=lambda x: x['f1'])
-    return optimal
-```
-
-#### Cost-based Optimization
-
-**ทฤษฎี**: ปรับ threshold ตาม cost ของ false positive vs false negative
-
-```
-Total Cost = FP_count × FP_cost + FN_count × FN_cost
-
-Scenarios:
-├── High FN cost (เช่น fraud detection)
-│   └── ใช้ Low threshold → detect more, accept false alarms
-├── High FP cost (เช่น expensive retraining)
-│   └── ใช้ High threshold → conservative detection
-└── Balanced cost
-    └── Optimize for F1
-```
-
-**Code Reference**:
-```python
-class BusinessDriftThreshold:
-    def __init__(self, false_positive_cost=1, false_negative_cost=10):
-        self.fp_cost = false_positive_cost
-        self.fn_cost = false_negative_cost
-    
-    def calculate_total_cost(self, y_true, y_pred):
-        tn, fp, fn, tp = confusion_matrix(y_true, y_pred).ravel()
-        return fp * self.fp_cost + fn * self.fn_cost
-    
-    def find_cost_optimal_threshold(self, scenarios, metric_func, thresholds):
-        costs = []
-        for t in thresholds:
-            y_pred = [metric_func(s['reference'], s['current']) > t 
-                     for s in scenarios]
-            cost = self.calculate_total_cost(y_true, y_pred)
-            costs.append({'threshold': t, 'cost': cost})
-        
-        optimal = min(costs, key=lambda x: x['cost'])
-        return optimal
-```
-
-### Handling False Positives/Negatives
-
-#### Ensemble Approach
-```python
-class RobustDriftDetector:
-    """ใช้หลาย methods ร่วมกัน"""
-    
-    def detect(self, reference, current):
-        all_metrics = self._calculate_all_metrics(reference, current)
-        
-        # Majority voting
-        drift_votes = sum(
-            1 for m, v in all_metrics.items() 
-            if v > self.thresholds[m]
-        )
-        
-        # ต้อง 3/4 methods agree
-        ensemble_drift = drift_votes >= 3
-        
-        return ensemble_drift
-```
-
-#### Confirmation Mechanism
-```python
-def detect_with_confirmation(self, reference, current):
-    """ต้อง detect หลายครั้งติดกันถึงยืนยัน"""
-    
-    potential_drift = self.primary_metric(reference, current) > threshold
-    
-    if potential_drift:
-        self.consecutive_count += 1
-    else:
-        self.consecutive_count = 0
-    
-    # Confirmed ถ้า detect 3 ครั้งติดกัน
-    confirmed = self.consecutive_count >= 3
-    return confirmed
-```
-
-### Best Practices สำหรับ Threshold Setting
-
-```
-1️⃣ DOMAIN-SPECIFIC THRESHOLDS
-   - ไม่ใช้ default โดยไม่ validate
-   - ทดสอบกับ labeled data
-   - ปรึกษา domain experts
-
-2️⃣ COST-BASED OPTIMIZATION
-   - พิจารณา cost ของ FP vs FN
-   - FN แพง → Lower threshold
-   - FP แพง → Higher threshold
-
-3️⃣ ENSEMBLE APPROACH
-   - ใช้หลาย metrics ร่วมกัน
-   - Voting mechanism ลด false positives
-
-4️⃣ CONFIRMATION MECHANISM
-   - Require consecutive detections
-   - ป้องกัน temporary spikes
-
-5️⃣ PERIODIC REVIEW
-   - Review thresholds เป็นระยะ
-   - Business requirements อาจเปลี่ยน
-```
-
----
-
-## LAB 6: End-to-End Monitoring Pipeline
-
-### 🎯 วัตถุประสงค์
-- รวมทุก components เข้าด้วยกัน
-- สร้าง automated monitoring workflow
-- Integrate กับ MLflow
-
-### Architecture Overview
-
-```
-┌─────────────────────────────────────────────────────────────┐
-│                 Drift Monitoring Pipeline                    │
-├─────────────────────────────────────────────────────────────┤
-│                                                              │
-│  ┌────────────────┐    ┌────────────────┐                   │
-│  │  Data Source   │───▶│  Data Buffer   │                   │
-│  └────────────────┘    └───────┬────────┘                   │
-│                                │                             │
-│                    ┌───────────▼───────────┐                │
-│                    │   Drift Calculator    │                │
-│                    └───────────┬───────────┘                │
-│                                │                             │
-│           ┌────────────────────┼────────────────────┐       │
-│           │                    │                    │       │
-│           ▼                    ▼                    ▼       │
-│  ┌─────────────┐      ┌─────────────┐      ┌─────────────┐ │
-│  │   Alert     │      │   Report    │      │   MLflow    │ │
-│  │   Manager   │      │   Generator │      │   Tracker   │ │
-│  └─────────────┘      └─────────────┘      └─────────────┘ │
-│                                                              │
-└─────────────────────────────────────────────────────────────┘
-```
-
-### Core Components
-
-#### 1. Data Classes
-
-```python
-from dataclasses import dataclass
-from enum import Enum
-
-class AlertSeverity(Enum):
-    INFO = "info"
-    WARNING = "warning"
-    CRITICAL = "critical"
-
-class DriftType(Enum):
-    NONE = "none"
-    MILD = "mild"
-    MODERATE = "moderate"
-    SEVERE = "severe"
-
-@dataclass
-class DriftResult:
-    timestamp: datetime
-    feature: str
-    drift_detected: bool
-    drift_type: DriftType
-    psi: float
-    ks_statistic: float
-    ks_pvalue: float
-    reference_mean: float
-    current_mean: float
-
-@dataclass
-class Alert:
-    timestamp: datetime
-    severity: AlertSeverity
-    message: str
-    details: Dict
-    acknowledged: bool = False
-```
-
-#### 2. Configuration
-
-```python
-@dataclass
-class MonitoringConfig:
-    reference_window_size: int = 1000
-    current_window_size: int = 200
-    psi_mild_threshold: float = 0.1
-    psi_moderate_threshold: float = 0.2
-    psi_severe_threshold: float = 0.25
-    ks_significance: float = 0.05
-    check_interval_seconds: int = 60
-    alert_cooldown_minutes: int = 30
-    features_to_monitor: List[str] = field(default_factory=list)
-```
-
-#### 3. Data Buffer
-
-```python
-class DataBuffer:
-    """Buffer สำหรับเก็บ reference และ current data"""
-    
-    def __init__(self, config: MonitoringConfig):
-        self.reference_data: Dict[str, deque] = {}
-        self.current_data: Dict[str, deque] = {}
-    
-    def initialize(self, reference_df: pd.DataFrame):
-        """Initialize with reference data"""
-        for feature in self.config.features_to_monitor:
-            self.reference_data[feature] = deque(
-                reference_df[feature].values,
-                maxlen=self.config.reference_window_size
-            )
-    
-    def add_data(self, data: Dict[str, float]):
-        """Add new data point"""
-        for feature, value in data.items():
-            self.current_data[feature].append(value)
-```
-
-#### 4. Alert Manager
-
-```python
-class AlertManager:
-    """จัดการ alerts พร้อม cooldown"""
-    
-    def __init__(self, config: MonitoringConfig):
-        self.alerts: List[Alert] = []
-        self.last_alert_time: Dict[str, datetime] = {}
-    
-    def should_alert(self, feature: str) -> bool:
-        """Check cooldown"""
-        if feature not in self.last_alert_time:
-            return True
-        elapsed = datetime.now() - self.last_alert_time[feature]
-        return elapsed > timedelta(minutes=self.config.alert_cooldown_minutes)
-    
-    def create_alert(self, drift_result: DriftResult) -> Optional[Alert]:
-        if not drift_result.drift_detected:
-            return None
-        
-        if not self.should_alert(drift_result.feature):
-            return None
-        
-        # Determine severity
-        severity = self._determine_severity(drift_result.drift_type)
-        
-        alert = Alert(
-            timestamp=drift_result.timestamp,
-            severity=severity,
-            message=f"Drift detected in {drift_result.feature}",
-            details=drift_result.to_dict()
-        )
-        
-        self.alerts.append(alert)
-        self.last_alert_time[drift_result.feature] = datetime.now()
-        
-        return alert
-```
-
-#### 5. Main Pipeline
-
-```python
-class DriftMonitoringPipeline:
-    def __init__(self, config: MonitoringConfig):
-        self.config = config
-        self.data_buffer = DataBuffer(config)
-        self.alert_manager = AlertManager(config)
-        self.drift_calculator = DriftCalculator()
-        self.results_history: List[DriftResult] = []
-    
-    def initialize(self, reference_data: pd.DataFrame):
-        self.data_buffer.initialize(reference_data)
-    
-    def process_batch(self, batch_data: pd.DataFrame) -> List[DriftResult]:
-        results = []
-        
-        # Add data to buffer
-        for idx, row in batch_data.iterrows():
-            self.data_buffer.add_data(row.to_dict())
-        
-        # Check if ready
-        if not self.data_buffer.is_current_ready():
-            return results
-        
-        # Detect drift for each feature
-        for feature in self.config.features_to_monitor:
-            result = self._detect_drift_for_feature(feature)
-            if result:
-                results.append(result)
+    for pid in person_ids:
+        for kpt in keypoints:
+            vel_data = calculate_velocity(df, pid, kpt, window_size=5)
+            vel_data = vel_data[vel_data['action'] != 'Unknown']
+            
+            # คำนวณสถิติต่อ action
+            for action in vel_data['action'].unique():
+                action_data = vel_data[vel_data['action'] == action]['velocity_smooth']
+                action_data = action_data.dropna()
                 
-                # Create alert if needed
-                if result.drift_detected:
-                    self.alert_manager.create_alert(result)
-        
-        return results
-```
-
-### Report Generation
-
-```python
-class ReportGenerator:
-    def generate_html_report(self, output_path: str):
-        """Generate HTML report"""
-        summary = self.pipeline.get_summary_report()
-        
-        html_content = f"""
-        <html>
-        <head><title>Drift Monitoring Report</title></head>
-        <body>
-            <h1>Drift Monitoring Report</h1>
-            <p>Generated: {datetime.now()}</p>
-            
-            <h2>Summary</h2>
-            <p>Total Checks: {summary['total_checks']}</p>
-            <p>Drifts Detected: {summary['total_drifts_detected']}</p>
-            
-            <h2>Feature Summary</h2>
-            <table>
-                <tr><th>Feature</th><th>PSI</th><th>Status</th></tr>
-                {self._generate_feature_rows(summary)}
-            </table>
-            
-            <h2>Active Alerts</h2>
-            {self._generate_alerts_section()}
-        </body>
-        </html>
-        """
-        
-        with open(output_path, 'w') as f:
-            f.write(html_content)
-```
-
-### MLflow Integration
-
-```python
-class MLflowDriftTracker:
-    def __init__(self, experiment_name: str = "drift_monitoring"):
-        mlflow.set_experiment(experiment_name)
+                if len(action_data) > 0:
+                    results.append({
+                        'person_id': pid,
+                        'keypoint': kpt,
+                        'action': action,
+                        'mean_velocity': action_data.mean(),
+                        'max_velocity': action_data.max(),
+                        'std_velocity': action_data.std(),
+                        'median_velocity': action_data.median()
+                    })
     
-    def log_drift_result(self, result: DriftResult):
-        mlflow.log_metric(f"{result.feature}_psi", result.psi)
-        mlflow.log_metric(f"{result.feature}_drift", 1 if result.drift_detected else 0)
-        mlflow.log_param(f"{result.feature}_drift_type", result.drift_type.value)
+    return pd.DataFrame(results)
+
+# คำนวณสถิติ
+velocity_stats = calculate_action_velocity_stats(
+    df_labeled, 
+    SELECTED_PERSON_IDS, 
+    ['right_wrist', 'left_wrist', 'right_ankle', 'left_ankle']
+)
+
+print("=" * 70)
+print("📊 VELOCITY STATISTICS BY ACTION")
+print("=" * 70)
+
+# เฉลี่ยข้าม persons และ keypoints
+action_velocity_summary = velocity_stats.groupby('action').agg({
+    'mean_velocity': 'mean',
+    'max_velocity': 'mean',
+    'std_velocity': 'mean'
+}).round(2)
+
+action_velocity_summary = action_velocity_summary.sort_values('mean_velocity', ascending=False)
+
+print("\n📋 Average Velocity Statistics by Action:")
+print("   (Averaged across all persons and keypoints)")
+print("\n" + action_velocity_summary.to_string())
+
+print("\n💡 Interpretation:")
+print("   🥇 Actions ที่อยู่ด้านบน = เคลื่อนไหวเร็วกว่า (หมัด/เตะ)")
+print("   🥉 Actions ที่อยู่ด้านล่าง = เคลื่อนไหวช้ากว่า (ตั้งรับ)")
+
+# Visualization
+fig, axes = plt.subplots(1, 2, figsize=(14, 6))
+
+# Mean velocity by action
+colors = plt.cm.RdYlGn(np.linspace(0.2, 0.8, len(action_velocity_summary)))[::-1]
+bars = axes[0].barh(action_velocity_summary.index, 
+                    action_velocity_summary['mean_velocity'],
+                    color=colors, edgecolor='black')
+axes[0].set_xlabel('Mean Velocity (pixels/second)')
+axes[0].set_title('📊 Mean Velocity by Action\n(Higher = Faster movement)')
+axes[0].invert_yaxis()
+
+# เพิ่มค่าบน bar
+for bar, val in zip(bars, action_velocity_summary['mean_velocity']):
+    axes[0].text(bar.get_width() + 5, bar.get_y() + bar.get_height()/2,
+                 f'{val:.1f}', va='center', fontsize=9)
+
+# Max velocity by action
+bars = axes[1].barh(action_velocity_summary.index, 
+                    action_velocity_summary['max_velocity'],
+                    color=colors, edgecolor='black')
+axes[1].set_xlabel('Max Velocity (pixels/second)')
+axes[1].set_title('📊 Max Velocity by Action\n(Peak movement speed)')
+axes[1].invert_yaxis()
+
+# เพิ่มค่าบน bar
+for bar, val in zip(bars, action_velocity_summary['max_velocity']):
+    axes[1].text(bar.get_width() + 5, bar.get_y() + bar.get_height()/2,
+                 f'{val:.1f}', va='center', fontsize=9)
+
+plt.tight_layout()
+plt.show()
+
+# %% [markdown]
+# ---
+#
+# ## 📚 Part 4: Joint Angle Analysis
+#
+# ในส่วนนี้เราจะคำนวณและวิเคราะห์มุมข้อต่อ (Joint Angles) ซึ่งเป็นตัวแปรสำคัญในการวิเคราะห์ท่าทาง
+#
+# ### 4.1 Understanding Joint Angles
+#
+# **Joint Angle คืออะไร?**
+# - มุมที่เกิดจากข้อต่อ 3 จุด (เช่น ไหล่-ข้อศอก-ข้อมือ)
+# - ใช้ในการวิเคราะห์ท่าทางและการเคลื่อนไหว
+# - สำคัญมากในกีฬาและการวิเคราะห์การเคลื่อนไหว
+#
+# **Angles ที่จะคำนวณ:**
+#
+# | Angle | Points | ความหมาย |
+# |-------|--------|----------|
+# | Elbow Angle | shoulder-elbow-wrist | มุมงอข้อศอก |
+# | Knee Angle | hip-knee-ankle | มุมงอเข่า |
+# | Shoulder Angle | elbow-shoulder-hip | มุมยกแขน |
+# | Hip Angle | shoulder-hip-knee | มุมยกขา |
+# | Torso Lean | จากแนวตั้ง | มุมเอียงลำตัว |
+#
+# **ภาพประกอบการคำนวณมุม:**
+# ```
+#         p1 (shoulder)
+#          \
+#           \  ← angle
+#            \
+#             p2 (elbow) ────── p3 (wrist)
+#
+# angle = arctan2(|cross(v1,v2)|, dot(v1,v2))
+# โดย v1 = p1 - p2, v2 = p3 - p2
+# ```
+#
+# **ตัวอย่างค่ามุม:**
+# ```
+# Elbow Angle:
+# - 180° = แขนเหยียดตรง
+# - 90°  = งอ 90 องศา
+# - 45°  = งอมาก
+#
+#   180°           90°            45°
+#   ────○         ○              ○
+#       │          \            /
+#       │           \          /
+#       ○            ○        ○
+# ```
+
+# %%
+# =====================================================
+# STEP 4.1: Joint Angle Calculation Functions
+# =====================================================
+# 📝 Description: 
+# สร้างฟังก์ชันคำนวณมุมข้อต่อ
+# 
+# 📐 Mathematical Principle:
+# ใช้ dot product และ cross product
+# angle = atan2(|cross_product|, dot_product)
+# 
+# 📊 Output:
+# มุมเป็นองศา (degrees) ตั้งแต่ 0° ถึง 180°
+#
+# 💡 Note:
+# - 180° = เหยียดตรง
+# - 90° = งอฉาก
+# - 0° = พับชิด
+# =====================================================
+
+def calculate_angle(p1, p2, p3):
+    """
+    คำนวณมุมที่จุด p2 จากเส้น p1-p2 และ p2-p3
     
-    def log_summary(self, summary: Dict):
-        mlflow.log_metric("total_drifts", summary.get('total_drifts_detected', 0))
-        for feature, data in summary.get('feature_summary', {}).items():
-            mlflow.log_metric(f"{feature}_drift_rate", data['drift_rate'])
+    Parameters:
+    -----------
+    p1, p2, p3 : np.array - พิกัด (x, y) ของแต่ละจุด
     
-    def log_artifact(self, artifact_path: str):
-        mlflow.log_artifact(artifact_path)
-```
+    Returns:
+    --------
+    angle : float - มุมเป็นองศา (0-180)
+    
+    Diagram:
+           p1
+            \
+             \  angle
+              p2-------p3
+    
+    Formula:
+    angle = arctan2(|v1 × v2|, v1 · v2)
+    """
+    # Vector จาก p2 ไป p1 และ p3
+    v1 = p1 - p2
+    v2 = p3 - p2
+    
+    # ตรวจสอบว่ามีค่า valid หรือไม่ (0 = keypoint not detected)
+    if np.any(p1 == 0) or np.any(p2 == 0) or np.any(p3 == 0):
+        return np.nan
+    
+    # คำนวณ dot product: v1 · v2 = |v1||v2|cos(θ)
+    dot = np.dot(v1, v2)
+    
+    # คำนวณ cross product magnitude: |v1 × v2| = |v1||v2|sin(θ)
+    cross = np.cross(v1, v2)
+    
+    # คำนวณมุม (radians) ด้วย atan2 เพื่อได้มุมที่ถูกต้องในทุก quadrant
+    angle_rad = np.arctan2(np.abs(cross), dot)
+    
+    # แปลงเป็น degrees
+    angle_deg = np.degrees(angle_rad)
+    
+    return angle_deg
 
----
+def calculate_all_angles(row):
+    """
+    คำนวณมุมข้อต่อทั้งหมดสำหรับ 1 row ของข้อมูล
+    
+    Parameters:
+    -----------
+    row : pandas Series - 1 row ของ DataFrame
+    
+    Returns:
+    --------
+    dict : dictionary ของมุมต่างๆ
+    """
+    angles = {}
+    
+    # Helper function ดึงพิกัด keypoint
+    def get_point(name):
+        return np.array([row[f'{name}_x'], row[f'{name}_y']])
+    
+    # ===== Elbow Angles (มุมข้อศอก) =====
+    # การงอข้อศอก: shoulder-elbow-wrist
+    angles['left_elbow_angle'] = calculate_angle(
+        get_point('left_shoulder'),
+        get_point('left_elbow'),
+        get_point('left_wrist')
+    )
+    
+    angles['right_elbow_angle'] = calculate_angle(
+        get_point('right_shoulder'),
+        get_point('right_elbow'),
+        get_point('right_wrist')
+    )
+    
+    # ===== Knee Angles (มุมเข่า) =====
+    # การงอเข่า: hip-knee-ankle
+    angles['left_knee_angle'] = calculate_angle(
+        get_point('left_hip'),
+        get_point('left_knee'),
+        get_point('left_ankle')
+    )
+    
+    angles['right_knee_angle'] = calculate_angle(
+        get_point('right_hip'),
+        get_point('right_knee'),
+        get_point('right_ankle')
+    )
+    
+    # ===== Shoulder Angles (มุมไหล่) =====
+    # การยกแขน: elbow-shoulder-hip
+    angles['left_shoulder_angle'] = calculate_angle(
+        get_point('left_elbow'),
+        get_point('left_shoulder'),
+        get_point('left_hip')
+    )
+    
+    angles['right_shoulder_angle'] = calculate_angle(
+        get_point('right_elbow'),
+        get_point('right_shoulder'),
+        get_point('right_hip')
+    )
+    
+    # ===== Hip Angles (มุมสะโพก) =====
+    # การยกขา: shoulder-hip-knee
+    angles['left_hip_angle'] = calculate_angle(
+        get_point('left_shoulder'),
+        get_point('left_hip'),
+        get_point('left_knee')
+    )
+    
+    angles['right_hip_angle'] = calculate_angle(
+        get_point('right_shoulder'),
+        get_point('right_hip'),
+        get_point('right_knee')
+    )
+    
+    # ===== Torso Lean Angle (มุมเอียงลำตัว) =====
+    # คำนวณจากเส้นที่เชื่อม shoulder center กับ hip center
+    shoulder_mid = (get_point('left_shoulder') + get_point('right_shoulder')) / 2
+    hip_mid = (get_point('left_hip') + get_point('right_hip')) / 2
+    
+    # มุมของลำตัวเทียบกับแนวตั้ง (vertical)
+    vertical = np.array([0, -1])  # ขึ้นบน (ใน pixel coord, Y ลดลง = ขึ้นบน)
+    torso_vector = shoulder_mid - hip_mid
+    
+    if np.linalg.norm(torso_vector) > 0:
+        torso_vector_norm = torso_vector / np.linalg.norm(torso_vector)
+        dot = np.dot(torso_vector_norm, vertical)
+        angles['torso_lean_angle'] = np.degrees(np.arccos(np.clip(dot, -1, 1)))
+    else:
+        angles['torso_lean_angle'] = np.nan
+    
+    return angles
 
-## สรุปและ Best Practices
+print("✅ Angle calculation functions defined!")
+print("\n📐 Angles to be calculated:")
+print("   ┌────────────────────────────────────────────┐")
+print("   │ Angle Name          │ Points               │")
+print("   ├────────────────────────────────────────────┤")
+print("   │ Elbow Angle         │ shoulder-elbow-wrist │")
+print("   │ Knee Angle          │ hip-knee-ankle       │")
+print("   │ Shoulder Angle      │ elbow-shoulder-hip   │")
+print("   │ Hip Angle           │ shoulder-hip-knee    │")
+print("   │ Torso Lean          │ from vertical        │")
+print("   └────────────────────────────────────────────┘")
 
-### Summary Table
+# %% [markdown]
+# ### 4.2 Calculate Angles for All Data
+#
+# **อธิบาย:** คำนวณมุมข้อต่อทั้งหมดสำหรับทุก frame ในข้อมูล
+#
+# **ขั้นตอน:**
+# 1. ใช้ฟังก์ชัน `calculate_all_angles()` กับทุก row
+# 2. เพิ่มคอลัมน์มุมเข้าไปใน DataFrame
+# 3. ตรวจสอบผลลัพธ์
 
-| Lab | หัวข้อ | Key Concepts |
-|-----|--------|--------------|
-| 1 | Understanding Data Drift | Covariate/Concept Shift, KS/PSI/Wasserstein |
-| 2 | Feature Drift Detection | Per-feature analysis, Numerical vs Categorical |
-| 3 | Multivariate Drift | Correlation, PCA, Mahalanobis Distance |
-| 4 | Production Simulation | Streaming, Sliding Window, Page-Hinkley |
-| 5 | Custom Metrics & Thresholds | Optimization, Cost-based, Ensemble |
-| 6 | End-to-End Pipeline | Architecture, Alerting, Reporting, MLflow |
+# %%
+# =====================================================
+# STEP 4.2: Calculate Angles for All Data
+# =====================================================
+# 📝 Description: 
+# คำนวณมุมข้อต่อทั้งหมดสำหรับทุก frame
+#
+# ⏱️ Note: 
+# การคำนวณนี้อาจใช้เวลาสักครู่ (30 วินาที - 2 นาที)
+# ขึ้นอยู่กับจำนวนข้อมูล
+#
+# 🔄 Process:
+# 1. Apply calculate_all_angles() to each row
+# 2. Convert results to DataFrame
+# 3. Merge with original data
+# =====================================================
 
-### Decision Framework
+print("=" * 70)
+print("📐 CALCULATING JOINT ANGLES")
+print("=" * 70)
+print(f"\n⏳ Processing {len(df_labeled):,} frames... This may take a moment.")
 
-```
-เมื่อพบ Drift ควรทำอย่างไร?
+# คำนวณมุมทั้งหมด
+import time
+start_time = time.time()
 
-1. Assess Severity
-   ├── MILD → Monitor closely
-   ├── MODERATE → Investigate root cause
-   └── SEVERE → Immediate action required
+# Apply function to each row และแปลงเป็น DataFrame
+angles_list = df_labeled.apply(calculate_all_angles, axis=1).tolist()
+angles_df = pd.DataFrame(angles_list)
 
-2. Investigate Root Cause
-   ├── Data collection issue?
-   ├── Upstream data change?
-   ├── Real-world change?
-   └── Seasonal pattern?
+# รวมกับข้อมูลเดิม
+df_with_angles = pd.concat([df_labeled.reset_index(drop=True), angles_df], axis=1)
 
-3. Decide Action
-   ├── Retrain model
-   ├── Update feature engineering
-   ├── Adjust thresholds
-   └── Business process change
-```
+elapsed_time = time.time() - start_time
+print(f"✅ Calculation completed in {elapsed_time:.2f} seconds")
 
-### Production Checklist
+# แสดงรายชื่อ angle columns
+angle_columns = [col for col in df_with_angles.columns if '_angle' in col]
+print(f"\n📊 Angle columns added: {len(angle_columns)}")
+for col in angle_columns:
+    print(f"   - {col}")
 
-```
-□ Define monitoring strategy
-  □ Which features to monitor?
-  □ What thresholds to use?
-  □ How often to check?
+# แสดงตัวอย่างข้อมูล
+print("\n" + "=" * 70)
+print("📋 SAMPLE DATA WITH ANGLES")
+print("=" * 70)
+display(df_with_angles[['frame_idx', 'person_id', 'action'] + angle_columns].head(10))
 
-□ Implement detection
-  □ Choose appropriate methods
-  □ Handle both numerical and categorical
-  □ Consider multivariate drift
+# แสดงสถิติเบื้องต้นของมุม
+print("\n" + "=" * 70)
+print("📊 ANGLE STATISTICS SUMMARY")
+print("=" * 70)
+print(df_with_angles[angle_columns].describe().round(2))
 
-□ Set up alerting
-  □ Define severity levels
-  □ Configure notification channels
-  □ Set cooldown periods
+# %% [markdown]
+# ### 4.3 Angle Time Series Visualization
+#
+# **อธิบาย:** แสดงการเปลี่ยนแปลงของมุมข้อต่อตามเวลา
+#
+# **การอ่านกราฟ:**
+# - แกน Y: มุมเป็นองศา (0° - 180°)
+# - เส้นประสีเทา 90°: มุมฉาก (reference line)
+# - สีต่างกัน: actions ต่างกัน
+#
+# **Pattern ที่ควรสังเกต:**
+# - **หมัดตรง**: elbow angle เพิ่มขึ้นอย่างรวดเร็ว (แขนเหยียด)
+# - **เตะ**: knee angle เพิ่มขึ้น + hip angle เปลี่ยน
+# - **ท่าตั้งรับ**: มุมค่อนข้างคงที่
 
-□ Create reporting
-  □ Automated dashboards
-  □ Periodic reports
-  □ Historical analysis
+# %%
+# =====================================================
+# STEP 4.3: Angle Time Series Visualization
+# =====================================================
+# 📝 Description: 
+# สร้างกราฟแสดงการเปลี่ยนแปลงของมุมข้อต่อ
+# ตามเวลาสำหรับแต่ละ action
+#
+# 📊 Graph elements:
+# - Y-axis: Angle in degrees (0° - 180°)
+# - Gray dashed line at 90°: right angle reference
+# - Different colors: different actions
+#
+# 💡 What to look for:
+# - Rapid changes = fast movements
+# - Stable values = static poses
+# - Periodic patterns = repetitive movements
+# =====================================================
 
-□ Plan remediation
-  □ When to retrain?
-  □ How to validate new model?
-  □ Rollback procedures
-```
+def plot_angle_timeseries(df, person_id, angles, figsize=(16, 12)):
+    """
+    สร้างกราฟ Time Series ของมุมข้อต่อ
+    
+    Parameters:
+    -----------
+    df : DataFrame - ข้อมูล pose พร้อมมุม
+    person_id : int - Person ID
+    angles : list - รายชื่อ angle columns
+    figsize : tuple - ขนาดรูป
+    
+    Returns:
+    --------
+    fig : matplotlib figure object
+    """
+    person_data = df[df['person_id'] == person_id].copy()
+    person_data = person_data.sort_values('timestamp')
+    
+    # สร้าง figure
+    fig, axes = plt.subplots(len(angles), 1, figsize=figsize, sharex=True)
+    if len(angles) == 1:
+        axes = [axes]
+    
+    fig.suptitle(f'📐 Joint Angle Time Series - Person ID: {person_id}', 
+                 fontsize=14, fontweight='bold')
+    
+    # Color map สำหรับ actions
+    actions = [a for a in person_data['action'].unique() if a != 'Unknown']
+    action_colors = dict(zip(actions, plt.cm.Set2(np.linspace(0, 1, len(actions)))))
+    
+    for idx, angle_name in enumerate(angles):
+        ax = axes[idx]
+        
+        for action in actions:
+            action_data = person_data[person_data['action'] == action]
+            if len(action_data) > 0:
+                ax.scatter(action_data['timestamp'], action_data[angle_name],
+                          label=action, alpha=0.5, s=3, color=action_colors[action])
+        
+        # Format axis
+        ax.set_ylabel(f'{angle_name.replace("_", " ").title()}\n(degrees)')
+        ax.set_ylim(0, 180)
+        
+        # Reference lines
+        ax.axhline(y=90, color='gray', linestyle='--', alpha=0.5, label='90°' if idx == 0 else '')
+        ax.axhline(y=180, color='gray', linestyle=':', alpha=0.3)
+        ax.axhline(y=0, color='gray', linestyle=':', alpha=0.3)
+        
+        if idx == 0:
+            ax.legend(loc='upper right', fontsize=8, ncol=3, markerscale=3)
+    
+    axes[-1].set_xlabel('Time (seconds)')
+    
+    plt.tight_layout()
+    return fig
 
-### Final Thoughts
+# Angles ที่จะวิเคราะห์
+ANALYSIS_ANGLES = ['right_elbow_angle', 'left_elbow_angle', 
+                   'right_knee_angle', 'left_knee_angle',
+                   'torso_lean_angle']
 
-การทำ Drift Detection ที่ดีต้อง:
+print("=" * 70)
+print("📐 ANGLE TIME SERIES VISUALIZATION")
+print("=" * 70)
+print("\n💡 Reading Guide:")
+print("   - Y-axis: Angle (0° to 180°)")
+print("   - 180° = fully extended (straight)")
+print("   - 90° = right angle")
+print("   - 0° = fully flexed")
+print("   - Gray dashed line = 90° reference")
+print("\n" + "-" * 70)
 
-1. **เข้าใจ Business Context**: Drift ที่สำคัญใน domain หนึ่งอาจไม่สำคัญใน domain อื่น
+for pid in SELECTED_PERSON_IDS[:1]:  # แสดงเฉพาะ person แรก
+    print(f"\n📊 Generating plot for Person ID: {pid}")
+    fig = plot_angle_timeseries(df_with_angles, pid, ANALYSIS_ANGLES)
+    plt.show()
 
-2. **ใช้หลาย Methods**: ไม่มี method ใดที่สมบูรณ์แบบ ควรใช้หลาย methods ร่วมกัน
+# %% [markdown]
+# ### 4.4 Angle Statistics per Action
+#
+# **อธิบาย:** เปรียบเทียบค่าเฉลี่ยและการกระจายของมุมในแต่ละ Action
+#
+# **Box Plot Interpretation:**
+# ```
+#     ┬── Maximum (Q3 + 1.5*IQR)
+#     │
+#   ┌─┼─┐ ── Q3 (75th percentile)
+#   │ │ │
+#   │ ├─┤ ── Median (Q2, 50th percentile)
+#   │ │ │
+#   └─┼─┘ ── Q1 (25th percentile)
+#     │
+#     ┴── Minimum (Q1 - 1.5*IQR)
+#     
+#     ○ ── Outliers
+# ```
 
-3. **Tune Thresholds**: Default thresholds มักไม่เหมาะ ต้องปรับตาม use case
+# %%
+# =====================================================
+# STEP 4.4: Angle Statistics per Action
+# =====================================================
+# 📝 Description: 
+# คำนวณและเปรียบเทียบสถิติมุมของแต่ละ action
+# เพื่อระบุลักษณะเฉพาะของแต่ละท่า
+#
+# 📊 Statistics:
+# - Mean: ค่าเฉลี่ย
+# - Std: ค่าเบี่ยงเบนมาตรฐาน
+# - Min/Max: ค่าต่ำสุด/สูงสุด
+#
+# 📈 Visualization:
+# Box plot แสดงการกระจายของมุมในแต่ละ action
+# =====================================================
 
-4. **Automate**: การทำ manual monitoring ไม่ยั่งยืน ต้องมี automated pipeline
+# คำนวณสถิติมุมต่อ action
+angle_stats = df_with_angles.groupby('action')[angle_columns].agg(['mean', 'std', 'min', 'max'])
+angle_stats = angle_stats.round(2)
 
-5. **Monitor the Monitor**: ตรวจสอบว่า monitoring system ทำงานถูกต้อง
+print("=" * 70)
+print("📊 ANGLE STATISTICS BY ACTION")
+print("=" * 70)
 
----
+# แสดงค่าเฉลี่ยมุม
+print("\n📋 Mean Angle by Action (degrees):")
+mean_angles = df_with_angles.groupby('action')[angle_columns].mean().round(2)
+print(mean_angles.to_string())
 
-## แหล่งเรียนรู้เพิ่มเติม
+# Visualization - Box plots for key angles
+fig, axes = plt.subplots(2, 3, figsize=(16, 10))
+axes = axes.flatten()
 
-- [Evidently AI Documentation](https://docs.evidentlyai.com/)
-- [NannyML Documentation](https://docs.nannyml.com/)
-- [Alibi Detect](https://docs.seldon.io/projects/alibi-detect/)
-- [Great Expectations](https://docs.greatexpectations.io/)
+key_angles = ['right_elbow_angle', 'left_elbow_angle', 
+              'right_knee_angle', 'left_knee_angle',
+              'right_shoulder_angle', 'torso_lean_angle']
 
----
+actions_list = [a for a in df_with_angles['action'].unique() if a != 'Unknown']
 
-*เอกสารนี้จัดทำเพื่อประกอบการเรียนการสอนวิชา MLOps*
+for idx, angle in enumerate(key_angles):
+    ax = axes[idx]
+    
+    # สร้าง box plot
+    data_for_plot = [df_with_angles[df_with_angles['action'] == action][angle].dropna() 
+                     for action in actions_list]
+    
+    bp = ax.boxplot(data_for_plot, labels=[a.replace('_', '\n')[:15] for a in actions_list],
+                    patch_artist=True)
+    
+    # สีสำหรับ box
+    colors = plt.cm.Set3(np.linspace(0, 1, len(actions_list)))
+    for patch, color in zip(bp['boxes'], colors):
+        patch.set_facecolor(color)
+        patch.set_alpha(0.7)
+    
+    ax.set_ylabel('Angle (degrees)')
+    ax.set_title(f'📐 {angle.replace("_", " ").title()}')
+    ax.tick_params(axis='x', rotation=45)
+    ax.axhline(y=90, color='red', linestyle='--', alpha=0.5, linewidth=1)
+    ax.set_ylim(0, 180)
+
+plt.suptitle('📊 Joint Angle Distribution by Action\n(Red dashed line = 90°)', 
+             fontsize=14, fontweight='bold')
+plt.tight_layout()
+plt.show()
+
+# %% [markdown]
+# ### 4.5 Angle Heatmap Comparison
+#
+# **อธิบาย:** สร้าง Heatmap เปรียบเทียบค่าเฉลี่ยมุมของแต่ละ Action
+#
+# **การอ่าน Heatmap:**
+# - **สีแดงเข้ม**: มุมมาก (ใกล้ 180° = เหยียด)
+# - **สีน้ำเงินเข้ม**: มุมน้อย (ใกล้ 0° = งอ)
+# - **ตัวเลขในช่อง**: ค่าเฉลี่ยมุม (องศา)
+
+# %%
+# =====================================================
+# STEP 4.5: Angle Heatmap Comparison
+# =====================================================
+# 📝 Description: 
+# สร้าง Heatmap แสดงค่าเฉลี่ยมุมของแต่ละ action
+# ทำให้เห็นภาพรวมได้ง่าย
+#
+# 🎨 Color interpretation:
+# - Dark red: large angle (near 180° = extended)
+# - Dark blue: small angle (near 0° = flexed)
+# - Numbers: mean angle in degrees
+# =====================================================
+
+# คำนวณค่าเฉลี่ยมุมต่อ action
+mean_angles_matrix = df_with_angles[df_with_angles['action'] != 'Unknown'].groupby('action')[angle_columns].mean()
+
+# สร้าง Heatmap
+fig, ax = plt.subplots(figsize=(14, 8))
+
+# แปลงชื่อ columns ให้อ่านง่าย
+display_columns = [col.replace('_', ' ').replace(' angle', '').title() 
+                   for col in angle_columns]
+
+sns.heatmap(mean_angles_matrix.values, 
+            annot=True, 
+            fmt='.1f',
+            cmap='RdYlBu_r',
+            xticklabels=display_columns,
+            yticklabels=mean_angles_matrix.index,
+            vmin=0, 
+            vmax=180,
+            cbar_kws={'label': 'Angle (degrees)'},
+            ax=ax,
+            linewidths=0.5,
+            linecolor='white')
+
+ax.set_title('📊 Mean Joint Angles Heatmap by Action\n'
+             '(Darker red = larger angle/extended, Darker blue = smaller angle/flexed)', 
+             fontsize=14, fontweight='bold')
+ax.set_xlabel('Joint Angle')
+ax.set_ylabel('Action')
+
+plt.tight_layout()
+plt.show()
+
+print("\n💡 Heatmap Interpretation Guide:")
+print("   🔴 Red colors (high values): Extended/straightened joints")
+print("   🔵 Blue colors (low values): Flexed/bent joints")
+print("   📊 Numbers: Mean angle in degrees for each action-joint combination")
+
+# %% [markdown]
+# ---
+#
+# ## 📚 Part 5: Action Comparison Analysis
+#
+# ### 5.1 Create Action Feature Summary
+#
+# **อธิบาย:** สร้างตาราง Feature สรุปลักษณะเด่นของแต่ละ Action
+
+# %%
+# =====================================================
+# STEP 5.1: Create Action Feature Summary
+# =====================================================
+# 📝 Description: 
+# สรุปค่า features หลักๆ ของแต่ละ action
+# เพื่อใช้ในการเปรียบเทียบและ classification
+# =====================================================
+
+# สร้าง feature summary ต่อ action
+actions_to_compare = [a for a in df_with_angles['action'].unique() if a != 'Unknown']
+
+action_features = []
+
+for action in actions_to_compare:
+    action_data = df_with_angles[df_with_angles['action'] == action]
+    
+    features = {
+        'action': action,
+        'frame_count': len(action_data),
+        'unique_persons': action_data['person_id'].nunique(),
+        
+        # Angle means
+        'mean_right_elbow': action_data['right_elbow_angle'].mean(),
+        'mean_left_elbow': action_data['left_elbow_angle'].mean(),
+        'mean_right_knee': action_data['right_knee_angle'].mean(),
+        'mean_left_knee': action_data['left_knee_angle'].mean(),
+        'mean_torso_lean': action_data['torso_lean_angle'].mean(),
+        
+        # Angle std (variability)
+        'std_right_elbow': action_data['right_elbow_angle'].std(),
+        'std_left_elbow': action_data['left_elbow_angle'].std(),
+        'std_right_knee': action_data['right_knee_angle'].std(),
+        'std_left_knee': action_data['left_knee_angle'].std(),
+    }
+    
+    action_features.append(features)
+
+action_features = pd.DataFrame(action_features)
+
+print("=" * 70)
+print("📊 ACTION FEATURE SUMMARY")
+print("=" * 70)
+print("\n📋 Features per Action:")
+display(action_features.round(2))
+
+# %% [markdown]
+# ### 5.2 Radar Chart Comparison
+#
+# **อธิบาย:** สร้าง Radar Chart (Spider Chart) เปรียบเทียบลักษณะของแต่ละ Action
+#
+# **การอ่าน Radar Chart:**
+# - แต่ละแกน = 1 feature (normalized)
+# - พื้นที่กว้าง = ค่า feature สูงในหลายมิติ
+# - รูปร่างต่างกัน = ลักษณะท่าแตกต่างกัน
+
+# %%
+# =====================================================
+# STEP 5.2: Radar Chart Comparison
+# =====================================================
+# 📝 Description: 
+# สร้าง Radar Chart เปรียบเทียบ features ของแต่ละ action
+#
+# 📊 Chart interpretation:
+# - Each axis = 1 normalized feature
+# - Larger area = higher values in multiple dimensions
+# - Different shapes = different action characteristics
+# =====================================================
+
+def create_radar_chart(df_features, actions_to_plot, features_to_plot, figsize=(10, 10)):
+    """
+    สร้าง Radar Chart สำหรับเปรียบเทียบ actions
+    
+    Parameters:
+    -----------
+    df_features : DataFrame - ข้อมูล features ต่อ action
+    actions_to_plot : list - actions ที่ต้องการ plot
+    features_to_plot : list - features ที่ต้องการ plot
+    figsize : tuple - ขนาดรูป
+    
+    Returns:
+    --------
+    fig : matplotlib figure object
+    """
+    # กรองและ normalize ข้อมูล
+    df_plot = df_features[df_features['action'].isin(actions_to_plot)].copy()
+    
+    # Normalize features to 0-1 scale
+    for feature in features_to_plot:
+        min_val = df_plot[feature].min()
+        max_val = df_plot[feature].max()
+        if max_val > min_val:
+            df_plot[f'{feature}_norm'] = (df_plot[feature] - min_val) / (max_val - min_val)
+        else:
+            df_plot[f'{feature}_norm'] = 0.5
+    
+    # สร้าง radar chart
+    num_vars = len(features_to_plot)
+    angles = np.linspace(0, 2 * np.pi, num_vars, endpoint=False).tolist()
+    angles += angles[:1]  # close the polygon
+    
+    fig, ax = plt.subplots(figsize=figsize, subplot_kw=dict(polar=True))
+    
+    colors = plt.cm.Set2(np.linspace(0, 1, len(actions_to_plot)))
+    
+    for idx, action in enumerate(actions_to_plot):
+        action_row = df_plot[df_plot['action'] == action]
+        if len(action_row) == 0:
+            continue
+            
+        values = [action_row[f'{f}_norm'].values[0] for f in features_to_plot]
+        values += values[:1]  # close the polygon
+        
+        ax.plot(angles, values, 'o-', linewidth=2, label=action, color=colors[idx])
+        ax.fill(angles, values, alpha=0.25, color=colors[idx])
+    
+    # Set labels
+    feature_labels = [f.replace('mean_', '').replace('_', ' ').title() for f in features_to_plot]
+    ax.set_xticks(angles[:-1])
+    ax.set_xticklabels(feature_labels, size=10)
+    
+    ax.set_ylim(0, 1)
+    ax.set_title('🎯 Action Feature Comparison (Radar Chart)\n'
+                 'Values normalized to 0-1 scale', fontsize=14, fontweight='bold', y=1.08)
+    ax.legend(loc='upper right', bbox_to_anchor=(1.3, 1.0))
+    
+    return fig
+
+# เลือก features สำหรับ radar chart
+radar_features = ['mean_right_elbow', 'mean_left_elbow', 
+                  'mean_right_knee', 'mean_left_knee', 'mean_torso_lean']
+
+print("=" * 70)
+print("🎯 RADAR CHART COMPARISON")
+print("=" * 70)
+
+# สร้าง radar chart (เลือก 5 actions แรก)
+actions_for_radar = actions_to_compare[:5]
+print(f"\n📊 Comparing actions: {actions_for_radar}")
+
+fig = create_radar_chart(action_features, actions_for_radar, radar_features)
+plt.show()
+
+print("\n💡 Interpretation:")
+print("   - แต่ละแกนแทน 1 feature (normalized 0-1)")
+print("   - รูปร่างต่างกัน = ท่าทางต่างกัน")
+print("   - พื้นที่มาก = มุมโดยรวมมาก (เหยียดมากกว่า)")
+
+# %% [markdown]
+# ---
+#
+# ## 📚 Part 6: Advanced Analysis
+#
+# ### 6.1 Correlation Analysis Between Angles
+#
+# **อธิบาย:** วิเคราะห์ความสัมพันธ์ระหว่างมุมข้อต่อต่างๆ
+
+# %%
+# =====================================================
+# STEP 6.1: Correlation Analysis Between Angles
+# =====================================================
+# 📝 Description: 
+# วิเคราะห์ความสัมพันธ์ระหว่างมุมข้อต่อต่างๆ
+#
+# 📊 Correlation interpretation:
+# - +1: perfect positive correlation
+# - 0: no correlation
+# - -1: perfect negative correlation
+# =====================================================
+
+# คำนวณ correlation matrix
+angle_corr = df_with_angles[angle_columns].corr()
+
+# สร้าง heatmap
+fig, ax = plt.subplots(figsize=(10, 8))
+
+mask = np.triu(np.ones_like(angle_corr, dtype=bool))  # แสดงเฉพาะครึ่งล่าง
+
+sns.heatmap(angle_corr, 
+            mask=mask,
+            annot=True, 
+            fmt='.2f',
+            cmap='coolwarm',
+            center=0,
+            vmin=-1, vmax=1,
+            square=True,
+            ax=ax,
+            linewidths=0.5)
+
+# แปลงชื่อให้อ่านง่าย
+labels = [col.replace('_angle', '').replace('_', ' ').title() for col in angle_columns]
+ax.set_xticklabels(labels, rotation=45, ha='right')
+ax.set_yticklabels(labels, rotation=0)
+
+ax.set_title('📊 Correlation Matrix: Joint Angles\n'
+             '(Red = positive correlation, Blue = negative correlation)', 
+             fontsize=14, fontweight='bold')
+
+plt.tight_layout()
+plt.show()
+
+print("\n💡 Correlation Insights:")
+print("   🔴 Red (positive): Angles tend to increase together")
+print("   🔵 Blue (negative): One increases while other decreases")
+print("   ⚪ White (zero): No relationship")
+
+# %% [markdown]
+# ### 6.2 Symmetry Analysis (Left vs Right)
+#
+# **อธิบาย:** เปรียบเทียบความสมมาตรของร่างกายซ้าย-ขวา
+
+# %%
+# =====================================================
+# STEP 6.2: Symmetry Analysis (Left vs Right)
+# =====================================================
+# 📝 Description: 
+# วิเคราะห์ความสมมาตรของร่างกายซ้าย-ขวา
+# ถ้า difference มาก = ท่าทางไม่สมมาตร (เช่น หมัดข้างเดียว)
+# =====================================================
+
+# คำนวณ difference ระหว่างซ้าย-ขวา
+df_with_angles['elbow_diff'] = np.abs(df_with_angles['right_elbow_angle'] - df_with_angles['left_elbow_angle'])
+df_with_angles['knee_diff'] = np.abs(df_with_angles['right_knee_angle'] - df_with_angles['left_knee_angle'])
+df_with_angles['shoulder_diff'] = np.abs(df_with_angles['right_shoulder_angle'] - df_with_angles['left_shoulder_angle'])
+df_with_angles['hip_diff'] = np.abs(df_with_angles['right_hip_angle'] - df_with_angles['left_hip_angle'])
+
+# สรุปตาม action
+symmetry_cols = ['elbow_diff', 'knee_diff', 'shoulder_diff', 'hip_diff']
+symmetry_by_action = df_with_angles.groupby('action')[symmetry_cols].mean().round(2)
+symmetry_by_action = symmetry_by_action.sort_values('elbow_diff', ascending=False)
+
+print("=" * 70)
+print("⚖️ SYMMETRY ANALYSIS (Left-Right Difference)")
+print("=" * 70)
+print("\n📋 Mean Angle Difference by Action:")
+print("   (Higher value = more asymmetric)")
+print("\n" + symmetry_by_action.to_string())
+
+# Visualization
+fig, ax = plt.subplots(figsize=(12, 6))
+
+x = np.arange(len(symmetry_by_action))
+width = 0.2
+
+bars1 = ax.bar(x - 1.5*width, symmetry_by_action['elbow_diff'], width, label='Elbow', color='#e74c3c')
+bars2 = ax.bar(x - 0.5*width, symmetry_by_action['knee_diff'], width, label='Knee', color='#3498db')
+bars3 = ax.bar(x + 0.5*width, symmetry_by_action['shoulder_diff'], width, label='Shoulder', color='#2ecc71')
+bars4 = ax.bar(x + 1.5*width, symmetry_by_action['hip_diff'], width, label='Hip', color='#9b59b6')
+
+ax.set_xlabel('Action')
+ax.set_ylabel('Mean Angle Difference (degrees)')
+ax.set_title('⚖️ Body Symmetry Analysis by Action\n(Higher = More Asymmetric)', fontsize=14, fontweight='bold')
+ax.set_xticks(x)
+ax.set_xticklabels([a.replace('_', '\n')[:15] for a in symmetry_by_action.index], rotation=45, ha='right')
+ax.legend()
+ax.axhline(y=10, color='gray', linestyle='--', alpha=0.5, label='10° threshold')
+
+plt.tight_layout()
+plt.show()
+
+print("\n💡 Interpretation:")
+print("   📊 ค่าสูง = ท่าไม่สมมาตร (เช่น หมัดข้างเดียว, เตะข้างเดียว)")
+print("   📊 ค่าต่ำ = ท่าสมมาตร (เช่น ท่าตั้งรับ, ท่าเตรียม)")
+
+# %% [markdown]
+# ---
+#
+# ## 📚 Part 7: Summary and Conclusions
+#
+# ### 7.1 Generate Final Report
+#
+# **อธิบาย:** สรุปผลการวิเคราะห์ทั้งหมดเป็น report
+
+# %%
+# =====================================================
+# STEP 7.1: Generate Final Summary Report
+# =====================================================
+# 📝 Description: 
+# สรุปผลการวิเคราะห์ทั้งหมดเป็น report
+# =====================================================
+
+print("=" * 70)
+print("📋 FINAL ANALYSIS REPORT")
+print("=" * 70)
+
+print(f"""
+🎯 DATASET OVERVIEW
+─────────────────────────────────────────
+• Total Frames: {len(df_pose):,}
+• Total Labeled Frames: {len(df_labeled):,}
+• Unique Persons: {df_pose['person_id'].nunique()}
+• Actions Analyzed: {len(actions_to_compare)}
+• Selected Persons for Analysis: {SELECTED_PERSON_IDS}
+
+📊 ACTIONS SUMMARY
+─────────────────────────────────────────""")
+
+for action in actions_to_compare[:6]:  # แสดง 6 actions แรก
+    action_data = df_with_angles[df_with_angles['action'] == action]
+    print(f"\n🥊 {action.replace('_', ' ')}")
+    print(f"   Frames: {len(action_data):,}")
+    print(f"   Mean Right Elbow Angle: {action_data['right_elbow_angle'].mean():.1f}°")
+    print(f"   Mean Right Knee Angle: {action_data['right_knee_angle'].mean():.1f}°")
+    print(f"   Mean Torso Lean: {action_data['torso_lean_angle'].mean():.1f}°")
+
+print(f"""
+
+📈 KEY FINDINGS
+─────────────────────────────────────────
+1. ✅ Actions ที่ต้องการการเหยียดแขน (elbow angle สูง) เด่นชัด
+2. ✅ ท่าที่ต้องงอเข่า (knee angle ต่ำ) สามารถแยกแยะได้ดี
+3. ✅ มุมลำตัว (torso lean) ช่วยบ่งบอกท่าทางโจมตี/ป้องกัน
+4. ✅ Velocity analysis ช่วยระบุช่วงเวลาของการเคลื่อนไหวเร็ว
+5. ✅ Symmetry analysis ช่วยระบุท่าที่ใช้แขน/ขาข้างเดียว
+
+─────────────────────────────────────────
+📌 RECOMMENDATIONS FOR FURTHER ANALYSIS
+─────────────────────────────────────────
+1. 🤖 ใช้ Machine Learning เพื่อ classify actions อัตโนมัติ
+2. 📈 วิเคราะห์ temporal patterns ด้วย DTW หรือ LSTM
+3. 📊 สร้าง feature vectors จาก angles สำหรับ clustering
+4. 🎥 เพิ่ม 3D reconstruction ถ้ามีข้อมูลจากหลายกล้อง
+5. ⏱️  วิเคราะห์ timing และ rhythm ของการเคลื่อนไหว
+""")
+
+# %% [markdown]
+# ### 7.2 Export Processed Data
+#
+# **อธิบาย:** Export ข้อมูลที่ประมวลผลแล้วสำหรับใช้งานต่อ
+#
+# **ไฟล์ที่จะ Export:**
+# 1. `pose_data_with_angles.csv` - ข้อมูลพร้อมมุมที่คำนวณ
+# 2. `action_features_summary.csv` - สรุป features ต่อ action
+# 3. `velocity_statistics.csv` - สถิติความเร็ว
+
+# %%
+# =====================================================
+# STEP 7.2: Export Processed Data
+# =====================================================
+# 📝 Description: 
+# บันทึกข้อมูลที่ประมวลผลแล้ว
+# รวมถึง angles ที่คำนวณ
+#
+# 📁 Output files:
+# - pose_data_with_angles.csv
+# - action_features_summary.csv
+# - velocity_statistics.csv
+#
+# ⚠️ Note: Uncomment the code below to export
+# =====================================================
+
+# # Export DataFrame พร้อม angles
+# output_filename = 'pose_data_with_angles.csv'
+# df_with_angles.to_csv(output_filename, index=False)
+# print(f"✅ Exported: {output_filename}")
+
+# # Export action features
+# features_filename = 'action_features_summary.csv'
+# action_features.to_csv(features_filename, index=False)
+# print(f"✅ Exported: {features_filename}")
+
+# # Export velocity statistics
+# velocity_filename = 'velocity_statistics.csv'
+# velocity_stats.to_csv(velocity_filename, index=False)
+# print(f"✅ Exported: {velocity_filename}")
+
+print("=" * 70)
+print("💾 EXPORT OPTIONS (Currently commented out)")
+print("=" * 70)
+print("""
+📁 Files available for export:
+
+1. pose_data_with_angles.csv
+   - Original pose data + calculated joint angles
+   - Size: ~{:,} rows × {:,} columns
+   
+2. action_features_summary.csv
+   - Aggregated features per action
+   - Size: {:,} rows × {:,} columns
+   
+3. velocity_statistics.csv
+   - Velocity statistics per action/person/keypoint
+   - Size: {:,} rows × {:,} columns
+
+💡 To export, uncomment the code above and run again.
+""".format(len(df_with_angles), len(df_with_angles.columns),
+           len(action_features), len(action_features.columns),
+           len(velocity_stats), len(velocity_stats.columns)))
+
+print("\n" + "=" * 70)
+print("🎉 LAB COMPLETED SUCCESSFULLY!")
+print("=" * 70)
+print("""
+คุณได้เรียนรู้:
+✅ การโหลดและสำรวจข้อมูล Pose Estimation
+✅ การวิเคราะห์ Time Series ของ keypoint positions
+✅ การคำนวณ Velocity และวิเคราะห์ความเร็ว
+✅ การคำนวณ Joint Angles จาก keypoint coordinates
+✅ การเปรียบเทียบ Actions ด้วย visualization ต่างๆ
+✅ การวิเคราะห์ Symmetry และ Correlation
+
+🚀 Next Steps:
+- ลองนำ features ไปใช้ train ML model
+- เพิ่ม features อื่นๆ เช่น acceleration, jerk
+- วิเคราะห์ temporal patterns ด้วย sequence models
+""")
+
+# %% [markdown]
+# ---
+#
+# ## 📖 Additional Resources
+#
+# **สำหรับศึกษาเพิ่มเติม:**
+#
+# ### 1. Pose Estimation
+# - [COCO Keypoint Detection](https://cocodataset.org/#keypoints-2020) - มาตรฐาน keypoint format
+# - [YOLOv11 Documentation](https://docs.ultralytics.com/) - เอกสาร pose estimation
+# - [MediaPipe Pose](https://developers.google.com/mediapipe/solutions/vision/pose_landmarker) - alternative pose estimation
+#
+# ### 2. Time Series Analysis
+# - [Pandas Time Series](https://pandas.pydata.org/docs/user_guide/timeseries.html) - การจัดการข้อมูลเวลา
+# - [SciPy Signal Processing](https://docs.scipy.org/doc/scipy/reference/signal.html) - การประมวลผลสัญญาณ
+# - [Dynamic Time Warping](https://rtavenar.github.io/blog/dtw.html) - การเปรียบเทียบ time series
+#
+# ### 3. Joint Angle Analysis
+# - [Biomechanics Tutorials](https://biomechanics.stanford.edu/) - หลักการ biomechanics
+# - [OpenSim Documentation](https://opensim.stanford.edu/) - เครื่องมือวิเคราะห์การเคลื่อนไหว
+#
+# ### 4. Visualization
+# - [Matplotlib Gallery](https://matplotlib.org/stable/gallery/) - ตัวอย่างกราฟ
+# - [Seaborn Tutorial](https://seaborn.pydata.org/tutorial.html) - การสร้างกราฟสถิติ
+#
+# ### 5. Machine Learning for Action Recognition
+# - [scikit-learn](https://scikit-learn.org/) - ML algorithms
+# - [TensorFlow/Keras](https://www.tensorflow.org/) - Deep learning
+# - [PyTorch](https://pytorch.org/) - Deep learning alternative
+#
+# ---
+#
+# **End of Lab** 🎓
