@@ -460,7 +460,7 @@ client.set_model_version_tag(SKLEARN_MODEL_NAME, "2", "status", "improved")
 print(f"✅ เพิ่ม Description และ Tags สำหรับ Version 2 สำเร็จ!")
 
 # %% [markdown]
-# ###  ลงทะเบียนภายหลังจาก Run ที่มีอยู่แล้ว
+# ### 2.2 วิธีที่ 2: ลงทะเบียนภายหลังจาก Run ที่มีอยู่แล้ว
 #
 # ใช้เมื่อต้องการ:
 # - เลือก Model ที่ดีที่สุดจากหลายๆ Run ก่อนลงทะเบียน
@@ -618,8 +618,15 @@ for tag in version_info.tags:
 
 # %% [markdown]
 # ---
-# ## 📚 ส่วนที่ 4: การจัดการ Model Stages Aliases  (การตั้งชื่อนามแฝงให้ Model)
+# ## 📚 ส่วนที่ 4: การจัดการ Model Stages (Aliases)
 #
+# ### แนวคิด (MLflow 2.x)
+# ใน MLflow 2.x แนะนำให้ใช้ **Model Aliases** แทน Stages เดิม
+#
+# | Concept เก่า (Stages) | Concept ใหม่ (Aliases) |
+# |----------------------|----------------------|
+# | `None`, `Staging`, `Production`, `Archived` | กำหนดเองได้ เช่น `champion`, `challenger` |
+# | เปลี่ยน Stage ด้วย `transition_model_version_stage()` | กำหนด Alias ด้วย `set_registered_model_alias()` |
 #
 # ### ฟังก์ชันสำคัญ (MLflow 2.x - Aliases)
 # | ฟังก์ชัน | คำอธิบาย |
@@ -766,6 +773,26 @@ print(f"   Baseline: {accuracy_baseline:.4f}")
 print(f"   Champion: {accuracy_champion:.4f}")
 print(f"   ปรับปรุง: +{(accuracy_champion - accuracy_baseline) * 100:.2f}%")
 
+# %% [markdown]
+# ### 5.3 โหลด Model โดยใช้ Run ID
+
+# %%
+# โหลด Model โดยใช้ Run ID
+print("\n📥 วิธีที่ 3: โหลด Model โดยใช้ Run ID")
+print("=" * 60)
+
+# ใช้ Run ID ที่เก็บไว้จากการ Train
+model_uri_run = f"runs:/{sklearn_run_id_v2}/model"
+print(f"\n🔗 Model URI: {model_uri_run}")
+print(f"🆔 Run ID: {sklearn_run_id_v2}")
+
+loaded_from_run = mlflow.sklearn.load_model(model_uri_run)
+print(f"✅ โหลด Model จาก Run สำเร็จ: {type(loaded_from_run)}")
+
+# ทดสอบทำนาย
+predictions_run = loaded_from_run.predict(X_test[:5])
+print(f"🔮 Predictions: {predictions_run}")
+print(f"📋 Actual:      {y_test[:5]}")
 
 # %% [markdown]
 # ### 5.4 โหลด Model จาก ARTIFACTS_BASE โดยตรง (เร็วที่สุด)
