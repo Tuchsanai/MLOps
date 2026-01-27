@@ -12,7 +12,7 @@ services:
       - MLFLOW_DISABLE_HOST_CHECK=true
     restart: unless-stopped
     volumes:
-       - "C:/Users/oishi/Documents/GitHub/MLOps:/home/student/workspace/"
+       - "C:/Users/oishi/Documents/GitHub/MLOps:/home/student/workspace/Drive"
 
     command:
       - bash
