@@ -480,47 +480,6 @@ Confidence: [XX%, XX%, XX%, ...]
 
 ---
 
-# 📋 Grading Rubric
-
-## ข้อที่ 1: Wine Quality (Scikit-learn)
-
-| Criteria | Points | Notes |
-|----------|--------|-------|
-| **Data Loading & Preparation** | 10 | โหลด wine dataset, split train/test |
-| **Model 1 (DecisionTree)** | 10 | Train, log metrics, register model |
-| **Model 2 (RandomForest)** | 10 | Train, log metrics, register model |
-| **Model 3 (GradientBoosting)** | 10 | Train, log metrics, register model |
-| **MLflow Registry Setup** | 10 | Description, Tags, Aliases |
-| **Model Loading & Testing** | 10 | Load champion, predict, show results |
-| **Code Quality** | 10 | Comments, structure, error handling |
-| **Subtotal** | **70** | - |
-
-## ข้อที่ 2: MNIST (PyTorch)
-
-| Criteria | Points | Notes |
-|----------|--------|-------|
-| **Data Preparation** | 10 | โหลด MNIST, normalize, DataLoader |
-| **Model 1 (Shallow NN)** | 10 | Train, log metrics, register model |
-| **Model 2 (Medium Deep)** | 10 | Train, log metrics, register model |
-| **Model 3 (Deep + Dropout)** | 10 | Train, log metrics, register model |
-| **MLflow Registry Setup** | 10 | Description, Tags, Aliases |
-| **Model Loading & Testing** | 10 | Load champion, predict, show results |
-| **Code Quality** | 10 | Comments, structure, error handling |
-| **Subtotal** | **70** | - |
-
-## Overall Quality
-
-| Criteria | Points | Notes |
-|----------|--------|-------|
-| **MLflow UI Screenshots** | 10 | Show registered models and versions |
-| **Comparison Tables** | 10 | Clear presentation of results |
-| **Code Organization** | 10 | Well-structured, easy to read |
-| **Subtotal** | **30** | - |
-
-## **TOTAL GRADE: 100 Points**
-
----
-
 # 💡 Tips & Tricks
 
 ## สำหรับข้อที่ 1 (Wine Quality - Scikit-learn)
