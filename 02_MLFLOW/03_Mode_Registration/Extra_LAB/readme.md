@@ -644,7 +644,3 @@ Confidence: [XX%, XX%, XX%, ...]
 **MLflow Server URL:** http://127.0.0.1:5000
 
 ---
-
-**Last Updated:** January 2025  
-**Instructor:** Machine Learning Operations Team  
-**Course:** MLOps with MLflow
