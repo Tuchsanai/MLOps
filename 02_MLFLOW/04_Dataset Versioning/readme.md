@@ -235,27 +235,30 @@ print(f"Dataset Version: {version}")  # ผลลัพธ์: "a1b2c3d4"
 ### 3.1 MLflow Components สำหรับ Dataset Tracking
 
 ```
-┌─────────────────────────────────────────────────────────────────┐
-│                   MLflow Dataset Tracking                        │
-├─────────────────────────────────────────────────────────────────┤
-│                                                                  │
-│  ┌─────────────────┐  ┌─────────────────┐  ┌─────────────────┐ │
-│  │   Experiments   │  │      Runs       │  │    Artifacts    │ │
-│  │─────────────────│  │─────────────────│  │─────────────────│ │
-│  │ • CSV_Dataset   │  │ • Parameters    │  │ • Dataset files │ │
-│  │ • Image_Dataset │  │ • Metrics       │  │ • Schema JSON   │ │
-│  │ • JSON_Dataset  │  │ • Tags          │  │ • Samples       │ │
-│  │ • Parquet_Data  │  │ • Dataset Input │  │ • Metadata      │ │
-│  └─────────────────┘  └─────────────────┘  └─────────────────┘ │
-│           │                    │                    │           │
-│           └────────────────────┼────────────────────┘           │
-│                                ▼                                 │
-│                    ┌───────────────────┐                        │
-│                    │  Tracking Server  │                        │
-│                    │   (SQLite/DB)     │                        │
-│                    └───────────────────┘                        │
-│                                                                  │
-└─────────────────────────────────────────────────────────────────┘
+─────────────────────────────────────────────────────────────────
+                    MLflow Dataset Tracking                       
+─────────────────────────────────────────────────────────────────
+                                                                 
+   ┌─────────────────┐  ┌─────────────────┐  ┌─────────────────┐ 
+   │   Experiments   │  │      Runs       │  │    Artifacts    │ 
+   │─────────────────│  │─────────────────│  │─────────────────│ 
+   │ • CSV_Dataset   │  │ • Parameters    │  │ • Dataset files │ 
+   │ • Image_Dataset │  │ • Metrics       │  │ • Schema JSON   │ 
+   │ • JSON_Dataset  │  │ • Tags          │  │ • Samples       │ 
+   │                 │  │ • Dataset Input │  │ • Metadata      │ 
+   └─────────────────┘  └─────────────────┘  └─────────────────┘ 
+            │                    │                    │           
+            └────────────────────┼────────────────────┘           
+                                 ▼                                
+      ┌───────────────────────────────────────────────────┐      
+      │                                                   │      
+      │                 Tracking Server                   │      
+      │                                                   │      
+      │   MLFLOW_TRACKING_URI="http://127.0.0.1:5000"     │      
+      │                                                   │      
+      └───────────────────────────────────────────────────┘      
+                                                                 
+─────────────────────────────────────────────────────────────────
 ```
 
 ### 3.2 MLflow Dataset Types
@@ -508,58 +511,6 @@ tracking_elements = {
 }
 ```
 
-### 4.4 Parquet Dataset Versioning
-
-**Use Cases:** Big data, Data warehousing, Columnar analytics
-
-```
-┌─────────────────────────────────────────────────────────────┐
-│              Parquet vs CSV Comparison                       │
-├─────────────────────────────────────────────────────────────┤
-│                                                              │
-│  Feature              │    CSV    │   Parquet               │
-│  ─────────────────────┼───────────┼────────────────         │
-│  Storage Format       │    Row    │   Columnar              │
-│  Compression          │    No     │   Built-in              │
-│  Schema               │    No     │   Embedded              │
-│  Read Speed           │   Slow    │   Fast                  │
-│  Write Speed          │   Fast    │   Moderate              │
-│  File Size            │   Large   │   Small                 │
-│  Column Selection     │   Full    │   Selective             │
-│  Data Types           │   Text    │   Native                │
-│                                                              │
-│  Best For:                                                  │
-│  - CSV: Small data, interchange, human-readable             │
-│  - Parquet: Large data, analytics, ML pipelines             │
-│                                                              │
-└─────────────────────────────────────────────────────────────┘
-```
-
-**Key Tracking Elements:**
-
-```python
-# สิ่งที่ควร Track สำหรับ Parquet Dataset
-tracking_elements = {
-    "parameters": [
-        "dataset_version",
-        "compression",         # snappy, gzip, etc.
-        "row_group_size",
-        "partitioning",        # partition columns
-    ],
-    "metrics": [
-        "num_records",
-        "num_columns",
-        "file_size_mb",
-        "compression_ratio",
-        "row_groups",
-    ],
-    "artifacts": [
-        "dataset.parquet",
-        "schema.json",
-        "statistics.json",
-    ]
-}
-```
 
 ---
 
