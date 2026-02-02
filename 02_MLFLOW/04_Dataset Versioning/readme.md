@@ -122,7 +122,11 @@
 
 ### 2.3 Dataset Versioning Strategies
 
+การเลือก Versioning Strategy ที่เหมาะสมเป็นสิ่งสำคัญในการจัดการ Dataset ให้มีประสิทธิภาพ แต่ละ Strategy มีข้อดีและข้อเสียที่แตกต่างกัน ขึ้นอยู่กับลักษณะของโปรเจกต์และทีม
+
 #### Strategy 1: Semantic Versioning (MAJOR.MINOR.PATCH)
+
+Semantic Versioning ใช้หลักการเดียวกับ Software Versioning ที่เป็นที่นิยม โดยแบ่งเลข version เป็น 3 ส่วน
 
 ```python
 # Version Number Meaning:
@@ -138,7 +142,14 @@ version_examples = {
 }
 ```
 
+**เมื่อไหร่ควรใช้:**
+- เมื่อต้องการสื่อสารลักษณะการเปลี่ยนแปลงให้ทีมเข้าใจ
+- เมื่อมี downstream dependencies ที่ต้องรู้ว่า data เปลี่ยนแปลงอย่างไร
+- เหมาะกับ production datasets ที่มี consumers หลายคน
+
 #### Strategy 2: Date-based Versioning
+
+Date-based Versioning เหมาะกับ datasets ที่มีการ update เป็นประจำ เช่น daily snapshots หรือ monthly reports
 
 ```python
 # Format: YYYY-MM-DD or YYYYMMDD
@@ -149,21 +160,72 @@ version_examples = {
 }
 ```
 
+**เมื่อไหร่ควรใช้:**
+- Datasets ที่ update เป็น schedule (daily, weekly, monthly)
+- Time-series data หรือ snapshot data
+- เมื่อ "เวลา" เป็นข้อมูลที่สำคัญในการ track
+
 #### Strategy 3: Hash-based Versioning
 
+Hash-based Versioning ใช้ Content Hash เป็น Version Identifier ซึ่งเป็นวิธีที่ **อัตโนมัติและแม่นยำที่สุด** เนื่องจาก version จะเปลี่ยนก็ต่อเมื่อเนื้อหาของไฟล์เปลี่ยนจริงๆ เท่านั้น
+
+```
+┌─────────────────────────────────────────────────────────────────┐
+│                   Hash-based Versioning Flow                     │
+├─────────────────────────────────────────────────────────────────┤
+│                                                                  │
+│   File Content                    Hash Function                  │
+│   ┌─────────────┐                ┌─────────────┐                │
+│   │ id,name,age │                │             │                │
+│   │ 1,John,25   │ ──────────────►│   MD5 /     │────► a1b2c3d4  │
+│   │ 2,Jane,30   │                │   SHA256    │                │
+│   └─────────────┘                └─────────────┘                │
+│                                                                  │
+│   เปลี่ยนแม้แต่ 1 byte ──────────────────────────► Hash ใหม่    │
+│                                                                  │
+│   ┌─────────────┐                                               │
+│   │ id,name,age │                                               │
+│   │ 1,John,26   │ ◄── เปลี่ยน age ────────────────► e5f6g7h8   │
+│   │ 2,Jane,30   │                                               │
+│   └─────────────┘                                               │
+│                                                                  │
+└─────────────────────────────────────────────────────────────────┘
+```
+
+**ข้อดีของ Hash-based Versioning:**
+
+| ข้อดี | คำอธิบาย |
+|-------|----------|
+| **Automatic** | ไม่ต้อง manual update version number |
+| **Unique** | แต่ละ content มี hash เฉพาะตัว |
+| **Integrity Check** | ตรวจสอบความถูกต้องของไฟล์ได้ |
+| **Deduplication** | ตรวจจับ duplicate datasets ได้ |
+| **Reproducibility** | มั่นใจได้ว่าใช้ data ชุดเดียวกัน |
+
 ```python
-# ใช้ Content Hash เป็น Version Identifier
 import hashlib
+import pandas as pd
+import os
 
 def get_dataset_version(filepath):
-    """สร้าง version จาก file content hash"""
+    """
+    สร้าง version จาก file content hash
+    
+    Args:
+        filepath: path ไปยังไฟล์ dataset
+        
+    Returns:
+        str: 8-character hash string เป็น version identifier
+    """
     hash_md5 = hashlib.md5()
     with open(filepath, "rb") as f:
         for chunk in iter(lambda: f.read(4096), b""):
             hash_md5.update(chunk)
     return hash_md5.hexdigest()[:8]  # ใช้ 8 characters แรก
 
-# ผลลัพธ์: "a1b2c3d4"
+# ตัวอย่างการใช้งาน
+version = get_dataset_version("data/customers.csv")
+print(f"Dataset Version: {version}")  # ผลลัพธ์: "a1b2c3d4"
 ```
 
 ---
