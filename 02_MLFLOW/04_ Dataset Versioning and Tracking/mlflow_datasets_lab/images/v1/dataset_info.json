@@ -1,0 +1,472 @@
+{
+  "version": 1,
+  "classes": [
+    "circle",
+    "square",
+    "triangle"
+  ],
+  "images_per_class": 30,
+  "total_images": 90,
+  "image_size": 64,
+  "files": [
+    {
+      "path": "./mlflow_datasets_lab/images/v1/circle/circle_0000.png",
+      "class": "circle",
+      "filename": "circle_0000.png"
+    },
+    {
+      "path": "./mlflow_datasets_lab/images/v1/circle/circle_0001.png",
+      "class": "circle",
+      "filename": "circle_0001.png"
+    },
+    {
+      "path": "./mlflow_datasets_lab/images/v1/circle/circle_0002.png",
+      "class": "circle",
+      "filename": "circle_0002.png"
+    },
+    {
+      "path": "./mlflow_datasets_lab/images/v1/circle/circle_0003.png",
+      "class": "circle",
+      "filename": "circle_0003.png"
+    },
+    {
+      "path": "./mlflow_datasets_lab/images/v1/circle/circle_0004.png",
+      "class": "circle",
+      "filename": "circle_0004.png"
+    },
+    {
+      "path": "./mlflow_datasets_lab/images/v1/circle/circle_0005.png",
+      "class": "circle",
+      "filename": "circle_0005.png"
+    },
+    {
+      "path": "./mlflow_datasets_lab/images/v1/circle/circle_0006.png",
+      "class": "circle",
+      "filename": "circle_0006.png"
+    },
+    {
+      "path": "./mlflow_datasets_lab/images/v1/circle/circle_0007.png",
+      "class": "circle",
+      "filename": "circle_0007.png"
+    },
+    {
+      "path": "./mlflow_datasets_lab/images/v1/circle/circle_0008.png",
+      "class": "circle",
+      "filename": "circle_0008.png"
+    },
+    {
+      "path": "./mlflow_datasets_lab/images/v1/circle/circle_0009.png",
+      "class": "circle",
+      "filename": "circle_0009.png"
+    },
+    {
+      "path": "./mlflow_datasets_lab/images/v1/circle/circle_0010.png",
+      "class": "circle",
+      "filename": "circle_0010.png"
+    },
+    {
+      "path": "./mlflow_datasets_lab/images/v1/circle/circle_0011.png",
+      "class": "circle",
+      "filename": "circle_0011.png"
+    },
+    {
+      "path": "./mlflow_datasets_lab/images/v1/circle/circle_0012.png",
+      "class": "circle",
+      "filename": "circle_0012.png"
+    },
+    {
+      "path": "./mlflow_datasets_lab/images/v1/circle/circle_0013.png",
+      "class": "circle",
+      "filename": "circle_0013.png"
+    },
+    {
+      "path": "./mlflow_datasets_lab/images/v1/circle/circle_0014.png",
+      "class": "circle",
+      "filename": "circle_0014.png"
+    },
+    {
+      "path": "./mlflow_datasets_lab/images/v1/circle/circle_0015.png",
+      "class": "circle",
+      "filename": "circle_0015.png"
+    },
+    {
+      "path": "./mlflow_datasets_lab/images/v1/circle/circle_0016.png",
+      "class": "circle",
+      "filename": "circle_0016.png"
+    },
+    {
+      "path": "./mlflow_datasets_lab/images/v1/circle/circle_0017.png",
+      "class": "circle",
+      "filename": "circle_0017.png"
+    },
+    {
+      "path": "./mlflow_datasets_lab/images/v1/circle/circle_0018.png",
+      "class": "circle",
+      "filename": "circle_0018.png"
+    },
+    {
+      "path": "./mlflow_datasets_lab/images/v1/circle/circle_0019.png",
+      "class": "circle",
+      "filename": "circle_0019.png"
+    },
+    {
+      "path": "./mlflow_datasets_lab/images/v1/circle/circle_0020.png",
+      "class": "circle",
+      "filename": "circle_0020.png"
+    },
+    {
+      "path": "./mlflow_datasets_lab/images/v1/circle/circle_0021.png",
+      "class": "circle",
+      "filename": "circle_0021.png"
+    },
+    {
+      "path": "./mlflow_datasets_lab/images/v1/circle/circle_0022.png",
+      "class": "circle",
+      "filename": "circle_0022.png"
+    },
+    {
+      "path": "./mlflow_datasets_lab/images/v1/circle/circle_0023.png",
+      "class": "circle",
+      "filename": "circle_0023.png"
+    },
+    {
+      "path": "./mlflow_datasets_lab/images/v1/circle/circle_0024.png",
+      "class": "circle",
+      "filename": "circle_0024.png"
+    },
+    {
+      "path": "./mlflow_datasets_lab/images/v1/circle/circle_0025.png",
+      "class": "circle",
+      "filename": "circle_0025.png"
+    },
+    {
+      "path": "./mlflow_datasets_lab/images/v1/circle/circle_0026.png",
+      "class": "circle",
+      "filename": "circle_0026.png"
+    },
+    {
+      "path": "./mlflow_datasets_lab/images/v1/circle/circle_0027.png",
+      "class": "circle",
+      "filename": "circle_0027.png"
+    },
+    {
+      "path": "./mlflow_datasets_lab/images/v1/circle/circle_0028.png",
+      "class": "circle",
+      "filename": "circle_0028.png"
+    },
+    {
+      "path": "./mlflow_datasets_lab/images/v1/circle/circle_0029.png",
+      "class": "circle",
+      "filename": "circle_0029.png"
+    },
+    {
+      "path": "./mlflow_datasets_lab/images/v1/square/square_0000.png",
+      "class": "square",
+      "filename": "square_0000.png"
+    },
+    {
+      "path": "./mlflow_datasets_lab/images/v1/square/square_0001.png",
+      "class": "square",
+      "filename": "square_0001.png"
+    },
+    {
+      "path": "./mlflow_datasets_lab/images/v1/square/square_0002.png",
+      "class": "square",
+      "filename": "square_0002.png"
+    },
+    {
+      "path": "./mlflow_datasets_lab/images/v1/square/square_0003.png",
+      "class": "square",
+      "filename": "square_0003.png"
+    },
+    {
+      "path": "./mlflow_datasets_lab/images/v1/square/square_0004.png",
+      "class": "square",
+      "filename": "square_0004.png"
+    },
+    {
+      "path": "./mlflow_datasets_lab/images/v1/square/square_0005.png",
+      "class": "square",
+      "filename": "square_0005.png"
+    },
+    {
+      "path": "./mlflow_datasets_lab/images/v1/square/square_0006.png",
+      "class": "square",
+      "filename": "square_0006.png"
+    },
+    {
+      "path": "./mlflow_datasets_lab/images/v1/square/square_0007.png",
+      "class": "square",
+      "filename": "square_0007.png"
+    },
+    {
+      "path": "./mlflow_datasets_lab/images/v1/square/square_0008.png",
+      "class": "square",
+      "filename": "square_0008.png"
+    },
+    {
+      "path": "./mlflow_datasets_lab/images/v1/square/square_0009.png",
+      "class": "square",
+      "filename": "square_0009.png"
+    },
+    {
+      "path": "./mlflow_datasets_lab/images/v1/square/square_0010.png",
+      "class": "square",
+      "filename": "square_0010.png"
+    },
+    {
+      "path": "./mlflow_datasets_lab/images/v1/square/square_0011.png",
+      "class": "square",
+      "filename": "square_0011.png"
+    },
+    {
+      "path": "./mlflow_datasets_lab/images/v1/square/square_0012.png",
+      "class": "square",
+      "filename": "square_0012.png"
+    },
+    {
+      "path": "./mlflow_datasets_lab/images/v1/square/square_0013.png",
+      "class": "square",
+      "filename": "square_0013.png"
+    },
+    {
+      "path": "./mlflow_datasets_lab/images/v1/square/square_0014.png",
+      "class": "square",
+      "filename": "square_0014.png"
+    },
+    {
+      "path": "./mlflow_datasets_lab/images/v1/square/square_0015.png",
+      "class": "square",
+      "filename": "square_0015.png"
+    },
+    {
+      "path": "./mlflow_datasets_lab/images/v1/square/square_0016.png",
+      "class": "square",
+      "filename": "square_0016.png"
+    },
+    {
+      "path": "./mlflow_datasets_lab/images/v1/square/square_0017.png",
+      "class": "square",
+      "filename": "square_0017.png"
+    },
+    {
+      "path": "./mlflow_datasets_lab/images/v1/square/square_0018.png",
+      "class": "square",
+      "filename": "square_0018.png"
+    },
+    {
+      "path": "./mlflow_datasets_lab/images/v1/square/square_0019.png",
+      "class": "square",
+      "filename": "square_0019.png"
+    },
+    {
+      "path": "./mlflow_datasets_lab/images/v1/square/square_0020.png",
+      "class": "square",
+      "filename": "square_0020.png"
+    },
+    {
+      "path": "./mlflow_datasets_lab/images/v1/square/square_0021.png",
+      "class": "square",
+      "filename": "square_0021.png"
+    },
+    {
+      "path": "./mlflow_datasets_lab/images/v1/square/square_0022.png",
+      "class": "square",
+      "filename": "square_0022.png"
+    },
+    {
+      "path": "./mlflow_datasets_lab/images/v1/square/square_0023.png",
+      "class": "square",
+      "filename": "square_0023.png"
+    },
+    {
+      "path": "./mlflow_datasets_lab/images/v1/square/square_0024.png",
+      "class": "square",
+      "filename": "square_0024.png"
+    },
+    {
+      "path": "./mlflow_datasets_lab/images/v1/square/square_0025.png",
+      "class": "square",
+      "filename": "square_0025.png"
+    },
+    {
+      "path": "./mlflow_datasets_lab/images/v1/square/square_0026.png",
+      "class": "square",
+      "filename": "square_0026.png"
+    },
+    {
+      "path": "./mlflow_datasets_lab/images/v1/square/square_0027.png",
+      "class": "square",
+      "filename": "square_0027.png"
+    },
+    {
+      "path": "./mlflow_datasets_lab/images/v1/square/square_0028.png",
+      "class": "square",
+      "filename": "square_0028.png"
+    },
+    {
+      "path": "./mlflow_datasets_lab/images/v1/square/square_0029.png",
+      "class": "square",
+      "filename": "square_0029.png"
+    },
+    {
+      "path": "./mlflow_datasets_lab/images/v1/triangle/triangle_0000.png",
+      "class": "triangle",
+      "filename": "triangle_0000.png"
+    },
+    {
+      "path": "./mlflow_datasets_lab/images/v1/triangle/triangle_0001.png",
+      "class": "triangle",
+      "filename": "triangle_0001.png"
+    },
+    {
+      "path": "./mlflow_datasets_lab/images/v1/triangle/triangle_0002.png",
+      "class": "triangle",
+      "filename": "triangle_0002.png"
+    },
+    {
+      "path": "./mlflow_datasets_lab/images/v1/triangle/triangle_0003.png",
+      "class": "triangle",
+      "filename": "triangle_0003.png"
+    },
+    {
+      "path": "./mlflow_datasets_lab/images/v1/triangle/triangle_0004.png",
+      "class": "triangle",
+      "filename": "triangle_0004.png"
+    },
+    {
+      "path": "./mlflow_datasets_lab/images/v1/triangle/triangle_0005.png",
+      "class": "triangle",
+      "filename": "triangle_0005.png"
+    },
+    {
+      "path": "./mlflow_datasets_lab/images/v1/triangle/triangle_0006.png",
+      "class": "triangle",
+      "filename": "triangle_0006.png"
+    },
+    {
+      "path": "./mlflow_datasets_lab/images/v1/triangle/triangle_0007.png",
+      "class": "triangle",
+      "filename": "triangle_0007.png"
+    },
+    {
+      "path": "./mlflow_datasets_lab/images/v1/triangle/triangle_0008.png",
+      "class": "triangle",
+      "filename": "triangle_0008.png"
+    },
+    {
+      "path": "./mlflow_datasets_lab/images/v1/triangle/triangle_0009.png",
+      "class": "triangle",
+      "filename": "triangle_0009.png"
+    },
+    {
+      "path": "./mlflow_datasets_lab/images/v1/triangle/triangle_0010.png",
+      "class": "triangle",
+      "filename": "triangle_0010.png"
+    },
+    {
+      "path": "./mlflow_datasets_lab/images/v1/triangle/triangle_0011.png",
+      "class": "triangle",
+      "filename": "triangle_0011.png"
+    },
+    {
+      "path": "./mlflow_datasets_lab/images/v1/triangle/triangle_0012.png",
+      "class": "triangle",
+      "filename": "triangle_0012.png"
+    },
+    {
+      "path": "./mlflow_datasets_lab/images/v1/triangle/triangle_0013.png",
+      "class": "triangle",
+      "filename": "triangle_0013.png"
+    },
+    {
+      "path": "./mlflow_datasets_lab/images/v1/triangle/triangle_0014.png",
+      "class": "triangle",
+      "filename": "triangle_0014.png"
+    },
+    {
+      "path": "./mlflow_datasets_lab/images/v1/triangle/triangle_0015.png",
+      "class": "triangle",
+      "filename": "triangle_0015.png"
+    },
+    {
+      "path": "./mlflow_datasets_lab/images/v1/triangle/triangle_0016.png",
+      "class": "triangle",
+      "filename": "triangle_0016.png"
+    },
+    {
+      "path": "./mlflow_datasets_lab/images/v1/triangle/triangle_0017.png",
+      "class": "triangle",
+      "filename": "triangle_0017.png"
+    },
+    {
+      "path": "./mlflow_datasets_lab/images/v1/triangle/triangle_0018.png",
+      "class": "triangle",
+      "filename": "triangle_0018.png"
+    },
+    {
+      "path": "./mlflow_datasets_lab/images/v1/triangle/triangle_0019.png",
+      "class": "triangle",
+      "filename": "triangle_0019.png"
+    },
+    {
+      "path": "./mlflow_datasets_lab/images/v1/triangle/triangle_0020.png",
+      "class": "triangle",
+      "filename": "triangle_0020.png"
+    },
+    {
+      "path": "./mlflow_datasets_lab/images/v1/triangle/triangle_0021.png",
+      "class": "triangle",
+      "filename": "triangle_0021.png"
+    },
+    {
+      "path": "./mlflow_datasets_lab/images/v1/triangle/triangle_0022.png",
+      "class": "triangle",
+      "filename": "triangle_0022.png"
+    },
+    {
+      "path": "./mlflow_datasets_lab/images/v1/triangle/triangle_0023.png",
+      "class": "triangle",
+      "filename": "triangle_0023.png"
+    },
+    {
+      "path": "./mlflow_datasets_lab/images/v1/triangle/triangle_0024.png",
+      "class": "triangle",
+      "filename": "triangle_0024.png"
+    },
+    {
+      "path": "./mlflow_datasets_lab/images/v1/triangle/triangle_0025.png",
+      "class": "triangle",
+      "filename": "triangle_0025.png"
+    },
+    {
+      "path": "./mlflow_datasets_lab/images/v1/triangle/triangle_0026.png",
+      "class": "triangle",
+      "filename": "triangle_0026.png"
+    },
+    {
+      "path": "./mlflow_datasets_lab/images/v1/triangle/triangle_0027.png",
+      "class": "triangle",
+      "filename": "triangle_0027.png"
+    },
+    {
+      "path": "./mlflow_datasets_lab/images/v1/triangle/triangle_0028.png",
+      "class": "triangle",
+      "filename": "triangle_0028.png"
+    },
+    {
+      "path": "./mlflow_datasets_lab/images/v1/triangle/triangle_0029.png",
+      "class": "triangle",
+      "filename": "triangle_0029.png"
+    }
+  ],
+  "stats": {
+    "total_images": 90,
+    "total_size_mb": 0.004145622253417969,
+    "classes": {
+      "circle": 30,
+      "square": 30,
+      "triangle": 30
+    }
+  }
+}

@@ -1,16 +1,17 @@
+# %%
 # MLflow Dataset Versioning and Tracking Lab
 
 ```python
 # %% [markdown]
 # # 🧪 MLflow Dataset Versioning and Tracking Lab
-# 
+#
 # ## Learning Objectives
 # By the end of this lab, you will be able to:
 # - Understand MLflow's dataset tracking capabilities
 # - Version different types of datasets (CSV, Images, JSON, Parquet)
 # - Track dataset metadata and lineage
 # - Compare dataset versions across experiments
-# 
+#
 # ## Prerequisites
 # - Python 3.8+
 # - MLflow installed
@@ -18,13 +19,13 @@
 
 # %% [markdown]
 # ## 📦 Step 1: Environment Setup
-# 
+#
 # First, let's install and import all necessary libraries.
 # Run the cell below to set up your environment.
 
 # %%
 # Install required packages (uncomment if needed)
-# !pip install mlflow pandas numpy scikit-learn pillow pyarrow boto3
+# #!pip install mlflow pandas numpy scikit-learn pillow pyarrow boto3
 
 # %%
 # Import required libraries
@@ -51,11 +52,11 @@ print(f"MLflow version: {mlflow.__version__}")
 
 # %% [markdown]
 # ## 🔧 Step 2: MLflow Configuration
-# 
+#
 # Configure MLflow to connect to your tracking server.
-# 
+#
 # **Important:** Make sure your MLflow server is running at the specified URI.
-# 
+#
 # To start a local MLflow server, run in terminal:
 # ```bash
 # mlflow server --host 0.0.0.0 --port 5000
@@ -80,7 +81,7 @@ except Exception as e:
 
 # %% [markdown]
 # ## 📁 Step 3: Create Working Directories
-# 
+#
 # We'll create directories to store our sample datasets.
 
 # %%
@@ -102,9 +103,9 @@ print("\n✅ All directories created successfully!")
 # ---
 # # 📊 PART 1: CSV Dataset Versioning
 # ---
-# 
+#
 # ## Step 4: Create and Version CSV Datasets
-# 
+#
 # In this section, we'll learn how to:
 # 1. Create sample CSV datasets
 # 2. Track them with MLflow
@@ -113,7 +114,7 @@ print("\n✅ All directories created successfully!")
 
 # %% [markdown]
 # ### 4.1 Create Sample CSV Datasets
-# 
+#
 # We'll create a customer dataset with multiple versions simulating
 # data updates over time.
 
@@ -185,7 +186,7 @@ print(f"   Saved to: {csv_path_v2}")
 
 # %% [markdown]
 # ### 4.2 Track CSV Dataset with MLflow
-# 
+#
 # Now let's create an MLflow experiment and log our CSV datasets
 # with proper versioning and metadata.
 
@@ -342,7 +343,7 @@ with mlflow.start_run(run_name="customer_dataset_v2") as run:
 
 # %% [markdown]
 # ### 4.3 Compare CSV Dataset Versions
-# 
+#
 # Let's retrieve and compare the two versions we logged.
 
 # %%
@@ -378,9 +379,9 @@ print(comparison_df.to_string(index=False))
 # ---
 # # 🖼️ PART 2: Image Dataset Versioning
 # ---
-# 
+#
 # ## Step 5: Create and Version Image Datasets
-# 
+#
 # In this section, we'll learn how to:
 # 1. Generate synthetic image datasets
 # 2. Track image datasets with metadata
@@ -388,7 +389,7 @@ print(comparison_df.to_string(index=False))
 
 # %% [markdown]
 # ### 5.1 Create Synthetic Image Dataset
-# 
+#
 # We'll create a simple image classification dataset with
 # geometric shapes (circles, squares, triangles).
 
@@ -477,7 +478,7 @@ print(f"   Location: {image_dir_v2}")
 
 # %% [markdown]
 # ### 5.2 Track Image Dataset with MLflow
-# 
+#
 # Now let's log our image datasets with proper tracking and metadata.
 
 # %%
@@ -612,9 +613,9 @@ with mlflow.start_run(run_name="shapes_dataset_v2") as run:
 # ---
 # # 📋 PART 3: JSON Dataset Versioning
 # ---
-# 
+#
 # ## Step 6: Create and Version JSON Datasets
-# 
+#
 # JSON datasets are common for NLP tasks, configuration data,
 # and semi-structured data. Let's learn how to version them.
 
@@ -799,9 +800,9 @@ with mlflow.start_run(run_name="text_classification_v2") as run:
 # ---
 # # 📦 PART 4: Parquet Dataset Versioning
 # ---
-# 
+#
 # ## Step 7: Create and Version Parquet Datasets
-# 
+#
 # Parquet is a columnar storage format that's efficient for
 # large datasets. It's commonly used in big data pipelines.
 
@@ -939,9 +940,9 @@ with mlflow.start_run(run_name="sales_parquet_v2") as run:
 # ---
 # # 🔬 PART 5: Using Scikit-learn Built-in Datasets
 # ---
-# 
+#
 # ## Step 8: Track Standard ML Datasets
-# 
+#
 # MLflow can also track popular datasets from scikit-learn.
 
 # %%
@@ -1065,7 +1066,7 @@ with mlflow.start_run(run_name="california_housing_dataset") as run:
 # ---
 # # 📊 PART 6: Dataset Comparison Dashboard
 # ---
-# 
+#
 # ## Step 9: Create a Summary of All Tracked Datasets
 
 # %%
@@ -1110,9 +1111,9 @@ else:
 # ---
 # # 🎯 PART 7: Best Practices and Tips
 # ---
-# 
+#
 # ## Dataset Versioning Best Practices
-# 
+#
 # 1. **Always include version numbers** in your dataset parameters
 # 2. **Calculate and log file hashes** for data integrity verification
 # 3. **Log comprehensive metadata** including creation date, source, and changes
@@ -1123,7 +1124,7 @@ else:
 
 # %% [markdown]
 # ## 🧹 Step 10: Cleanup (Optional)
-# 
+#
 # Run this cell to clean up the created directories and files.
 
 # %%
@@ -1144,19 +1145,19 @@ print("💡 To clean up, uncomment and run the cleanup() function above.")
 # ---
 # # 📝 Lab Exercises
 # ---
-# 
+#
 # ## Exercise 1: Create Your Own Dataset Version
 # Create a new version (v3) of the customer dataset with additional features
 # and log it to MLflow.
-# 
+#
 # ## Exercise 2: Image Dataset Augmentation
 # Create a v3 of the image dataset with augmented images (rotations, flips)
 # and track the augmentation parameters.
-# 
+#
 # ## Exercise 3: Compare Metrics
 # Write code to compare the metrics between two dataset versions
 # and highlight the differences.
-# 
+#
 # ## Exercise 4: Dataset Lineage
 # Create a run that logs the relationship between a raw dataset and
 # a processed/cleaned version.
@@ -1164,9 +1165,9 @@ print("💡 To clean up, uncomment and run the cleanup() function above.")
 # %% [markdown]
 # ---
 # # 🎉 Congratulations!
-# 
+#
 # You have completed the MLflow Dataset Versioning and Tracking Lab!
-# 
+#
 # ## What You Learned:
 # - ✅ Setting up MLflow tracking
 # - ✅ Versioning CSV datasets
@@ -1175,46 +1176,46 @@ print("💡 To clean up, uncomment and run the cleanup() function above.")
 # - ✅ Working with Parquet files
 # - ✅ Using sklearn built-in datasets
 # - ✅ Comparing dataset versions
-# 
+#
 # ## Next Steps:
 # 1. Explore the MLflow UI at http://localhost:5000
 # 2. Try connecting datasets to model training runs
 # 3. Implement automated dataset validation
 # 4. Set up dataset alerts for drift detection
-# 
+#
 # ---
 # **Happy Tracking! 🚀**
-```
-
-## How to Use This Lab
-
-### Prerequisites
-
-1. **Start MLflow Server:**
-```bash
-mlflow server --host 0.0.0.0 --port 5000
-```
-
-2. **Install Required Packages:**
-```bash
-pip install mlflow pandas numpy scikit-learn pillow pyarrow
-```
-
-### Running the Lab
-
-1. Save the code as `mlflow_dataset_lab.py`
-2. Open in VS Code or JupyterLab
-3. The `# %%` markers create executable cells
-4. Run cells sequentially
-
-### Lab Structure
-
-| Part | Content | Dataset Types |
-|------|---------|---------------|
-| 1 | CSV Dataset Versioning | Customer churn data |
-| 2 | Image Dataset Versioning | Geometric shapes |
-| 3 | JSON Dataset Versioning | Text classification |
-| 4 | Parquet Dataset Versioning | Sales transactions |
-| 5 | Sklearn Datasets | Iris, Wine, Housing |
-| 6 | Comparison Dashboard | All datasets |
-| 7 | Best Practices | Tips & Exercises |
+# ```
+#
+# # How to Use This Lab
+#
+# ## Prerequisites
+#
+# 1. **Start MLflow Server:**
+# ```bash
+# mlflow server --host 0.0.0.0 --port 5000
+# ```
+#
+# 2. **Install Required Packages:**
+# ```bash
+# pip install mlflow pandas numpy scikit-learn pillow pyarrow
+# ```
+#
+# ## Running the Lab
+#
+# 1. Save the code as `mlflow_dataset_lab.py`
+# 2. Open in VS Code or JupyterLab
+# 3. The `# %%` markers create executable cells
+# 4. Run cells sequentially
+#
+# ## Lab Structure
+#
+# | Part | Content | Dataset Types |
+# |------|---------|---------------|
+# | 1 | CSV Dataset Versioning | Customer churn data |
+# | 2 | Image Dataset Versioning | Geometric shapes |
+# | 3 | JSON Dataset Versioning | Text classification |
+# | 4 | Parquet Dataset Versioning | Sales transactions |
+# | 5 | Sklearn Datasets | Iris, Wine, Housing |
+# | 6 | Comparison Dashboard | All datasets |
+# | 7 | Best Practices | Tips & Exercises |

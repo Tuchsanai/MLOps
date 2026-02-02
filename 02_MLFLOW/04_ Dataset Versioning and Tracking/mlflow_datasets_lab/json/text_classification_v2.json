@@ -1,0 +1,2202 @@
+[
+  {
+    "id": 0,
+    "text": "Athletes prepare for the upcoming Olympics (Sample 0)",
+    "label": "sports",
+    "timestamp": "2026-02-02T05:25:32.255692",
+    "metadata": {
+      "source": "synthetic",
+      "version": 2,
+      "confidence": 0.91
+    }
+  },
+  {
+    "id": 1,
+    "text": "New legislation passes in parliament (Sample 1)",
+    "label": "politics",
+    "timestamp": "2026-02-02T05:25:32.255776",
+    "metadata": {
+      "source": "synthetic",
+      "version": 2,
+      "confidence": 0.9
+    }
+  },
+  {
+    "id": 2,
+    "text": "Movie breaks box office records (Sample 2)",
+    "label": "entertainment",
+    "timestamp": "2026-02-02T05:25:32.255858",
+    "metadata": {
+      "source": "synthetic",
+      "version": 2,
+      "confidence": 0.82
+    }
+  },
+  {
+    "id": 3,
+    "text": "Artificial intelligence continues to evolve (Sample 3)",
+    "label": "technology",
+    "timestamp": "2026-02-02T05:25:32.255941",
+    "metadata": {
+      "source": "synthetic",
+      "version": 2,
+      "confidence": 0.76
+    }
+  },
+  {
+    "id": 4,
+    "text": "Streaming service adds new content (Sample 4)",
+    "label": "entertainment",
+    "timestamp": "2026-02-02T05:25:32.256023",
+    "metadata": {
+      "source": "synthetic",
+      "version": 2,
+      "confidence": 0.9
+    }
+  },
+  {
+    "id": 5,
+    "text": "Artificial intelligence continues to evolve (Sample 5)",
+    "label": "technology",
+    "timestamp": "2026-02-02T05:25:32.256105",
+    "metadata": {
+      "source": "synthetic",
+      "version": 2,
+      "confidence": 0.9
+    }
+  },
+  {
+    "id": 6,
+    "text": "Cloud computing transforms business operations (Sample 6)",
+    "label": "technology",
+    "timestamp": "2026-02-02T05:25:32.256188",
+    "metadata": {
+      "source": "synthetic",
+      "version": 2,
+      "confidence": 0.76
+    }
+  },
+  {
+    "id": 7,
+    "text": "New smartphone features advanced AI capabilities (Sample 7)",
+    "label": "technology",
+    "timestamp": "2026-02-02T05:25:32.256269",
+    "metadata": {
+      "source": "synthetic",
+      "version": 2,
+      "confidence": 0.8
+    }
+  },
+  {
+    "id": 8,
+    "text": "Diplomatic relations improve between nations (Sample 8)",
+    "label": "politics",
+    "timestamp": "2026-02-02T05:25:32.256351",
+    "metadata": {
+      "source": "synthetic",
+      "version": 2,
+      "confidence": 0.89
+    }
+  },
+  {
+    "id": 9,
+    "text": "Tennis tournament reaches final stages (Sample 9)",
+    "label": "sports",
+    "timestamp": "2026-02-02T05:25:32.256441",
+    "metadata": {
+      "source": "synthetic",
+      "version": 2,
+      "confidence": 0.85
+    }
+  },
+  {
+    "id": 10,
+    "text": "Award show celebrates best performances (Sample 10)",
+    "label": "entertainment",
+    "timestamp": "2026-02-02T05:25:32.256525",
+    "metadata": {
+      "source": "synthetic",
+      "version": 2,
+      "confidence": 0.84
+    }
+  },
+  {
+    "id": 11,
+    "text": "Artificial intelligence continues to evolve (Sample 11)",
+    "label": "technology",
+    "timestamp": "2026-02-02T05:25:32.256608",
+    "metadata": {
+      "source": "synthetic",
+      "version": 2,
+      "confidence": 0.73
+    }
+  },
+  {
+    "id": 12,
+    "text": "Government announces new economic policies (Sample 12)",
+    "label": "politics",
+    "timestamp": "2026-02-02T05:25:32.256694",
+    "metadata": {
+      "source": "synthetic",
+      "version": 2,
+      "confidence": 0.99
+    }
+  },
+  {
+    "id": 13,
+    "text": "The basketball player scored 30 points (Sample 13)",
+    "label": "sports",
+    "timestamp": "2026-02-02T05:25:32.256776",
+    "metadata": {
+      "source": "synthetic",
+      "version": 2,
+      "confidence": 0.73
+    }
+  },
+  {
+    "id": 14,
+    "text": "The team won the championship game last night (Sample 14)",
+    "label": "sports",
+    "timestamp": "2026-02-02T05:25:32.256857",
+    "metadata": {
+      "source": "synthetic",
+      "version": 2,
+      "confidence": 0.84
+    }
+  },
+  {
+    "id": 15,
+    "text": "International summit addresses climate change (Sample 15)",
+    "label": "politics",
+    "timestamp": "2026-02-02T05:25:32.256939",
+    "metadata": {
+      "source": "synthetic",
+      "version": 2,
+      "confidence": 0.81
+    }
+  },
+  {
+    "id": 16,
+    "text": "Scientists develop revolutionary battery technology (Sample 16)",
+    "label": "technology",
+    "timestamp": "2026-02-02T05:25:32.257021",
+    "metadata": {
+      "source": "synthetic",
+      "version": 2,
+      "confidence": 0.81
+    }
+  },
+  {
+    "id": 17,
+    "text": "Streaming service adds new content (Sample 17)",
+    "label": "entertainment",
+    "timestamp": "2026-02-02T05:25:32.257103",
+    "metadata": {
+      "source": "synthetic",
+      "version": 2,
+      "confidence": 0.94
+    }
+  },
+  {
+    "id": 18,
+    "text": "Streaming service adds new content (Sample 18)",
+    "label": "entertainment",
+    "timestamp": "2026-02-02T05:25:32.257185",
+    "metadata": {
+      "source": "synthetic",
+      "version": 2,
+      "confidence": 0.93
+    }
+  },
+  {
+    "id": 19,
+    "text": "New legislation passes in parliament (Sample 19)",
+    "label": "politics",
+    "timestamp": "2026-02-02T05:25:32.257267",
+    "metadata": {
+      "source": "synthetic",
+      "version": 2,
+      "confidence": 0.81
+    }
+  },
+  {
+    "id": 20,
+    "text": "Scientists develop revolutionary battery technology (Sample 20)",
+    "label": "technology",
+    "timestamp": "2026-02-02T05:25:32.257350",
+    "metadata": {
+      "source": "synthetic",
+      "version": 2,
+      "confidence": 0.83
+    }
+  },
+  {
+    "id": 21,
+    "text": "Football season starts next month (Sample 21)",
+    "label": "sports",
+    "timestamp": "2026-02-02T05:25:32.257442",
+    "metadata": {
+      "source": "synthetic",
+      "version": 2,
+      "confidence": 0.97
+    }
+  },
+  {
+    "id": 22,
+    "text": "Athletes prepare for the upcoming Olympics (Sample 22)",
+    "label": "sports",
+    "timestamp": "2026-02-02T05:25:32.257533",
+    "metadata": {
+      "source": "synthetic",
+      "version": 2,
+      "confidence": 0.77
+    }
+  },
+  {
+    "id": 23,
+    "text": "Government announces new economic policies (Sample 23)",
+    "label": "politics",
+    "timestamp": "2026-02-02T05:25:32.257617",
+    "metadata": {
+      "source": "synthetic",
+      "version": 2,
+      "confidence": 0.85
+    }
+  },
+  {
+    "id": 24,
+    "text": "The team won the championship game last night (Sample 24)",
+    "label": "sports",
+    "timestamp": "2026-02-02T05:25:32.257699",
+    "metadata": {
+      "source": "synthetic",
+      "version": 2,
+      "confidence": 0.74
+    }
+  },
+  {
+    "id": 25,
+    "text": "Award show celebrates best performances (Sample 25)",
+    "label": "entertainment",
+    "timestamp": "2026-02-02T05:25:32.257782",
+    "metadata": {
+      "source": "synthetic",
+      "version": 2,
+      "confidence": 0.75
+    }
+  },
+  {
+    "id": 26,
+    "text": "Movie breaks box office records (Sample 26)",
+    "label": "entertainment",
+    "timestamp": "2026-02-02T05:25:32.257865",
+    "metadata": {
+      "source": "synthetic",
+      "version": 2,
+      "confidence": 0.73
+    }
+  },
+  {
+    "id": 27,
+    "text": "Artificial intelligence continues to evolve (Sample 27)",
+    "label": "technology",
+    "timestamp": "2026-02-02T05:25:32.257947",
+    "metadata": {
+      "source": "synthetic",
+      "version": 2,
+      "confidence": 0.73
+    }
+  },
+  {
+    "id": 28,
+    "text": "Award show celebrates best performances (Sample 28)",
+    "label": "entertainment",
+    "timestamp": "2026-02-02T05:25:32.258030",
+    "metadata": {
+      "source": "synthetic",
+      "version": 2,
+      "confidence": 0.77
+    }
+  },
+  {
+    "id": 29,
+    "text": "New legislation passes in parliament (Sample 29)",
+    "label": "politics",
+    "timestamp": "2026-02-02T05:25:32.258118",
+    "metadata": {
+      "source": "synthetic",
+      "version": 2,
+      "confidence": 0.75
+    }
+  },
+  {
+    "id": 30,
+    "text": "Movie breaks box office records (Sample 30)",
+    "label": "entertainment",
+    "timestamp": "2026-02-02T05:25:32.258202",
+    "metadata": {
+      "source": "synthetic",
+      "version": 2,
+      "confidence": 0.83
+    }
+  },
+  {
+    "id": 31,
+    "text": "Football season starts next month (Sample 31)",
+    "label": "sports",
+    "timestamp": "2026-02-02T05:25:32.258284",
+    "metadata": {
+      "source": "synthetic",
+      "version": 2,
+      "confidence": 0.97
+    }
+  },
+  {
+    "id": 32,
+    "text": "New video game receives critical acclaim (Sample 32)",
+    "label": "entertainment",
+    "timestamp": "2026-02-02T05:25:32.258367",
+    "metadata": {
+      "source": "synthetic",
+      "version": 2,
+      "confidence": 0.9
+    }
+  },
+  {
+    "id": 33,
+    "text": "Tennis tournament reaches final stages (Sample 33)",
+    "label": "sports",
+    "timestamp": "2026-02-02T05:25:32.258449",
+    "metadata": {
+      "source": "synthetic",
+      "version": 2,
+      "confidence": 0.78
+    }
+  },
+  {
+    "id": 34,
+    "text": "Football season starts next month (Sample 34)",
+    "label": "sports",
+    "timestamp": "2026-02-02T05:25:32.258540",
+    "metadata": {
+      "source": "synthetic",
+      "version": 2,
+      "confidence": 0.94
+    }
+  },
+  {
+    "id": 35,
+    "text": "Football season starts next month (Sample 35)",
+    "label": "sports",
+    "timestamp": "2026-02-02T05:25:32.258624",
+    "metadata": {
+      "source": "synthetic",
+      "version": 2,
+      "confidence": 0.84
+    }
+  },
+  {
+    "id": 36,
+    "text": "Football season starts next month (Sample 36)",
+    "label": "sports",
+    "timestamp": "2026-02-02T05:25:32.258718",
+    "metadata": {
+      "source": "synthetic",
+      "version": 2,
+      "confidence": 0.74
+    }
+  },
+  {
+    "id": 37,
+    "text": "International summit addresses climate change (Sample 37)",
+    "label": "politics",
+    "timestamp": "2026-02-02T05:25:32.258802",
+    "metadata": {
+      "source": "synthetic",
+      "version": 2,
+      "confidence": 0.87
+    }
+  },
+  {
+    "id": 38,
+    "text": "Government announces new economic policies (Sample 38)",
+    "label": "politics",
+    "timestamp": "2026-02-02T05:25:32.258923",
+    "metadata": {
+      "source": "synthetic",
+      "version": 2,
+      "confidence": 0.81
+    }
+  },
+  {
+    "id": 39,
+    "text": "Scientists develop revolutionary battery technology (Sample 39)",
+    "label": "technology",
+    "timestamp": "2026-02-02T05:25:32.259007",
+    "metadata": {
+      "source": "synthetic",
+      "version": 2,
+      "confidence": 0.89
+    }
+  },
+  {
+    "id": 40,
+    "text": "Diplomatic relations improve between nations (Sample 40)",
+    "label": "politics",
+    "timestamp": "2026-02-02T05:25:32.259090",
+    "metadata": {
+      "source": "synthetic",
+      "version": 2,
+      "confidence": 0.86
+    }
+  },
+  {
+    "id": 41,
+    "text": "Artificial intelligence continues to evolve (Sample 41)",
+    "label": "technology",
+    "timestamp": "2026-02-02T05:25:32.259173",
+    "metadata": {
+      "source": "synthetic",
+      "version": 2,
+      "confidence": 0.92
+    }
+  },
+  {
+    "id": 42,
+    "text": "Elections scheduled for next year (Sample 42)",
+    "label": "politics",
+    "timestamp": "2026-02-02T05:25:32.259255",
+    "metadata": {
+      "source": "synthetic",
+      "version": 2,
+      "confidence": 0.95
+    }
+  },
+  {
+    "id": 43,
+    "text": "New smartphone features advanced AI capabilities (Sample 43)",
+    "label": "technology",
+    "timestamp": "2026-02-02T05:25:32.259338",
+    "metadata": {
+      "source": "synthetic",
+      "version": 2,
+      "confidence": 0.99
+    }
+  },
+  {
+    "id": 44,
+    "text": "Football season starts next month (Sample 44)",
+    "label": "sports",
+    "timestamp": "2026-02-02T05:25:32.259426",
+    "metadata": {
+      "source": "synthetic",
+      "version": 2,
+      "confidence": 0.79
+    }
+  },
+  {
+    "id": 45,
+    "text": "Diplomatic relations improve between nations (Sample 45)",
+    "label": "politics",
+    "timestamp": "2026-02-02T05:25:32.259511",
+    "metadata": {
+      "source": "synthetic",
+      "version": 2,
+      "confidence": 0.84
+    }
+  },
+  {
+    "id": 46,
+    "text": "Popular singer announces world tour (Sample 46)",
+    "label": "entertainment",
+    "timestamp": "2026-02-02T05:25:32.259596",
+    "metadata": {
+      "source": "synthetic",
+      "version": 2,
+      "confidence": 0.94
+    }
+  },
+  {
+    "id": 47,
+    "text": "Tech company releases latest software update (Sample 47)",
+    "label": "technology",
+    "timestamp": "2026-02-02T05:25:32.259679",
+    "metadata": {
+      "source": "synthetic",
+      "version": 2,
+      "confidence": 0.73
+    }
+  },
+  {
+    "id": 48,
+    "text": "New smartphone features advanced AI capabilities (Sample 48)",
+    "label": "technology",
+    "timestamp": "2026-02-02T05:25:32.259762",
+    "metadata": {
+      "source": "synthetic",
+      "version": 2,
+      "confidence": 0.83
+    }
+  },
+  {
+    "id": 49,
+    "text": "International summit addresses climate change (Sample 49)",
+    "label": "politics",
+    "timestamp": "2026-02-02T05:25:32.259850",
+    "metadata": {
+      "source": "synthetic",
+      "version": 2,
+      "confidence": 0.86
+    }
+  },
+  {
+    "id": 50,
+    "text": "International summit addresses climate change (Sample 50)",
+    "label": "politics",
+    "timestamp": "2026-02-02T05:25:32.259933",
+    "metadata": {
+      "source": "synthetic",
+      "version": 2,
+      "confidence": 0.89
+    }
+  },
+  {
+    "id": 51,
+    "text": "Popular singer announces world tour (Sample 51)",
+    "label": "entertainment",
+    "timestamp": "2026-02-02T05:25:32.260015",
+    "metadata": {
+      "source": "synthetic",
+      "version": 2,
+      "confidence": 0.9
+    }
+  },
+  {
+    "id": 52,
+    "text": "Streaming service adds new content (Sample 52)",
+    "label": "entertainment",
+    "timestamp": "2026-02-02T05:25:32.260098",
+    "metadata": {
+      "source": "synthetic",
+      "version": 2,
+      "confidence": 0.73
+    }
+  },
+  {
+    "id": 53,
+    "text": "Elections scheduled for next year (Sample 53)",
+    "label": "politics",
+    "timestamp": "2026-02-02T05:25:32.260180",
+    "metadata": {
+      "source": "synthetic",
+      "version": 2,
+      "confidence": 0.93
+    }
+  },
+  {
+    "id": 54,
+    "text": "Elections scheduled for next year (Sample 54)",
+    "label": "politics",
+    "timestamp": "2026-02-02T05:25:32.260262",
+    "metadata": {
+      "source": "synthetic",
+      "version": 2,
+      "confidence": 0.89
+    }
+  },
+  {
+    "id": 55,
+    "text": "Artificial intelligence continues to evolve (Sample 55)",
+    "label": "technology",
+    "timestamp": "2026-02-02T05:25:32.260344",
+    "metadata": {
+      "source": "synthetic",
+      "version": 2,
+      "confidence": 0.85
+    }
+  },
+  {
+    "id": 56,
+    "text": "Football season starts next month (Sample 56)",
+    "label": "sports",
+    "timestamp": "2026-02-02T05:25:32.260425",
+    "metadata": {
+      "source": "synthetic",
+      "version": 2,
+      "confidence": 0.74
+    }
+  },
+  {
+    "id": 57,
+    "text": "Diplomatic relations improve between nations (Sample 57)",
+    "label": "politics",
+    "timestamp": "2026-02-02T05:25:32.260510",
+    "metadata": {
+      "source": "synthetic",
+      "version": 2,
+      "confidence": 0.99
+    }
+  },
+  {
+    "id": 58,
+    "text": "The basketball player scored 30 points (Sample 58)",
+    "label": "sports",
+    "timestamp": "2026-02-02T05:25:32.260594",
+    "metadata": {
+      "source": "synthetic",
+      "version": 2,
+      "confidence": 0.87
+    }
+  },
+  {
+    "id": 59,
+    "text": "International summit addresses climate change (Sample 59)",
+    "label": "politics",
+    "timestamp": "2026-02-02T05:25:32.260688",
+    "metadata": {
+      "source": "synthetic",
+      "version": 2,
+      "confidence": 0.84
+    }
+  },
+  {
+    "id": 60,
+    "text": "Award show celebrates best performances (Sample 60)",
+    "label": "entertainment",
+    "timestamp": "2026-02-02T05:25:32.260779",
+    "metadata": {
+      "source": "synthetic",
+      "version": 2,
+      "confidence": 0.93
+    }
+  },
+  {
+    "id": 61,
+    "text": "Award show celebrates best performances (Sample 61)",
+    "label": "entertainment",
+    "timestamp": "2026-02-02T05:25:32.260861",
+    "metadata": {
+      "source": "synthetic",
+      "version": 2,
+      "confidence": 0.92
+    }
+  },
+  {
+    "id": 62,
+    "text": "Elections scheduled for next year (Sample 62)",
+    "label": "politics",
+    "timestamp": "2026-02-02T05:25:32.260943",
+    "metadata": {
+      "source": "synthetic",
+      "version": 2,
+      "confidence": 0.74
+    }
+  },
+  {
+    "id": 63,
+    "text": "Popular singer announces world tour (Sample 63)",
+    "label": "entertainment",
+    "timestamp": "2026-02-02T05:25:32.261025",
+    "metadata": {
+      "source": "synthetic",
+      "version": 2,
+      "confidence": 0.99
+    }
+  },
+  {
+    "id": 64,
+    "text": "International summit addresses climate change (Sample 64)",
+    "label": "politics",
+    "timestamp": "2026-02-02T05:25:32.261107",
+    "metadata": {
+      "source": "synthetic",
+      "version": 2,
+      "confidence": 0.9
+    }
+  },
+  {
+    "id": 65,
+    "text": "Movie breaks box office records (Sample 65)",
+    "label": "entertainment",
+    "timestamp": "2026-02-02T05:25:32.261189",
+    "metadata": {
+      "source": "synthetic",
+      "version": 2,
+      "confidence": 0.7
+    }
+  },
+  {
+    "id": 66,
+    "text": "New smartphone features advanced AI capabilities (Sample 66)",
+    "label": "technology",
+    "timestamp": "2026-02-02T05:25:32.261271",
+    "metadata": {
+      "source": "synthetic",
+      "version": 2,
+      "confidence": 0.89
+    }
+  },
+  {
+    "id": 67,
+    "text": "Movie breaks box office records (Sample 67)",
+    "label": "entertainment",
+    "timestamp": "2026-02-02T05:25:32.261358",
+    "metadata": {
+      "source": "synthetic",
+      "version": 2,
+      "confidence": 1.0
+    }
+  },
+  {
+    "id": 68,
+    "text": "Government announces new economic policies (Sample 68)",
+    "label": "politics",
+    "timestamp": "2026-02-02T05:25:32.261441",
+    "metadata": {
+      "source": "synthetic",
+      "version": 2,
+      "confidence": 0.85
+    }
+  },
+  {
+    "id": 69,
+    "text": "Diplomatic relations improve between nations (Sample 69)",
+    "label": "politics",
+    "timestamp": "2026-02-02T05:25:32.261523",
+    "metadata": {
+      "source": "synthetic",
+      "version": 2,
+      "confidence": 0.98
+    }
+  },
+  {
+    "id": 70,
+    "text": "Artificial intelligence continues to evolve (Sample 70)",
+    "label": "technology",
+    "timestamp": "2026-02-02T05:25:32.261606",
+    "metadata": {
+      "source": "synthetic",
+      "version": 2,
+      "confidence": 0.92
+    }
+  },
+  {
+    "id": 71,
+    "text": "New legislation passes in parliament (Sample 71)",
+    "label": "politics",
+    "timestamp": "2026-02-02T05:25:32.261688",
+    "metadata": {
+      "source": "synthetic",
+      "version": 2,
+      "confidence": 0.94
+    }
+  },
+  {
+    "id": 72,
+    "text": "Cloud computing transforms business operations (Sample 72)",
+    "label": "technology",
+    "timestamp": "2026-02-02T05:25:32.261771",
+    "metadata": {
+      "source": "synthetic",
+      "version": 2,
+      "confidence": 0.84
+    }
+  },
+  {
+    "id": 73,
+    "text": "Cloud computing transforms business operations (Sample 73)",
+    "label": "technology",
+    "timestamp": "2026-02-02T05:25:32.261853",
+    "metadata": {
+      "source": "synthetic",
+      "version": 2,
+      "confidence": 0.85
+    }
+  },
+  {
+    "id": 74,
+    "text": "Diplomatic relations improve between nations (Sample 74)",
+    "label": "politics",
+    "timestamp": "2026-02-02T05:25:32.261936",
+    "metadata": {
+      "source": "synthetic",
+      "version": 2,
+      "confidence": 0.73
+    }
+  },
+  {
+    "id": 75,
+    "text": "Scientists develop revolutionary battery technology (Sample 75)",
+    "label": "technology",
+    "timestamp": "2026-02-02T05:25:32.262021",
+    "metadata": {
+      "source": "synthetic",
+      "version": 2,
+      "confidence": 0.8
+    }
+  },
+  {
+    "id": 76,
+    "text": "Scientists develop revolutionary battery technology (Sample 76)",
+    "label": "technology",
+    "timestamp": "2026-02-02T05:25:32.262110",
+    "metadata": {
+      "source": "synthetic",
+      "version": 2,
+      "confidence": 0.94
+    }
+  },
+  {
+    "id": 77,
+    "text": "Scientists develop revolutionary battery technology (Sample 77)",
+    "label": "technology",
+    "timestamp": "2026-02-02T05:25:32.262195",
+    "metadata": {
+      "source": "synthetic",
+      "version": 2,
+      "confidence": 0.95
+    }
+  },
+  {
+    "id": 78,
+    "text": "Streaming service adds new content (Sample 78)",
+    "label": "entertainment",
+    "timestamp": "2026-02-02T05:25:32.262309",
+    "metadata": {
+      "source": "synthetic",
+      "version": 2,
+      "confidence": 0.72
+    }
+  },
+  {
+    "id": 79,
+    "text": "Football season starts next month (Sample 79)",
+    "label": "sports",
+    "timestamp": "2026-02-02T05:25:32.262406",
+    "metadata": {
+      "source": "synthetic",
+      "version": 2,
+      "confidence": 0.98
+    }
+  },
+  {
+    "id": 80,
+    "text": "Popular singer announces world tour (Sample 80)",
+    "label": "entertainment",
+    "timestamp": "2026-02-02T05:25:32.262490",
+    "metadata": {
+      "source": "synthetic",
+      "version": 2,
+      "confidence": 0.75
+    }
+  },
+  {
+    "id": 81,
+    "text": "Diplomatic relations improve between nations (Sample 81)",
+    "label": "politics",
+    "timestamp": "2026-02-02T05:25:32.262572",
+    "metadata": {
+      "source": "synthetic",
+      "version": 2,
+      "confidence": 0.71
+    }
+  },
+  {
+    "id": 82,
+    "text": "Football season starts next month (Sample 82)",
+    "label": "sports",
+    "timestamp": "2026-02-02T05:25:32.262665",
+    "metadata": {
+      "source": "synthetic",
+      "version": 2,
+      "confidence": 0.76
+    }
+  },
+  {
+    "id": 83,
+    "text": "Government announces new economic policies (Sample 83)",
+    "label": "politics",
+    "timestamp": "2026-02-02T05:25:32.262749",
+    "metadata": {
+      "source": "synthetic",
+      "version": 2,
+      "confidence": 0.81
+    }
+  },
+  {
+    "id": 84,
+    "text": "New video game receives critical acclaim (Sample 84)",
+    "label": "entertainment",
+    "timestamp": "2026-02-02T05:25:32.262832",
+    "metadata": {
+      "source": "synthetic",
+      "version": 2,
+      "confidence": 0.96
+    }
+  },
+  {
+    "id": 85,
+    "text": "Cloud computing transforms business operations (Sample 85)",
+    "label": "technology",
+    "timestamp": "2026-02-02T05:25:32.262943",
+    "metadata": {
+      "source": "synthetic",
+      "version": 2,
+      "confidence": 0.97
+    }
+  },
+  {
+    "id": 86,
+    "text": "New video game receives critical acclaim (Sample 86)",
+    "label": "entertainment",
+    "timestamp": "2026-02-02T05:25:32.263034",
+    "metadata": {
+      "source": "synthetic",
+      "version": 2,
+      "confidence": 0.71
+    }
+  },
+  {
+    "id": 87,
+    "text": "Tech company releases latest software update (Sample 87)",
+    "label": "technology",
+    "timestamp": "2026-02-02T05:25:32.263120",
+    "metadata": {
+      "source": "synthetic",
+      "version": 2,
+      "confidence": 0.93
+    }
+  },
+  {
+    "id": 88,
+    "text": "Award show celebrates best performances (Sample 88)",
+    "label": "entertainment",
+    "timestamp": "2026-02-02T05:25:32.263202",
+    "metadata": {
+      "source": "synthetic",
+      "version": 2,
+      "confidence": 0.96
+    }
+  },
+  {
+    "id": 89,
+    "text": "International summit addresses climate change (Sample 89)",
+    "label": "politics",
+    "timestamp": "2026-02-02T05:25:32.263285",
+    "metadata": {
+      "source": "synthetic",
+      "version": 2,
+      "confidence": 0.78
+    }
+  },
+  {
+    "id": 90,
+    "text": "Football season starts next month (Sample 90)",
+    "label": "sports",
+    "timestamp": "2026-02-02T05:25:32.263367",
+    "metadata": {
+      "source": "synthetic",
+      "version": 2,
+      "confidence": 0.84
+    }
+  },
+  {
+    "id": 91,
+    "text": "Cloud computing transforms business operations (Sample 91)",
+    "label": "technology",
+    "timestamp": "2026-02-02T05:25:32.263448",
+    "metadata": {
+      "source": "synthetic",
+      "version": 2,
+      "confidence": 0.78
+    }
+  },
+  {
+    "id": 92,
+    "text": "Elections scheduled for next year (Sample 92)",
+    "label": "politics",
+    "timestamp": "2026-02-02T05:25:32.263535",
+    "metadata": {
+      "source": "synthetic",
+      "version": 2,
+      "confidence": 0.85
+    }
+  },
+  {
+    "id": 93,
+    "text": "The team won the championship game last night (Sample 93)",
+    "label": "sports",
+    "timestamp": "2026-02-02T05:25:32.263618",
+    "metadata": {
+      "source": "synthetic",
+      "version": 2,
+      "confidence": 0.72
+    }
+  },
+  {
+    "id": 94,
+    "text": "Football season starts next month (Sample 94)",
+    "label": "sports",
+    "timestamp": "2026-02-02T05:25:32.263701",
+    "metadata": {
+      "source": "synthetic",
+      "version": 2,
+      "confidence": 0.72
+    }
+  },
+  {
+    "id": 95,
+    "text": "Tennis tournament reaches final stages (Sample 95)",
+    "label": "sports",
+    "timestamp": "2026-02-02T05:25:32.263783",
+    "metadata": {
+      "source": "synthetic",
+      "version": 2,
+      "confidence": 0.87
+    }
+  },
+  {
+    "id": 96,
+    "text": "New smartphone features advanced AI capabilities (Sample 96)",
+    "label": "technology",
+    "timestamp": "2026-02-02T05:25:32.263864",
+    "metadata": {
+      "source": "synthetic",
+      "version": 2,
+      "confidence": 0.78
+    }
+  },
+  {
+    "id": 97,
+    "text": "Government announces new economic policies (Sample 97)",
+    "label": "politics",
+    "timestamp": "2026-02-02T05:25:32.263947",
+    "metadata": {
+      "source": "synthetic",
+      "version": 2,
+      "confidence": 0.76
+    }
+  },
+  {
+    "id": 98,
+    "text": "The team won the championship game last night (Sample 98)",
+    "label": "sports",
+    "timestamp": "2026-02-02T05:25:32.264036",
+    "metadata": {
+      "source": "synthetic",
+      "version": 2,
+      "confidence": 0.86
+    }
+  },
+  {
+    "id": 99,
+    "text": "Tennis tournament reaches final stages (Sample 99)",
+    "label": "sports",
+    "timestamp": "2026-02-02T05:25:32.264125",
+    "metadata": {
+      "source": "synthetic",
+      "version": 2,
+      "confidence": 0.84
+    }
+  },
+  {
+    "id": 100,
+    "text": "Government announces new economic policies (Sample 100)",
+    "label": "politics",
+    "timestamp": "2026-02-02T05:25:32.264208",
+    "metadata": {
+      "source": "synthetic",
+      "version": 2,
+      "confidence": 0.84
+    }
+  },
+  {
+    "id": 101,
+    "text": "Athletes prepare for the upcoming Olympics (Sample 101)",
+    "label": "sports",
+    "timestamp": "2026-02-02T05:25:32.264290",
+    "metadata": {
+      "source": "synthetic",
+      "version": 2,
+      "confidence": 0.81
+    }
+  },
+  {
+    "id": 102,
+    "text": "Award show celebrates best performances (Sample 102)",
+    "label": "entertainment",
+    "timestamp": "2026-02-02T05:25:32.264373",
+    "metadata": {
+      "source": "synthetic",
+      "version": 2,
+      "confidence": 0.81
+    }
+  },
+  {
+    "id": 103,
+    "text": "Movie breaks box office records (Sample 103)",
+    "label": "entertainment",
+    "timestamp": "2026-02-02T05:25:32.264455",
+    "metadata": {
+      "source": "synthetic",
+      "version": 2,
+      "confidence": 0.84
+    }
+  },
+  {
+    "id": 104,
+    "text": "International summit addresses climate change (Sample 104)",
+    "label": "politics",
+    "timestamp": "2026-02-02T05:25:32.264538",
+    "metadata": {
+      "source": "synthetic",
+      "version": 2,
+      "confidence": 0.85
+    }
+  },
+  {
+    "id": 105,
+    "text": "The team won the championship game last night (Sample 105)",
+    "label": "sports",
+    "timestamp": "2026-02-02T05:25:32.264621",
+    "metadata": {
+      "source": "synthetic",
+      "version": 2,
+      "confidence": 0.94
+    }
+  },
+  {
+    "id": 106,
+    "text": "New smartphone features advanced AI capabilities (Sample 106)",
+    "label": "technology",
+    "timestamp": "2026-02-02T05:25:32.264708",
+    "metadata": {
+      "source": "synthetic",
+      "version": 2,
+      "confidence": 0.71
+    }
+  },
+  {
+    "id": 107,
+    "text": "The team won the championship game last night (Sample 107)",
+    "label": "sports",
+    "timestamp": "2026-02-02T05:25:32.264791",
+    "metadata": {
+      "source": "synthetic",
+      "version": 2,
+      "confidence": 0.92
+    }
+  },
+  {
+    "id": 108,
+    "text": "New legislation passes in parliament (Sample 108)",
+    "label": "politics",
+    "timestamp": "2026-02-02T05:25:32.264878",
+    "metadata": {
+      "source": "synthetic",
+      "version": 2,
+      "confidence": 0.77
+    }
+  },
+  {
+    "id": 109,
+    "text": "New video game receives critical acclaim (Sample 109)",
+    "label": "entertainment",
+    "timestamp": "2026-02-02T05:25:32.264961",
+    "metadata": {
+      "source": "synthetic",
+      "version": 2,
+      "confidence": 0.9
+    }
+  },
+  {
+    "id": 110,
+    "text": "Scientists develop revolutionary battery technology (Sample 110)",
+    "label": "technology",
+    "timestamp": "2026-02-02T05:25:32.265044",
+    "metadata": {
+      "source": "synthetic",
+      "version": 2,
+      "confidence": 0.82
+    }
+  },
+  {
+    "id": 111,
+    "text": "New legislation passes in parliament (Sample 111)",
+    "label": "politics",
+    "timestamp": "2026-02-02T05:25:32.265131",
+    "metadata": {
+      "source": "synthetic",
+      "version": 2,
+      "confidence": 0.76
+    }
+  },
+  {
+    "id": 112,
+    "text": "Scientists develop revolutionary battery technology (Sample 112)",
+    "label": "technology",
+    "timestamp": "2026-02-02T05:25:32.265213",
+    "metadata": {
+      "source": "synthetic",
+      "version": 2,
+      "confidence": 0.71
+    }
+  },
+  {
+    "id": 113,
+    "text": "Scientists develop revolutionary battery technology (Sample 113)",
+    "label": "technology",
+    "timestamp": "2026-02-02T05:25:32.265295",
+    "metadata": {
+      "source": "synthetic",
+      "version": 2,
+      "confidence": 0.87
+    }
+  },
+  {
+    "id": 114,
+    "text": "New video game receives critical acclaim (Sample 114)",
+    "label": "entertainment",
+    "timestamp": "2026-02-02T05:25:32.265377",
+    "metadata": {
+      "source": "synthetic",
+      "version": 2,
+      "confidence": 0.76
+    }
+  },
+  {
+    "id": 115,
+    "text": "Diplomatic relations improve between nations (Sample 115)",
+    "label": "politics",
+    "timestamp": "2026-02-02T05:25:32.265459",
+    "metadata": {
+      "source": "synthetic",
+      "version": 2,
+      "confidence": 0.75
+    }
+  },
+  {
+    "id": 116,
+    "text": "Award show celebrates best performances (Sample 116)",
+    "label": "entertainment",
+    "timestamp": "2026-02-02T05:25:32.265544",
+    "metadata": {
+      "source": "synthetic",
+      "version": 2,
+      "confidence": 0.83
+    }
+  },
+  {
+    "id": 117,
+    "text": "The team won the championship game last night (Sample 117)",
+    "label": "sports",
+    "timestamp": "2026-02-02T05:25:32.265627",
+    "metadata": {
+      "source": "synthetic",
+      "version": 2,
+      "confidence": 0.79
+    }
+  },
+  {
+    "id": 118,
+    "text": "New video game receives critical acclaim (Sample 118)",
+    "label": "entertainment",
+    "timestamp": "2026-02-02T05:25:32.265710",
+    "metadata": {
+      "source": "synthetic",
+      "version": 2,
+      "confidence": 0.83
+    }
+  },
+  {
+    "id": 119,
+    "text": "Elections scheduled for next year (Sample 119)",
+    "label": "politics",
+    "timestamp": "2026-02-02T05:25:32.265792",
+    "metadata": {
+      "source": "synthetic",
+      "version": 2,
+      "confidence": 0.91
+    }
+  },
+  {
+    "id": 120,
+    "text": "New legislation passes in parliament (Sample 120)",
+    "label": "politics",
+    "timestamp": "2026-02-02T05:25:32.265873",
+    "metadata": {
+      "source": "synthetic",
+      "version": 2,
+      "confidence": 0.94
+    }
+  },
+  {
+    "id": 121,
+    "text": "New legislation passes in parliament (Sample 121)",
+    "label": "politics",
+    "timestamp": "2026-02-02T05:25:32.265955",
+    "metadata": {
+      "source": "synthetic",
+      "version": 2,
+      "confidence": 0.96
+    }
+  },
+  {
+    "id": 122,
+    "text": "Streaming service adds new content (Sample 122)",
+    "label": "entertainment",
+    "timestamp": "2026-02-02T05:25:32.266037",
+    "metadata": {
+      "source": "synthetic",
+      "version": 2,
+      "confidence": 0.96
+    }
+  },
+  {
+    "id": 123,
+    "text": "The basketball player scored 30 points (Sample 123)",
+    "label": "sports",
+    "timestamp": "2026-02-02T05:25:32.266119",
+    "metadata": {
+      "source": "synthetic",
+      "version": 2,
+      "confidence": 0.73
+    }
+  },
+  {
+    "id": 124,
+    "text": "Government announces new economic policies (Sample 124)",
+    "label": "politics",
+    "timestamp": "2026-02-02T05:25:32.266258",
+    "metadata": {
+      "source": "synthetic",
+      "version": 2,
+      "confidence": 0.8
+    }
+  },
+  {
+    "id": 125,
+    "text": "Cloud computing transforms business operations (Sample 125)",
+    "label": "technology",
+    "timestamp": "2026-02-02T05:25:32.266340",
+    "metadata": {
+      "source": "synthetic",
+      "version": 2,
+      "confidence": 0.99
+    }
+  },
+  {
+    "id": 126,
+    "text": "Scientists develop revolutionary battery technology (Sample 126)",
+    "label": "technology",
+    "timestamp": "2026-02-02T05:25:32.266423",
+    "metadata": {
+      "source": "synthetic",
+      "version": 2,
+      "confidence": 0.8
+    }
+  },
+  {
+    "id": 127,
+    "text": "New smartphone features advanced AI capabilities (Sample 127)",
+    "label": "technology",
+    "timestamp": "2026-02-02T05:25:32.266506",
+    "metadata": {
+      "source": "synthetic",
+      "version": 2,
+      "confidence": 0.96
+    }
+  },
+  {
+    "id": 128,
+    "text": "New legislation passes in parliament (Sample 128)",
+    "label": "politics",
+    "timestamp": "2026-02-02T05:25:32.266589",
+    "metadata": {
+      "source": "synthetic",
+      "version": 2,
+      "confidence": 0.98
+    }
+  },
+  {
+    "id": 129,
+    "text": "Elections scheduled for next year (Sample 129)",
+    "label": "politics",
+    "timestamp": "2026-02-02T05:25:32.266676",
+    "metadata": {
+      "source": "synthetic",
+      "version": 2,
+      "confidence": 0.83
+    }
+  },
+  {
+    "id": 130,
+    "text": "Movie breaks box office records (Sample 130)",
+    "label": "entertainment",
+    "timestamp": "2026-02-02T05:25:32.266759",
+    "metadata": {
+      "source": "synthetic",
+      "version": 2,
+      "confidence": 0.94
+    }
+  },
+  {
+    "id": 131,
+    "text": "Football season starts next month (Sample 131)",
+    "label": "sports",
+    "timestamp": "2026-02-02T05:25:32.266841",
+    "metadata": {
+      "source": "synthetic",
+      "version": 2,
+      "confidence": 0.97
+    }
+  },
+  {
+    "id": 132,
+    "text": "New video game receives critical acclaim (Sample 132)",
+    "label": "entertainment",
+    "timestamp": "2026-02-02T05:25:32.266949",
+    "metadata": {
+      "source": "synthetic",
+      "version": 2,
+      "confidence": 0.96
+    }
+  },
+  {
+    "id": 133,
+    "text": "Scientists develop revolutionary battery technology (Sample 133)",
+    "label": "technology",
+    "timestamp": "2026-02-02T05:25:32.267032",
+    "metadata": {
+      "source": "synthetic",
+      "version": 2,
+      "confidence": 0.92
+    }
+  },
+  {
+    "id": 134,
+    "text": "The team won the championship game last night (Sample 134)",
+    "label": "sports",
+    "timestamp": "2026-02-02T05:25:32.267120",
+    "metadata": {
+      "source": "synthetic",
+      "version": 2,
+      "confidence": 1.0
+    }
+  },
+  {
+    "id": 135,
+    "text": "New smartphone features advanced AI capabilities (Sample 135)",
+    "label": "technology",
+    "timestamp": "2026-02-02T05:25:32.267204",
+    "metadata": {
+      "source": "synthetic",
+      "version": 2,
+      "confidence": 0.94
+    }
+  },
+  {
+    "id": 136,
+    "text": "Movie breaks box office records (Sample 136)",
+    "label": "entertainment",
+    "timestamp": "2026-02-02T05:25:32.267293",
+    "metadata": {
+      "source": "synthetic",
+      "version": 2,
+      "confidence": 0.74
+    }
+  },
+  {
+    "id": 137,
+    "text": "Artificial intelligence continues to evolve (Sample 137)",
+    "label": "technology",
+    "timestamp": "2026-02-02T05:25:32.267378",
+    "metadata": {
+      "source": "synthetic",
+      "version": 2,
+      "confidence": 0.87
+    }
+  },
+  {
+    "id": 138,
+    "text": "Tech company releases latest software update (Sample 138)",
+    "label": "technology",
+    "timestamp": "2026-02-02T05:25:32.267461",
+    "metadata": {
+      "source": "synthetic",
+      "version": 2,
+      "confidence": 0.95
+    }
+  },
+  {
+    "id": 139,
+    "text": "New smartphone features advanced AI capabilities (Sample 139)",
+    "label": "technology",
+    "timestamp": "2026-02-02T05:25:32.267544",
+    "metadata": {
+      "source": "synthetic",
+      "version": 2,
+      "confidence": 0.77
+    }
+  },
+  {
+    "id": 140,
+    "text": "The basketball player scored 30 points (Sample 140)",
+    "label": "sports",
+    "timestamp": "2026-02-02T05:25:32.267631",
+    "metadata": {
+      "source": "synthetic",
+      "version": 2,
+      "confidence": 0.7
+    }
+  },
+  {
+    "id": 141,
+    "text": "Football season starts next month (Sample 141)",
+    "label": "sports",
+    "timestamp": "2026-02-02T05:25:32.267714",
+    "metadata": {
+      "source": "synthetic",
+      "version": 2,
+      "confidence": 0.85
+    }
+  },
+  {
+    "id": 142,
+    "text": "New legislation passes in parliament (Sample 142)",
+    "label": "politics",
+    "timestamp": "2026-02-02T05:25:32.267797",
+    "metadata": {
+      "source": "synthetic",
+      "version": 2,
+      "confidence": 0.99
+    }
+  },
+  {
+    "id": 143,
+    "text": "New legislation passes in parliament (Sample 143)",
+    "label": "politics",
+    "timestamp": "2026-02-02T05:25:32.267880",
+    "metadata": {
+      "source": "synthetic",
+      "version": 2,
+      "confidence": 0.88
+    }
+  },
+  {
+    "id": 144,
+    "text": "Tennis tournament reaches final stages (Sample 144)",
+    "label": "sports",
+    "timestamp": "2026-02-02T05:25:32.267963",
+    "metadata": {
+      "source": "synthetic",
+      "version": 2,
+      "confidence": 0.89
+    }
+  },
+  {
+    "id": 145,
+    "text": "Award show celebrates best performances (Sample 145)",
+    "label": "entertainment",
+    "timestamp": "2026-02-02T05:25:32.268046",
+    "metadata": {
+      "source": "synthetic",
+      "version": 2,
+      "confidence": 0.73
+    }
+  },
+  {
+    "id": 146,
+    "text": "New video game receives critical acclaim (Sample 146)",
+    "label": "entertainment",
+    "timestamp": "2026-02-02T05:25:32.268492",
+    "metadata": {
+      "source": "synthetic",
+      "version": 2,
+      "confidence": 0.73
+    }
+  },
+  {
+    "id": 147,
+    "text": "Tech company releases latest software update (Sample 147)",
+    "label": "technology",
+    "timestamp": "2026-02-02T05:25:32.268601",
+    "metadata": {
+      "source": "synthetic",
+      "version": 2,
+      "confidence": 0.7
+    }
+  },
+  {
+    "id": 148,
+    "text": "The basketball player scored 30 points (Sample 148)",
+    "label": "sports",
+    "timestamp": "2026-02-02T05:25:32.268686",
+    "metadata": {
+      "source": "synthetic",
+      "version": 2,
+      "confidence": 0.88
+    }
+  },
+  {
+    "id": 149,
+    "text": "Movie breaks box office records (Sample 149)",
+    "label": "entertainment",
+    "timestamp": "2026-02-02T05:25:32.268769",
+    "metadata": {
+      "source": "synthetic",
+      "version": 2,
+      "confidence": 0.78
+    }
+  },
+  {
+    "id": 150,
+    "text": "Elections scheduled for next year (Sample 150)",
+    "label": "politics",
+    "timestamp": "2026-02-02T05:25:32.268852",
+    "metadata": {
+      "source": "synthetic",
+      "version": 2,
+      "confidence": 0.75
+    }
+  },
+  {
+    "id": 151,
+    "text": "New smartphone features advanced AI capabilities (Sample 151)",
+    "label": "technology",
+    "timestamp": "2026-02-02T05:25:32.268935",
+    "metadata": {
+      "source": "synthetic",
+      "version": 2,
+      "confidence": 0.75
+    }
+  },
+  {
+    "id": 152,
+    "text": "Movie breaks box office records (Sample 152)",
+    "label": "entertainment",
+    "timestamp": "2026-02-02T05:25:32.269017",
+    "metadata": {
+      "source": "synthetic",
+      "version": 2,
+      "confidence": 0.81
+    }
+  },
+  {
+    "id": 153,
+    "text": "New video game receives critical acclaim (Sample 153)",
+    "label": "entertainment",
+    "timestamp": "2026-02-02T05:25:32.269108",
+    "metadata": {
+      "source": "synthetic",
+      "version": 2,
+      "confidence": 0.74
+    }
+  },
+  {
+    "id": 154,
+    "text": "New smartphone features advanced AI capabilities (Sample 154)",
+    "label": "technology",
+    "timestamp": "2026-02-02T05:25:32.269266",
+    "metadata": {
+      "source": "synthetic",
+      "version": 2,
+      "confidence": 0.84
+    }
+  },
+  {
+    "id": 155,
+    "text": "Cloud computing transforms business operations (Sample 155)",
+    "label": "technology",
+    "timestamp": "2026-02-02T05:25:32.269351",
+    "metadata": {
+      "source": "synthetic",
+      "version": 2,
+      "confidence": 0.96
+    }
+  },
+  {
+    "id": 156,
+    "text": "New smartphone features advanced AI capabilities (Sample 156)",
+    "label": "technology",
+    "timestamp": "2026-02-02T05:25:32.269387",
+    "metadata": {
+      "source": "synthetic",
+      "version": 2,
+      "confidence": 0.83
+    }
+  },
+  {
+    "id": 157,
+    "text": "Tennis tournament reaches final stages (Sample 157)",
+    "label": "sports",
+    "timestamp": "2026-02-02T05:25:32.269448",
+    "metadata": {
+      "source": "synthetic",
+      "version": 2,
+      "confidence": 0.71
+    }
+  },
+  {
+    "id": 158,
+    "text": "Popular singer announces world tour (Sample 158)",
+    "label": "entertainment",
+    "timestamp": "2026-02-02T05:25:32.269546",
+    "metadata": {
+      "source": "synthetic",
+      "version": 2,
+      "confidence": 0.84
+    }
+  },
+  {
+    "id": 159,
+    "text": "Artificial intelligence continues to evolve (Sample 159)",
+    "label": "technology",
+    "timestamp": "2026-02-02T05:25:32.269685",
+    "metadata": {
+      "source": "synthetic",
+      "version": 2,
+      "confidence": 0.74
+    }
+  },
+  {
+    "id": 160,
+    "text": "Diplomatic relations improve between nations (Sample 160)",
+    "label": "politics",
+    "timestamp": "2026-02-02T05:25:32.269790",
+    "metadata": {
+      "source": "synthetic",
+      "version": 2,
+      "confidence": 0.75
+    }
+  },
+  {
+    "id": 161,
+    "text": "International summit addresses climate change (Sample 161)",
+    "label": "politics",
+    "timestamp": "2026-02-02T05:25:32.269873",
+    "metadata": {
+      "source": "synthetic",
+      "version": 2,
+      "confidence": 0.7
+    }
+  },
+  {
+    "id": 162,
+    "text": "The team won the championship game last night (Sample 162)",
+    "label": "sports",
+    "timestamp": "2026-02-02T05:25:32.269956",
+    "metadata": {
+      "source": "synthetic",
+      "version": 2,
+      "confidence": 0.85
+    }
+  },
+  {
+    "id": 163,
+    "text": "Popular singer announces world tour (Sample 163)",
+    "label": "entertainment",
+    "timestamp": "2026-02-02T05:25:32.269993",
+    "metadata": {
+      "source": "synthetic",
+      "version": 2,
+      "confidence": 0.72
+    }
+  },
+  {
+    "id": 164,
+    "text": "Cloud computing transforms business operations (Sample 164)",
+    "label": "technology",
+    "timestamp": "2026-02-02T05:25:32.270003",
+    "metadata": {
+      "source": "synthetic",
+      "version": 2,
+      "confidence": 0.71
+    }
+  },
+  {
+    "id": 165,
+    "text": "Tech company releases latest software update (Sample 165)",
+    "label": "technology",
+    "timestamp": "2026-02-02T05:25:32.270045",
+    "metadata": {
+      "source": "synthetic",
+      "version": 2,
+      "confidence": 0.89
+    }
+  },
+  {
+    "id": 166,
+    "text": "International summit addresses climate change (Sample 166)",
+    "label": "politics",
+    "timestamp": "2026-02-02T05:25:32.270064",
+    "metadata": {
+      "source": "synthetic",
+      "version": 2,
+      "confidence": 0.87
+    }
+  },
+  {
+    "id": 167,
+    "text": "Athletes prepare for the upcoming Olympics (Sample 167)",
+    "label": "sports",
+    "timestamp": "2026-02-02T05:25:32.270124",
+    "metadata": {
+      "source": "synthetic",
+      "version": 2,
+      "confidence": 0.98
+    }
+  },
+  {
+    "id": 168,
+    "text": "Streaming service adds new content (Sample 168)",
+    "label": "entertainment",
+    "timestamp": "2026-02-02T05:25:32.270207",
+    "metadata": {
+      "source": "synthetic",
+      "version": 2,
+      "confidence": 0.9
+    }
+  },
+  {
+    "id": 169,
+    "text": "Streaming service adds new content (Sample 169)",
+    "label": "entertainment",
+    "timestamp": "2026-02-02T05:25:32.270289",
+    "metadata": {
+      "source": "synthetic",
+      "version": 2,
+      "confidence": 0.86
+    }
+  },
+  {
+    "id": 170,
+    "text": "New video game receives critical acclaim (Sample 170)",
+    "label": "entertainment",
+    "timestamp": "2026-02-02T05:25:32.270377",
+    "metadata": {
+      "source": "synthetic",
+      "version": 2,
+      "confidence": 0.99
+    }
+  },
+  {
+    "id": 171,
+    "text": "Government announces new economic policies (Sample 171)",
+    "label": "politics",
+    "timestamp": "2026-02-02T05:25:32.270460",
+    "metadata": {
+      "source": "synthetic",
+      "version": 2,
+      "confidence": 0.7
+    }
+  },
+  {
+    "id": 172,
+    "text": "Elections scheduled for next year (Sample 172)",
+    "label": "politics",
+    "timestamp": "2026-02-02T05:25:32.270542",
+    "metadata": {
+      "source": "synthetic",
+      "version": 2,
+      "confidence": 0.83
+    }
+  },
+  {
+    "id": 173,
+    "text": "New legislation passes in parliament (Sample 173)",
+    "label": "politics",
+    "timestamp": "2026-02-02T05:25:32.270624",
+    "metadata": {
+      "source": "synthetic",
+      "version": 2,
+      "confidence": 0.73
+    }
+  },
+  {
+    "id": 174,
+    "text": "Tennis tournament reaches final stages (Sample 174)",
+    "label": "sports",
+    "timestamp": "2026-02-02T05:25:32.270706",
+    "metadata": {
+      "source": "synthetic",
+      "version": 2,
+      "confidence": 0.95
+    }
+  },
+  {
+    "id": 175,
+    "text": "Scientists develop revolutionary battery technology (Sample 175)",
+    "label": "technology",
+    "timestamp": "2026-02-02T05:25:32.270793",
+    "metadata": {
+      "source": "synthetic",
+      "version": 2,
+      "confidence": 0.72
+    }
+  },
+  {
+    "id": 176,
+    "text": "Movie breaks box office records (Sample 176)",
+    "label": "entertainment",
+    "timestamp": "2026-02-02T05:25:32.270914",
+    "metadata": {
+      "source": "synthetic",
+      "version": 2,
+      "confidence": 0.89
+    }
+  },
+  {
+    "id": 177,
+    "text": "Streaming service adds new content (Sample 177)",
+    "label": "entertainment",
+    "timestamp": "2026-02-02T05:25:32.270997",
+    "metadata": {
+      "source": "synthetic",
+      "version": 2,
+      "confidence": 1.0
+    }
+  },
+  {
+    "id": 178,
+    "text": "Elections scheduled for next year (Sample 178)",
+    "label": "politics",
+    "timestamp": "2026-02-02T05:25:32.271080",
+    "metadata": {
+      "source": "synthetic",
+      "version": 2,
+      "confidence": 0.71
+    }
+  },
+  {
+    "id": 179,
+    "text": "Popular singer announces world tour (Sample 179)",
+    "label": "entertainment",
+    "timestamp": "2026-02-02T05:25:32.271162",
+    "metadata": {
+      "source": "synthetic",
+      "version": 2,
+      "confidence": 0.78
+    }
+  },
+  {
+    "id": 180,
+    "text": "The team won the championship game last night (Sample 180)",
+    "label": "sports",
+    "timestamp": "2026-02-02T05:25:32.271244",
+    "metadata": {
+      "source": "synthetic",
+      "version": 2,
+      "confidence": 0.89
+    }
+  },
+  {
+    "id": 181,
+    "text": "Movie breaks box office records (Sample 181)",
+    "label": "entertainment",
+    "timestamp": "2026-02-02T05:25:32.271326",
+    "metadata": {
+      "source": "synthetic",
+      "version": 2,
+      "confidence": 0.87
+    }
+  },
+  {
+    "id": 182,
+    "text": "Elections scheduled for next year (Sample 182)",
+    "label": "politics",
+    "timestamp": "2026-02-02T05:25:32.271435",
+    "metadata": {
+      "source": "synthetic",
+      "version": 2,
+      "confidence": 0.75
+    }
+  },
+  {
+    "id": 183,
+    "text": "Artificial intelligence continues to evolve (Sample 183)",
+    "label": "technology",
+    "timestamp": "2026-02-02T05:25:32.271536",
+    "metadata": {
+      "source": "synthetic",
+      "version": 2,
+      "confidence": 0.8
+    }
+  },
+  {
+    "id": 184,
+    "text": "Government announces new economic policies (Sample 184)",
+    "label": "politics",
+    "timestamp": "2026-02-02T05:25:32.271620",
+    "metadata": {
+      "source": "synthetic",
+      "version": 2,
+      "confidence": 0.95
+    }
+  },
+  {
+    "id": 185,
+    "text": "Award show celebrates best performances (Sample 185)",
+    "label": "entertainment",
+    "timestamp": "2026-02-02T05:25:32.271703",
+    "metadata": {
+      "source": "synthetic",
+      "version": 2,
+      "confidence": 0.95
+    }
+  },
+  {
+    "id": 186,
+    "text": "The basketball player scored 30 points (Sample 186)",
+    "label": "sports",
+    "timestamp": "2026-02-02T05:25:32.271797",
+    "metadata": {
+      "source": "synthetic",
+      "version": 2,
+      "confidence": 0.71
+    }
+  },
+  {
+    "id": 187,
+    "text": "New smartphone features advanced AI capabilities (Sample 187)",
+    "label": "technology",
+    "timestamp": "2026-02-02T05:25:32.271880",
+    "metadata": {
+      "source": "synthetic",
+      "version": 2,
+      "confidence": 0.85
+    }
+  },
+  {
+    "id": 188,
+    "text": "Athletes prepare for the upcoming Olympics (Sample 188)",
+    "label": "sports",
+    "timestamp": "2026-02-02T05:25:32.271963",
+    "metadata": {
+      "source": "synthetic",
+      "version": 2,
+      "confidence": 0.83
+    }
+  },
+  {
+    "id": 189,
+    "text": "The team won the championship game last night (Sample 189)",
+    "label": "sports",
+    "timestamp": "2026-02-02T05:25:32.272046",
+    "metadata": {
+      "source": "synthetic",
+      "version": 2,
+      "confidence": 0.74
+    }
+  },
+  {
+    "id": 190,
+    "text": "Movie breaks box office records (Sample 190)",
+    "label": "entertainment",
+    "timestamp": "2026-02-02T05:25:32.272129",
+    "metadata": {
+      "source": "synthetic",
+      "version": 2,
+      "confidence": 0.98
+    }
+  },
+  {
+    "id": 191,
+    "text": "Movie breaks box office records (Sample 191)",
+    "label": "entertainment",
+    "timestamp": "2026-02-02T05:25:32.272212",
+    "metadata": {
+      "source": "synthetic",
+      "version": 2,
+      "confidence": 0.92
+    }
+  },
+  {
+    "id": 192,
+    "text": "Elections scheduled for next year (Sample 192)",
+    "label": "politics",
+    "timestamp": "2026-02-02T05:25:32.272296",
+    "metadata": {
+      "source": "synthetic",
+      "version": 2,
+      "confidence": 0.89
+    }
+  },
+  {
+    "id": 193,
+    "text": "International summit addresses climate change (Sample 193)",
+    "label": "politics",
+    "timestamp": "2026-02-02T05:25:32.272378",
+    "metadata": {
+      "source": "synthetic",
+      "version": 2,
+      "confidence": 0.87
+    }
+  },
+  {
+    "id": 194,
+    "text": "Elections scheduled for next year (Sample 194)",
+    "label": "politics",
+    "timestamp": "2026-02-02T05:25:32.272491",
+    "metadata": {
+      "source": "synthetic",
+      "version": 2,
+      "confidence": 0.7
+    }
+  },
+  {
+    "id": 195,
+    "text": "Scientists develop revolutionary battery technology (Sample 195)",
+    "label": "technology",
+    "timestamp": "2026-02-02T05:25:32.272574",
+    "metadata": {
+      "source": "synthetic",
+      "version": 2,
+      "confidence": 0.71
+    }
+  },
+  {
+    "id": 196,
+    "text": "Elections scheduled for next year (Sample 196)",
+    "label": "politics",
+    "timestamp": "2026-02-02T05:25:32.272657",
+    "metadata": {
+      "source": "synthetic",
+      "version": 2,
+      "confidence": 0.86
+    }
+  },
+  {
+    "id": 197,
+    "text": "Elections scheduled for next year (Sample 197)",
+    "label": "politics",
+    "timestamp": "2026-02-02T05:25:32.272740",
+    "metadata": {
+      "source": "synthetic",
+      "version": 2,
+      "confidence": 0.85
+    }
+  },
+  {
+    "id": 198,
+    "text": "Elections scheduled for next year (Sample 198)",
+    "label": "politics",
+    "timestamp": "2026-02-02T05:25:32.272822",
+    "metadata": {
+      "source": "synthetic",
+      "version": 2,
+      "confidence": 0.96
+    }
+  },
+  {
+    "id": 199,
+    "text": "New video game receives critical acclaim (Sample 199)",
+    "label": "entertainment",
+    "timestamp": "2026-02-02T05:25:32.272906",
+    "metadata": {
+      "source": "synthetic",
+      "version": 2,
+      "confidence": 0.78
+    }
+  }
+]
