@@ -1,7 +1,3 @@
-# %%
-# MLflow Dataset Versioning and Tracking Lab
-
-```python
 # %% [markdown]
 # # 🧪 MLflow Dataset Versioning and Tracking Lab
 #
@@ -508,6 +504,9 @@ def get_image_dataset_stats(dataset_dir):
     stats['image_dimensions'] = list(stats['image_dimensions'])
     return stats
 
+
+
+# %%
 # Create experiment for image datasets
 EXPERIMENT_NAME_IMAGES = "Image_Dataset_Versioning_Lab"
 mlflow.set_experiment(EXPERIMENT_NAME_IMAGES)
@@ -703,6 +702,8 @@ print("\n📋 JSON Dataset Version 2:")
 print(f"   Samples: {len(json_data_v2)}")
 print(f"   Saved to: {json_path_v2}")
 
+# %%
+
 # %% [markdown]
 # ### 6.2 Track JSON Dataset with MLflow
 
@@ -794,146 +795,6 @@ with mlflow.start_run(run_name="text_classification_v2") as run:
     mlflow.log_param("file_hash_md5", file_hash)
     
     print(f"✅ JSON Dataset v2 logged!")
-    print(f"   Run ID: {run.info.run_id}")
-
-# %% [markdown]
-# ---
-# # 📦 PART 4: Parquet Dataset Versioning
-# ---
-#
-# ## Step 7: Create and Version Parquet Datasets
-#
-# Parquet is a columnar storage format that's efficient for
-# large datasets. It's commonly used in big data pipelines.
-
-# %% [markdown]
-# ### 7.1 Create Parquet Datasets
-
-# %%
-def create_sales_dataset(version, num_records=10000):
-    """Create a sales dataset and save as Parquet."""
-    np.random.seed(40 + version)
-    
-    products = ['Laptop', 'Phone', 'Tablet', 'Monitor', 'Keyboard', 'Mouse']
-    regions = ['North America', 'Europe', 'Asia', 'South America', 'Africa']
-    
-    data = {
-        'transaction_id': range(1, num_records + 1),
-        'date': pd.date_range(start='2023-01-01', periods=num_records, freq='H'),
-        'product': np.random.choice(products, num_records),
-        'region': np.random.choice(regions, num_records),
-        'quantity': np.random.randint(1, 20, num_records),
-        'unit_price': np.random.uniform(50, 2000, num_records).round(2),
-        'discount': np.random.uniform(0, 0.3, num_records).round(2)
-    }
-    
-    df = pd.DataFrame(data)
-    df['total_amount'] = (df['quantity'] * df['unit_price'] * (1 - df['discount'])).round(2)
-    
-    return df
-
-# Create Parquet datasets
-parquet_df_v1 = create_sales_dataset(version=1, num_records=10000)
-parquet_df_v2 = create_sales_dataset(version=2, num_records=25000)
-
-# Save to Parquet
-parquet_path_v1 = os.path.join(PARQUET_DIR, "sales_v1.parquet")
-parquet_path_v2 = os.path.join(PARQUET_DIR, "sales_v2.parquet")
-
-parquet_df_v1.to_parquet(parquet_path_v1, index=False)
-parquet_df_v2.to_parquet(parquet_path_v2, index=False)
-
-print("📦 Parquet Dataset Version 1:")
-print(f"   Records: {len(parquet_df_v1)}")
-print(f"   Columns: {list(parquet_df_v1.columns)}")
-print(f"   File Size: {os.path.getsize(parquet_path_v1) / 1024:.2f} KB")
-
-print("\n📦 Parquet Dataset Version 2:")
-print(f"   Records: {len(parquet_df_v2)}")
-print(f"   Columns: {list(parquet_df_v2.columns)}")
-print(f"   File Size: {os.path.getsize(parquet_path_v2) / 1024:.2f} KB")
-
-# %% [markdown]
-# ### 7.2 Track Parquet Dataset with MLflow
-
-# %%
-# Create experiment for Parquet datasets
-EXPERIMENT_NAME_PARQUET = "Parquet_Dataset_Versioning_Lab"
-mlflow.set_experiment(EXPERIMENT_NAME_PARQUET)
-
-print(f"📁 Experiment: {EXPERIMENT_NAME_PARQUET}")
-
-# %%
-# Log Parquet Dataset Version 1
-print("🔄 Logging Parquet Dataset Version 1...")
-
-with mlflow.start_run(run_name="sales_parquet_v1") as run:
-    df = pd.read_parquet(parquet_path_v1)
-    
-    # Create MLflow dataset from parquet
-    dataset = mlflow.data.from_pandas(
-        df,
-        source=parquet_path_v1,
-        name="sales_transactions"
-    )
-    
-    mlflow.log_input(dataset, context="training")
-    
-    # Log parameters
-    mlflow.log_param("dataset_version", "1.0.0")
-    mlflow.log_param("dataset_name", "sales_transactions")
-    mlflow.log_param("data_format", "Parquet")
-    mlflow.log_param("compression", "snappy")
-    mlflow.log_param("creation_date", datetime.now().isoformat())
-    
-    # Log metrics
-    mlflow.log_metric("num_records", len(df))
-    mlflow.log_metric("num_columns", len(df.columns))
-    mlflow.log_metric("file_size_kb", os.path.getsize(parquet_path_v1) / 1024)
-    mlflow.log_metric("total_revenue", df['total_amount'].sum())
-    mlflow.log_metric("avg_transaction", df['total_amount'].mean())
-    mlflow.log_metric("unique_products", df['product'].nunique())
-    mlflow.log_metric("unique_regions", df['region'].nunique())
-    
-    # Log artifact
-    mlflow.log_artifact(parquet_path_v1, artifact_path="datasets")
-    
-    print(f"✅ Parquet Dataset v1 logged!")
-    print(f"   Run ID: {run.info.run_id}")
-
-# %%
-# Log Parquet Dataset Version 2
-print("🔄 Logging Parquet Dataset Version 2...")
-
-with mlflow.start_run(run_name="sales_parquet_v2") as run:
-    df = pd.read_parquet(parquet_path_v2)
-    
-    dataset = mlflow.data.from_pandas(
-        df,
-        source=parquet_path_v2,
-        name="sales_transactions"
-    )
-    
-    mlflow.log_input(dataset, context="training")
-    
-    mlflow.log_param("dataset_version", "2.0.0")
-    mlflow.log_param("dataset_name", "sales_transactions")
-    mlflow.log_param("data_format", "Parquet")
-    mlflow.log_param("compression", "snappy")
-    mlflow.log_param("creation_date", datetime.now().isoformat())
-    mlflow.log_param("changes_from_v1", "2.5x more records")
-    
-    mlflow.log_metric("num_records", len(df))
-    mlflow.log_metric("num_columns", len(df.columns))
-    mlflow.log_metric("file_size_kb", os.path.getsize(parquet_path_v2) / 1024)
-    mlflow.log_metric("total_revenue", df['total_amount'].sum())
-    mlflow.log_metric("avg_transaction", df['total_amount'].mean())
-    mlflow.log_metric("unique_products", df['product'].nunique())
-    mlflow.log_metric("unique_regions", df['region'].nunique())
-    
-    mlflow.log_artifact(parquet_path_v2, artifact_path="datasets")
-    
-    print(f"✅ Parquet Dataset v2 logged!")
     print(f"   Run ID: {run.info.run_id}")
 
 # %% [markdown]
