@@ -1,5 +1,5 @@
 # %% [markdown]
-# # 🧪 Lab: MLflow Prompt Management with Gemini API
+# # 🧪 Lab: MLflow Prompt Management 
 #
 # ## วัตถุประสงค์ (Objectives)
 # 1. เรียนรู้การใช้ **MLflow Prompt Registry** เพื่อจัดการ Prompt แบบมี Version Control
@@ -28,7 +28,7 @@
 
 # %%
 # ติดตั้ง Library ที่จำเป็น
-# !pip install mlflow google-genai
+# !pip install mlflow google-genai -q
 
 # %%
 # Import Libraries
@@ -47,7 +47,7 @@ print(f"MLflow version: {mlflow.__version__}")
 
 # %%
 # กำหนด API Key และ Model
-API_KEY = "AIzaSyB5irEioOc2skZ_aaLy9qDGo9sAAmLc5_k"  # <<<< ใส่ API Key ของคุณที่นี่
+API_KEY = "token"  # <<<< ใส่ API Key ของคุณที่นี่
 MODEL_NAME = "gemini-2.0-flash"
 
 # สร้าง Client
@@ -132,7 +132,16 @@ print_section("ทดสอบ Gemini API", test_response, "🧪")
 # - `template` — ตัว Prompt Template โดยใช้ `{{ variable }}` สำหรับตัวแปร
 # - `commit_message` — ข้อความอธิบายการเปลี่ยนแปลง (เหมือน Git commit message)
 
-# %%
+# %% [markdown]
+# | Image 1 | Image 2 |
+# |---------|---------|
+# | ![image.png](attachment:3190ea7a-c63e-45ff-8c64-09cb86f65e82.png) | ![image.png](attachment:5133e1f2-9221-41c8-8443-e867b7849730.png) |
+
+# %% [markdown]
+# ![image.png](attachment:3f4d603e-d86b-4cd5-9817-65d1d0964f61.png)
+
+# %% [markdown]
+# ![image.png](attachment:8514f2c7-d28b-48a4-9862-a490ec83ce4f.png)
 
 # %%
 # === Lab 2.1: Register Prompt v1 — Sentiment Analysis ===
@@ -204,6 +213,9 @@ for text in test_texts:
 #
 # ลองปรับปรุง Prompt ให้มีคำอธิบายชัดเจนขึ้น แล้ว Register เป็น Version ใหม่
 
+# %% [markdown]
+# ![image.png](attachment:e820545c-cf0a-4648-962f-c878d13f6094.png)
+
 # %%
 # === Lab 2.3: Register Prompt v2 — Improved Version ===
 
@@ -226,6 +238,9 @@ prompt_v2 = mlflow.genai.register_prompt(
     commit_message="v2: Added role, rules, and structured format"
 )
 
+
+
+# %%
 print(f"✅ ลงทะเบียน Prompt v2 สำเร็จ!")
 print(f"   Name: {prompt_v2.name}")
 print(f"   Version: {prompt_v2.version}")
@@ -377,11 +392,11 @@ def evaluate_prompt(prompt_template: str, test_data: List[Dict], version_label: 
 # %% [markdown]
 # ## 3.3 ทดสอบ Prompt v1 และ v2
 
-# %%
-# === Lab 3.3: ทดสอบ Prompt v1 ===
-
-prompt_v1_loaded = mlflow.genai.load_prompt(f"prompts:/{PROMPT_NAME}/1")
-eval_v1 = evaluate_prompt(prompt_v1_loaded.template, TEST_DATA, version_label="v1")
+# %% [markdown]
+# # === Lab 3.3: ทดสอบ Prompt v1 ===
+#
+# prompt_v1_loaded = mlflow.genai.load_prompt(f"prompts:/{PROMPT_NAME}/1")
+# eval_v1 = evaluate_prompt(prompt_v1_loaded.template, TEST_DATA, version_label="v1")
 
 # %%
 # === ทดสอบ Prompt v2 ===
@@ -415,6 +430,20 @@ else:
 # ```
 # Prompt v_n → ทดสอบ → วิเคราะห์ข้อผิดพลาด → สร้าง Prompt ใหม่ → Prompt v_n+1 → ทดสอบ → ...
 # ```
+#
+# ```
+# ╔══════════════════════════════════════════════════════════════════════════════════════╗
+# ║                                                                                      ║
+# ║   📝 Prompt vₙ  ──▶  🧪 ทดสอบ  ──▶  🔍 วิเคราะห์ข้อผิดพลาด  ──▶  ✨ Prompt vₙ₊₁   ║
+# ║        │                                                                 │           ║
+# ║        │                                                                 │           ║
+# ║        ◀─────────────────── 🔁 วนลูปซ้ำ ◀───────────────────────────────╯           ║
+# ║                                                                                      ║
+# ║                  หยุดเมื่อ: ✅ Accuracy ≥ เป้าหมาย  หรือ  ⏹ ครบจำนวนรอบ              ║
+# ║                                                                                      ║
+# ╚══════════════════════════════════════════════════════════════════════════════════════╝
+# ```
+#
 
 # %% [markdown]
 # ## 4.1 Reflection for Prompt Optimization
@@ -525,6 +554,9 @@ print(new_template_v3)
 
 # %% [markdown]
 # ## 4.4 Register และทดสอบ Prompt v3
+
+# %% [markdown]
+# ![image.png](attachment:bc4b038c-5266-49d7-afb1-384ecb486028.png)
 
 # %%
 # === Lab 4.4: Register v3 ===
@@ -652,23 +684,27 @@ def prompt_optimization_loop(
 # %% [markdown]
 # ## 5.1 รัน Optimization Loop
 #
-# เริ่มจาก Prompt v1 (Basic) แล้วให้ระบบปรับปรุงอัตโนมัติ
+# เริ่มจาก Prompt v2 (Basic) แล้วให้ระบบปรับปรุงอัตโนมัติ
 
 # %%
 # === Lab 5.1: Run Full Optimization ===
 
 # เริ่มจาก Prompt v1 (พื้นฐานที่สุด)
-starting_prompt = mlflow.genai.load_prompt(f"prompts:/{PROMPT_NAME}/1")
+starting_prompt = mlflow.genai.load_prompt(f"prompts:/{PROMPT_NAME}/2")
 
 optimization_result = prompt_optimization_loop(
     prompt_name=PROMPT_NAME,
     initial_template=starting_prompt.template,
     test_data=TEST_DATA,
     target_accuracy=100.0,
-    max_iterations=3
+    max_iterations=4
 )
 
+# %% [markdown]
+# ![image.png](attachment:8d6710f6-5156-4bca-8aaa-a41e349c4dc2.png)
+
 # %%
+print(optimization_result["final_template"])
 
 # %% [markdown]
 # ## 5.2 เปรียบเทียบผลลัพธ์ทุก Version พร้อม MLflow Tracking
@@ -718,7 +754,7 @@ while True:
         print(f"{'='*60}")
         print(f"📌 Version {version}")
         print(f"{'─'*60}")
-        print(p.template[:200] + ("..." if len(p.template) > 200 else ""))
+        print(p.template)
         print()
         version += 1
     except Exception:
