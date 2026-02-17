@@ -4,7 +4,7 @@ services:
     container_name: mlops-container
     ports:
       - "8083:8888"
-      - "5001:5000"
+      - "8081:5000"
     environment:
       - MLFLOW_TRACKING_URI=http://localhost:5000
       - MLFLOW_HOST=0.0.0.0
