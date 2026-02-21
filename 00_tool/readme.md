@@ -14,6 +14,11 @@ Use the following command to **build the Docker image** from the provided `Docke
 docker build -f ./Dockerfile -t tuchsanai/mlops_2568_2:latest .
 ```
 
+
+```bash
+docker build -f ./Dockerfile -t tuchsanai/mlops_2568_mac_2:latest .
+```
+
 This command:
 
 * Builds the image from the current directory (`.`)
