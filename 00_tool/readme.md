@@ -46,6 +46,11 @@ This ensures your image can be pulled and used on any machine without rebuilding
 docker run -d -p 8081:8888 --name mlops-container tuchsanai/mlops_2568_2:latest
 ```
 
+```bash
+docker run -d  -p 8081:8888 -v /var/run/docker.sock:/var/run/docker.sock  --name mlops-container tuchsanai/mlops_2568_2:latest
+```
+
+
 #### or without port map
 
 ```bash
