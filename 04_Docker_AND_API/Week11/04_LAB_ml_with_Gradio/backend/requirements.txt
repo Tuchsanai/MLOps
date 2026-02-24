@@ -1,5 +1,0 @@
-uvicorn
-fastapi
-scikit
-numpy
-pydantic
