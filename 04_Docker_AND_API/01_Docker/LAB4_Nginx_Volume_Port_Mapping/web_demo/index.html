@@ -1,572 +1,350 @@
 <!DOCTYPE html>
 <html lang="th">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>MLOps — KMITL</title>
-  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Sarabun:wght@300;400;700&family=Share+Tech+Mono&display=swap" rel="stylesheet"/>
-  <style>
-    :root {
-      --neon: #00ffe7;
-      --neon2: #ff00c8;
-      --accent: #ffe600;
-      --dark: #05060f;
-      --dark2: #0b0e1f;
-      --mid: #111831;
-      --text: #d0e8ff;
-      --grid: rgba(0,255,231,0.04);
-    }
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>MLOps — IT ลาดกระบัง</title>
+<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Sarabun:wght@300;400;700;800&family=Share+Tech+Mono&display=swap" rel="stylesheet"/>
+<style>
+:root{--neon:#00ffe7;--neon2:#ff00c8;--neon3:#ffe600;--dark:#020510;--mid:#080d1e;--text:#c8e0ff;}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+html{scroll-behavior:smooth;}
+body{background:var(--dark);color:var(--text);font-family:'Sarabun',sans-serif;min-height:100vh;overflow-x:hidden;cursor:none;}
 
-    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+/* CURSOR */
+#cursor{position:fixed;width:12px;height:12px;background:var(--neon);border-radius:50%;pointer-events:none;z-index:9999;box-shadow:0 0 16px var(--neon),0 0 40px var(--neon);transform:translate(-50%,-50%);}
+#cursor-ring{position:fixed;width:40px;height:40px;border:1px solid rgba(0,255,231,0.4);border-radius:50%;pointer-events:none;z-index:9998;transform:translate(-50%,-50%);transition:left .08s ease,top .08s ease;}
 
-    html { scroll-behavior: smooth; }
+/* CANVAS */
+#canvas{position:fixed;inset:0;z-index:0;pointer-events:none;}
 
-    body {
-      background: var(--dark);
-      color: var(--text);
-      font-family: 'Sarabun', sans-serif;
-      min-height: 100vh;
-      overflow-x: hidden;
-    }
+/* SCANLINES */
+body::after{content:'';position:fixed;inset:0;background:repeating-linear-gradient(0deg,transparent,transparent 2px,rgba(0,0,0,0.05) 2px,rgba(0,0,0,0.05) 4px);pointer-events:none;z-index:1;}
 
-    /* — GRID BACKGROUND — */
-    body::before {
-      content: '';
-      position: fixed;
-      inset: 0;
-      background-image:
-        linear-gradient(var(--grid) 1px, transparent 1px),
-        linear-gradient(90deg, var(--grid) 1px, transparent 1px);
-      background-size: 48px 48px;
-      pointer-events: none;
-      z-index: 0;
-    }
+/* TICKER */
+.ticker{position:relative;z-index:10;background:linear-gradient(90deg,var(--neon2),var(--neon),var(--neon2));padding:.45rem 0;overflow:hidden;border-bottom:1px solid rgba(0,255,231,.3);}
+.ticker-inner{display:flex;white-space:nowrap;animation:tickerRun 25s linear infinite;}
+.ticker-inner span{font-family:'Share Tech Mono',monospace;font-size:.72rem;letter-spacing:.18em;color:#000;font-weight:700;padding:0 3rem;}
+@keyframes tickerRun{from{transform:translateX(0);}to{transform:translateX(-50%);}}
 
-    /* — GLOW ORBS — */
-    .orb {
-      position: fixed;
-      border-radius: 50%;
-      filter: blur(120px);
-      opacity: 0.18;
-      pointer-events: none;
-      z-index: 0;
-      animation: drift 12s ease-in-out infinite alternate;
-    }
-    .orb1 { width: 600px; height: 600px; background: var(--neon); top: -200px; left: -200px; animation-delay: 0s; }
-    .orb2 { width: 500px; height: 500px; background: var(--neon2); bottom: -150px; right: -150px; animation-delay: -4s; }
-    .orb3 { width: 300px; height: 300px; background: var(--accent); top: 40%; left: 50%; animation-delay: -8s; }
+/* HEADER */
+header{position:relative;z-index:10;display:flex;align-items:center;justify-content:space-between;padding:1rem 3rem;background:rgba(2,5,16,.8);backdrop-filter:blur(20px);border-bottom:1px solid rgba(0,255,231,.1);}
+.logo-wrap{display:flex;align-items:center;gap:1rem;}
+.logo-badge{font-family:'Orbitron',monospace;font-size:.7rem;font-weight:900;letter-spacing:.2em;background:linear-gradient(135deg,var(--neon),var(--neon2));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;border:1px solid rgba(0,255,231,.3);padding:.3rem .8rem;border-radius:6px;}
+.logo-text{font-family:'Orbitron',monospace;font-weight:900;font-size:1rem;letter-spacing:.12em;}
+.logo-text .it{color:var(--neon);text-shadow:0 0 20px var(--neon);}
+.logo-text .sep{color:rgba(255,255,255,.2);margin:0 .4rem;}
+.logo-text .ml{color:var(--neon2);text-shadow:0 0 20px var(--neon2);}
+nav{display:flex;gap:2rem;}
+nav a{font-family:'Share Tech Mono',monospace;font-size:.75rem;letter-spacing:.12em;color:rgba(200,224,255,.55);text-decoration:none;transition:color .2s,text-shadow .2s;}
+nav a:hover{color:var(--neon);text-shadow:0 0 12px var(--neon);}
 
-    @keyframes drift {
-      from { transform: translate(0,0) scale(1); }
-      to   { transform: translate(40px, 30px) scale(1.08); }
-    }
+/* HERO */
+.hero{position:relative;z-index:5;min-height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:6rem 2rem 4rem;}
 
-    /* — HEADER / NAV — */
-    header {
-      position: relative; z-index: 10;
-      display: flex; align-items: center; justify-content: space-between;
-      padding: 1.2rem 3rem;
-      border-bottom: 1px solid rgba(0,255,231,0.12);
-      background: rgba(5,6,15,0.7);
-      backdrop-filter: blur(12px);
-    }
-    .logo {
-      font-family: 'Orbitron', monospace;
-      font-size: 1.1rem;
-      font-weight: 900;
-      letter-spacing: 0.2em;
-      color: var(--neon);
-      text-shadow: 0 0 16px var(--neon);
-    }
-    .logo span { color: var(--neon2); }
-    nav { display: flex; gap: 2rem; }
-    nav a {
-      font-family: 'Share Tech Mono', monospace;
-      font-size: 0.8rem;
-      letter-spacing: 0.1em;
-      color: var(--text);
-      text-decoration: none;
-      opacity: 0.7;
-      transition: opacity .2s, color .2s;
-    }
-    nav a:hover { opacity: 1; color: var(--neon); }
+.it-tag{font-family:'Orbitron',monospace;font-weight:900;font-size:clamp(.8rem,2vw,1rem);letter-spacing:.35em;color:var(--neon);text-shadow:0 0 30px var(--neon);border:1px solid rgba(0,255,231,.4);background:rgba(0,255,231,.05);padding:.5rem 2rem;border-radius:100px;margin-bottom:1.5rem;animation:fadeUp .6s ease both;position:relative;overflow:hidden;}
+.it-tag::before{content:'';position:absolute;inset:0;background:linear-gradient(90deg,transparent,rgba(0,255,231,.2),transparent);transform:translateX(-100%);animation:shimmer 2.2s 1s infinite;}
+@keyframes shimmer{to{transform:translateX(100%);}}
 
-    /* — HERO — */
-    .hero {
-      position: relative; z-index: 5;
-      display: flex; flex-direction: column; align-items: center;
-      text-align: center;
-      padding: 7rem 2rem 5rem;
-    }
+/* GLITCH */
+.glitch-wrap{margin-bottom:.8rem;animation:fadeUp .7s .1s ease both;}
+.glitch{font-family:'Orbitron',monospace;font-weight:900;font-size:clamp(1rem,4vw,1.8rem);letter-spacing:.35em;color:#fff;text-transform:uppercase;position:relative;display:inline-block;}
+.glitch::before,.glitch::after{content:attr(data-text);position:absolute;top:0;left:0;width:100%;height:100%;}
+.glitch::before{color:var(--neon2);animation:glitchT 3.5s infinite;clip-path:polygon(0 0,100% 0,100% 45%,0 45%);transform:translateX(-2px);}
+.glitch::after{color:var(--neon);animation:glitchB 3.5s infinite;clip-path:polygon(0 55%,100% 55%,100% 100%,0 100%);transform:translateX(2px);}
+@keyframes glitchT{0%,88%,100%{transform:translateX(-2px);opacity:1;}89%{transform:translateX(5px);opacity:.7;}91%{transform:translateX(-5px);opacity:.8;}93%{transform:translateX(2px);opacity:1;}}
+@keyframes glitchB{0%,88%,100%{transform:translateX(2px);opacity:1;}90%{transform:translateX(-5px);opacity:.7;}92%{transform:translateX(5px);opacity:.8;}94%{transform:translateX(-2px);opacity:1;}}
 
-    .badge {
-      font-family: 'Share Tech Mono', monospace;
-      font-size: 0.72rem;
-      letter-spacing: 0.25em;
-      color: var(--neon);
-      background: rgba(0,255,231,0.08);
-      border: 1px solid rgba(0,255,231,0.3);
-      padding: 0.35rem 1rem;
-      border-radius: 100px;
-      margin-bottom: 2rem;
-      animation: fadeSlideUp 0.6s ease both;
-    }
+/* MAIN TITLE */
+.hero-main{font-family:'Orbitron',monospace;font-weight:900;font-size:clamp(3rem,10vw,7.5rem);line-height:1;letter-spacing:-.02em;margin-bottom:.3rem;animation:fadeUp .7s .15s ease both;}
+.hero-main .word1{display:block;background:linear-gradient(90deg,#fff 20%,var(--neon) 60%,#fff 100%);background-size:200%;-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;animation:textFlow 4s ease infinite;}
+.hero-main .word2{display:block;background:linear-gradient(90deg,var(--neon2),var(--neon),var(--neon2));background-size:200%;-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;animation:textFlow 4s 1s ease infinite;filter:drop-shadow(0 0 40px rgba(0,255,231,.5));}
+@keyframes textFlow{0%{background-position:0%;}50%{background-position:100%;}100%{background-position:0%;}}
+@keyframes fadeUp{from{opacity:0;transform:translateY(30px);}to{opacity:1;transform:translateY(0);}}
 
-    .hero-title {
-      font-family: 'Orbitron', monospace;
-      font-size: clamp(2.8rem, 8vw, 6rem);
-      font-weight: 900;
-      line-height: 1.05;
-      letter-spacing: -0.01em;
-      margin-bottom: 1.5rem;
-      animation: fadeSlideUp 0.7s 0.1s ease both;
-    }
-    .hero-title .line1 { display: block; color: #fff; }
-    .hero-title .line2 {
-      display: block;
-      background: linear-gradient(90deg, var(--neon), var(--neon2));
-      -webkit-background-clip: text;
-      -webkit-text-fill-color: transparent;
-      background-clip: text;
-      filter: drop-shadow(0 0 30px rgba(0,255,231,0.4));
-    }
+.hero-sub{font-size:1.1rem;font-weight:300;color:rgba(200,224,255,.6);max-width:580px;line-height:1.9;margin-bottom:3rem;animation:fadeUp .7s .25s ease both;}
 
-    .hero-sub {
-      font-size: 1.15rem;
-      font-weight: 300;
-      color: rgba(208,232,255,0.65);
-      max-width: 560px;
-      line-height: 1.8;
-      margin-bottom: 3rem;
-      animation: fadeSlideUp 0.7s 0.2s ease both;
-    }
+/* NGINX MEGA BANNER */
+.nginx-mega{position:relative;display:inline-flex;align-items:center;gap:1.5rem;border-radius:20px;padding:1.8rem 3rem;margin-bottom:3rem;animation:fadeUp .7s .3s ease both;overflow:hidden;background:rgba(8,13,30,.95);border:1px solid transparent;background-clip:padding-box;}
+.nginx-mega::before{content:'';position:absolute;inset:-1px;border-radius:20px;background:linear-gradient(135deg,var(--neon),var(--neon2),var(--neon3),var(--neon));background-size:300%;animation:borderFlow 3s linear infinite;z-index:-1;}
+@keyframes borderFlow{0%{background-position:0%;}100%{background-position:300%;}}
+.nginx-mega::after{content:'';position:absolute;inset:1px;border-radius:19px;background:rgba(2,5,16,.97);z-index:-1;}
+.pulse-ring{position:relative;width:44px;height:44px;display:flex;align-items:center;justify-content:center;}
+.pulse-ring::before,.pulse-ring::after{content:'';position:absolute;border:2px solid var(--neon);border-radius:50%;animation:pingOut 2s ease-out infinite;}
+.pulse-ring::after{animation-delay:.8s;}
+@keyframes pingOut{0%{width:16px;height:16px;opacity:1;}100%{width:44px;height:44px;opacity:0;}}
+.dot-live{width:14px;height:14px;background:var(--neon);border-radius:50%;box-shadow:0 0 16px var(--neon),0 0 40px var(--neon);animation:livePulse 1.2s ease-in-out infinite;z-index:1;}
+@keyframes livePulse{0%,100%{box-shadow:0 0 8px var(--neon),0 0 20px var(--neon);}50%{box-shadow:0 0 20px var(--neon),0 0 60px var(--neon);}}
+.live-label{font-family:'Share Tech Mono',monospace;font-size:.55rem;letter-spacing:.2em;color:var(--neon);opacity:.7;margin-top:.3rem;}
+.nginx-status{display:flex;flex-direction:column;align-items:center;gap:.2rem;}
+.nginx-eyebrow{font-family:'Share Tech Mono',monospace;font-size:.6rem;letter-spacing:.25em;color:rgba(0,255,231,.5);margin-bottom:.3rem;}
+.nginx-headline{font-family:'Orbitron',monospace;font-weight:900;font-size:clamp(1.1rem,3vw,1.6rem);letter-spacing:.06em;color:#fff;line-height:1.2;}
+.nginx-headline .hl{color:var(--neon);text-shadow:0 0 20px var(--neon);position:relative;display:inline-block;}
+.nginx-headline .hl::after{content:'';position:absolute;bottom:-3px;left:0;right:0;height:2px;background:var(--neon);box-shadow:0 0 8px var(--neon);animation:ulGlow 2s ease-in-out infinite;}
+@keyframes ulGlow{0%,100%{opacity:1;}50%{opacity:.3;}}
+.nginx-url{margin-top:.6rem;font-family:'Share Tech Mono',monospace;font-size:.75rem;color:var(--neon3);letter-spacing:.08em;text-shadow:0 0 10px rgba(255,230,0,.5);}
 
-    /* — NGINX BANNER — */
-    .nginx-banner {
-      position: relative;
-      display: inline-flex;
-      align-items: center;
-      gap: 1rem;
-      background: linear-gradient(135deg, rgba(0,255,231,0.06), rgba(255,0,200,0.06));
-      border: 1px solid rgba(0,255,231,0.4);
-      border-radius: 16px;
-      padding: 1.4rem 2.5rem;
-      margin-bottom: 3.5rem;
-      animation: fadeSlideUp 0.7s 0.3s ease both;
-      overflow: hidden;
-    }
-    .nginx-banner::before {
-      content: '';
-      position: absolute;
-      inset: 0;
-      background: linear-gradient(90deg, transparent, rgba(0,255,231,0.07), transparent);
-      transform: translateX(-100%);
-      animation: shimmer 2.5s 1s infinite;
-    }
-    @keyframes shimmer {
-      to { transform: translateX(100%); }
-    }
-    .nginx-icon {
-      font-size: 2rem;
-      filter: drop-shadow(0 0 8px var(--neon));
-    }
-    .nginx-text {
-      text-align: left;
-    }
-    .nginx-text .label {
-      font-family: 'Share Tech Mono', monospace;
-      font-size: 0.65rem;
-      letter-spacing: 0.2em;
-      color: var(--neon);
-      opacity: 0.8;
-      margin-bottom: 0.2rem;
-    }
-    .nginx-text .main {
-      font-family: 'Orbitron', monospace;
-      font-size: 1.05rem;
-      font-weight: 700;
-      color: #fff;
-      letter-spacing: 0.05em;
-    }
-    .nginx-text .main span { color: var(--neon); }
-    .pulse-dot {
-      width: 10px; height: 10px;
-      background: #0f0;
-      border-radius: 50%;
-      box-shadow: 0 0 8px #0f0;
-      animation: pulse 1.4s infinite;
-      flex-shrink: 0;
-    }
-    @keyframes pulse {
-      0%,100% { opacity: 1; transform: scale(1); }
-      50%      { opacity: 0.4; transform: scale(0.7); }
-    }
+/* BUTTONS */
+.cta-group{display:flex;gap:1rem;flex-wrap:wrap;justify-content:center;animation:fadeUp .7s .4s ease both;}
+.btn{font-family:'Share Tech Mono',monospace;font-size:.82rem;letter-spacing:.12em;padding:.85rem 2.2rem;border-radius:10px;cursor:pointer;text-decoration:none;position:relative;overflow:hidden;transition:transform .2s;display:inline-block;}
+.btn::before{content:'';position:absolute;inset:0;background:rgba(255,255,255,.12);transform:translateX(-100%) skewX(-15deg);transition:transform .4s;}
+.btn:hover::before{transform:translateX(150%) skewX(-15deg);}
+.btn:hover{transform:translateY(-3px);}
+.btn-primary{background:linear-gradient(135deg,var(--neon),#009985);color:#000;font-weight:700;border:none;box-shadow:0 0 30px rgba(0,255,231,.5);}
+.btn-secondary{background:transparent;color:var(--neon2);border:1px solid var(--neon2);box-shadow:0 0 20px rgba(255,0,200,.2);}
 
-    /* — CTA BUTTONS — */
-    .cta-group {
-      display: flex; gap: 1rem; flex-wrap: wrap; justify-content: center;
-      animation: fadeSlideUp 0.7s 0.4s ease both;
-    }
-    .btn {
-      font-family: 'Share Tech Mono', monospace;
-      font-size: 0.85rem;
-      letter-spacing: 0.12em;
-      padding: 0.8rem 2rem;
-      border-radius: 8px;
-      cursor: pointer;
-      text-decoration: none;
-      transition: transform .2s, box-shadow .2s;
-    }
-    .btn-primary {
-      background: linear-gradient(135deg, var(--neon), #0099aa);
-      color: #000;
-      border: none;
-      font-weight: 700;
-      box-shadow: 0 0 24px rgba(0,255,231,0.4);
-    }
-    .btn-primary:hover { transform: translateY(-2px); box-shadow: 0 0 40px rgba(0,255,231,0.7); }
-    .btn-outline {
-      background: transparent;
-      color: var(--neon2);
-      border: 1px solid var(--neon2);
-      box-shadow: 0 0 12px rgba(255,0,200,0.2);
-    }
-    .btn-outline:hover { transform: translateY(-2px); background: rgba(255,0,200,0.08); box-shadow: 0 0 28px rgba(255,0,200,0.5); }
+/* CODE STRIP */
+.code-strip{position:relative;z-index:5;overflow:hidden;padding:1.4rem 0;border-top:1px solid rgba(0,255,231,.07);border-bottom:1px solid rgba(0,255,231,.07);background:rgba(0,255,231,.02);}
+.code-scroll{display:flex;white-space:nowrap;animation:codeRun 35s linear infinite;font-family:'Share Tech Mono',monospace;font-size:.8rem;}
+.code-scroll span{padding:0 2rem;opacity:.4;}
+.code-scroll .cmd{color:var(--neon);opacity:1;}
+.code-scroll .arg{color:var(--neon3);}
+.code-scroll .out{color:var(--neon2);}
+@keyframes codeRun{from{transform:translateX(0);}to{transform:translateX(-50%);}}
 
-    /* — STATS ROW — */
-    .stats {
-      position: relative; z-index: 5;
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
-      gap: 1px;
-      max-width: 900px;
-      margin: 0 auto 6rem;
-      border: 1px solid rgba(0,255,231,0.1);
-      border-radius: 16px;
-      overflow: hidden;
-      background: rgba(0,255,231,0.06);
-    }
-    .stat-item {
-      padding: 2rem 1.5rem;
-      text-align: center;
-      background: rgba(5,6,15,0.8);
-      border-right: 1px solid rgba(0,255,231,0.08);
-      animation: fadeSlideUp 0.6s ease both;
-    }
-    .stat-item:last-child { border-right: none; }
-    .stat-num {
-      font-family: 'Orbitron', monospace;
-      font-size: 2.2rem;
-      font-weight: 900;
-      color: var(--neon);
-      text-shadow: 0 0 20px rgba(0,255,231,0.6);
-      display: block;
-    }
-    .stat-label {
-      font-size: 0.78rem;
-      letter-spacing: 0.1em;
-      opacity: 0.5;
-      margin-top: 0.3rem;
-      text-transform: uppercase;
-    }
+/* STATS */
+.stats-row{position:relative;z-index:5;display:grid;grid-template-columns:repeat(4,1fr);gap:1px;max-width:900px;margin:5rem auto 0;border:1px solid rgba(0,255,231,.1);border-radius:16px;overflow:hidden;}
+.stat{background:rgba(8,13,30,.95);padding:2.2rem 1rem;text-align:center;border-right:1px solid rgba(0,255,231,.07);position:relative;overflow:hidden;transition:background .3s;}
+.stat:last-child{border-right:none;}
+.stat:hover{background:rgba(0,255,231,.04);}
+.stat-num{font-family:'Orbitron',monospace;font-size:2.5rem;font-weight:900;color:var(--neon);text-shadow:0 0 24px rgba(0,255,231,.6);display:block;line-height:1;margin-bottom:.4rem;}
+.stat-lbl{font-family:'Share Tech Mono',monospace;font-size:.62rem;letter-spacing:.15em;opacity:.4;text-transform:uppercase;}
 
-    /* — TOPICS GRID — */
-    .section {
-      position: relative; z-index: 5;
-      max-width: 1100px;
-      margin: 0 auto 6rem;
-      padding: 0 2rem;
-    }
-    .section-label {
-      font-family: 'Share Tech Mono', monospace;
-      font-size: 0.7rem;
-      letter-spacing: 0.3em;
-      color: var(--neon2);
-      margin-bottom: 0.6rem;
-      text-transform: uppercase;
-    }
-    .section-title {
-      font-family: 'Orbitron', monospace;
-      font-size: clamp(1.5rem, 3vw, 2.2rem);
-      font-weight: 700;
-      color: #fff;
-      margin-bottom: 2.5rem;
-    }
+/* CARDS SECTION */
+.section{position:relative;z-index:5;max-width:1140px;margin:6rem auto;padding:0 2rem;}
+.sec-eye{font-family:'Share Tech Mono',monospace;font-size:.65rem;letter-spacing:.3em;color:var(--neon2);text-transform:uppercase;margin-bottom:.5rem;}
+.sec-title{font-family:'Orbitron',monospace;font-weight:700;font-size:clamp(1.4rem,3vw,2rem);color:#fff;margin-bottom:2.5rem;}
+.cards{display:grid;grid-template-columns:repeat(auto-fill,minmax(320px,1fr));gap:1.2rem;}
+.card{background:rgba(8,13,30,.9);border:1px solid rgba(0,255,231,.08);border-radius:16px;padding:2rem;position:relative;overflow:hidden;transition:transform .3s,border-color .3s,box-shadow .3s;cursor:default;}
+.card::before{content:'';position:absolute;top:0;left:0;right:0;height:3px;background:linear-gradient(90deg,var(--neon),var(--neon2));transform:scaleX(0);transform-origin:left;transition:transform .35s;}
+.card-glow{position:absolute;top:-60px;right:-60px;width:180px;height:180px;border-radius:50%;background:radial-gradient(circle,rgba(0,255,231,.06),transparent 70%);transition:opacity .3s;opacity:0;}
+.card:hover{transform:translateY(-6px);border-color:rgba(0,255,231,.3);box-shadow:0 12px 50px rgba(0,255,231,.1);}
+.card:hover::before{transform:scaleX(1);}
+.card:hover .card-glow{opacity:1;}
+.card-num{font-family:'Orbitron',monospace;font-size:.6rem;letter-spacing:.2em;color:rgba(0,255,231,.3);margin-bottom:.8rem;}
+.card-icon{font-size:2rem;margin-bottom:.8rem;}
+.card-name{font-family:'Orbitron',monospace;font-size:.88rem;font-weight:700;color:var(--neon);letter-spacing:.06em;margin-bottom:.6rem;}
+.card-desc{font-size:.92rem;color:rgba(200,224,255,.55);line-height:1.75;}
+.card-tag{display:inline-block;margin-top:1.2rem;font-family:'Share Tech Mono',monospace;font-size:.6rem;letter-spacing:.15em;color:var(--neon2);background:rgba(255,0,200,.07);border:1px solid rgba(255,0,200,.2);padding:.2rem .7rem;border-radius:100px;}
+.card-featured{border-color:rgba(0,255,231,.3);box-shadow:0 0 30px rgba(0,255,231,.08);}
 
-    .topics-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
-      gap: 1.2rem;
-    }
-    .topic-card {
-      background: rgba(11,14,31,0.9);
-      border: 1px solid rgba(0,255,231,0.1);
-      border-radius: 14px;
-      padding: 1.8rem;
-      cursor: default;
-      transition: border-color .25s, transform .25s, box-shadow .25s;
-      position: relative;
-      overflow: hidden;
-    }
-    .topic-card::before {
-      content: '';
-      position: absolute;
-      top: 0; left: 0; right: 0;
-      height: 2px;
-      background: linear-gradient(90deg, var(--neon), var(--neon2));
-      opacity: 0;
-      transition: opacity .25s;
-    }
-    .topic-card:hover {
-      border-color: rgba(0,255,231,0.35);
-      transform: translateY(-4px);
-      box-shadow: 0 8px 40px rgba(0,255,231,0.12);
-    }
-    .topic-card:hover::before { opacity: 1; }
+/* TERMINAL */
+.terminal{background:#04060f;border:1px solid rgba(0,255,231,.2);border-radius:16px;overflow:hidden;box-shadow:0 0 80px rgba(0,255,231,.07);}
+.term-bar{display:flex;align-items:center;gap:.5rem;padding:.8rem 1.2rem;background:rgba(0,255,231,.04);border-bottom:1px solid rgba(0,255,231,.1);}
+.td{width:11px;height:11px;border-radius:50%;}
+.td1{background:#ff5f57;}.td2{background:#ffbd2e;}.td3{background:#28c840;}
+.term-title{font-family:'Share Tech Mono',monospace;font-size:.7rem;color:rgba(0,255,231,.4);margin-left:.5rem;letter-spacing:.1em;}
+.term-body{padding:2rem;}
+.term-body pre{font-family:'Share Tech Mono',monospace;font-size:.85rem;line-height:2.1;color:rgba(200,224,255,.7);white-space:pre-wrap;}
+.tc{color:var(--neon);}.tc2{color:var(--neon2);}.tc3{color:var(--neon3);}.tc4{color:#7fff7f;}.tc5{color:#666;}
+.cursor-blink{display:inline-block;width:8px;height:1em;background:var(--neon);animation:blink 1s step-end infinite;vertical-align:text-bottom;}
+@keyframes blink{0%,100%{opacity:1;}50%{opacity:0;}}
 
-    .topic-icon { font-size: 1.8rem; margin-bottom: 0.9rem; }
-    .topic-name {
-      font-family: 'Orbitron', monospace;
-      font-size: 0.85rem;
-      font-weight: 700;
-      color: var(--neon);
-      letter-spacing: 0.08em;
-      margin-bottom: 0.5rem;
-    }
-    .topic-desc {
-      font-size: 0.9rem;
-      color: rgba(208,232,255,0.55);
-      line-height: 1.7;
-    }
-    .topic-tag {
-      display: inline-block;
-      margin-top: 1rem;
-      font-family: 'Share Tech Mono', monospace;
-      font-size: 0.65rem;
-      letter-spacing: 0.15em;
-      color: var(--neon2);
-      background: rgba(255,0,200,0.08);
-      border: 1px solid rgba(255,0,200,0.2);
-      padding: 0.2rem 0.6rem;
-      border-radius: 100px;
-    }
+/* FOOTER */
+footer{position:relative;z-index:5;text-align:center;padding:3rem 2rem;border-top:1px solid rgba(0,255,231,.07);}
+.footer-it{font-family:'Orbitron',monospace;font-weight:900;font-size:1.4rem;letter-spacing:.25em;color:var(--neon);text-shadow:0 0 30px var(--neon);margin-bottom:.5rem;}
+.footer-sub{font-family:'Share Tech Mono',monospace;font-size:.68rem;letter-spacing:.2em;color:rgba(200,224,255,.25);text-transform:uppercase;line-height:2;}
 
-    /* — TERMINAL BOX — */
-    .terminal {
-      background: #060912;
-      border: 1px solid rgba(0,255,231,0.2);
-      border-radius: 14px;
-      overflow: hidden;
-      max-width: 800px;
-      margin: 0 auto;
-      box-shadow: 0 0 60px rgba(0,255,231,0.08);
-    }
-    .term-bar {
-      background: rgba(0,255,231,0.05);
-      padding: 0.7rem 1.2rem;
-      display: flex;
-      align-items: center;
-      gap: 0.5rem;
-      border-bottom: 1px solid rgba(0,255,231,0.1);
-    }
-    .term-dot { width: 10px; height: 10px; border-radius: 50%; }
-    .d1 { background: #ff5f57; } .d2 { background: #ffbd2e; } .d3 { background: #28c840; }
-    .term-title {
-      font-family: 'Share Tech Mono', monospace;
-      font-size: 0.72rem;
-      color: rgba(0,255,231,0.5);
-      margin-left: 0.5rem;
-      letter-spacing: 0.1em;
-    }
-    .term-body { padding: 1.8rem; }
-    .term-body pre {
-      font-family: 'Share Tech Mono', monospace;
-      font-size: 0.85rem;
-      line-height: 2;
-      color: rgba(208,232,255,0.75);
-      white-space: pre-wrap;
-    }
-    .tc { color: var(--neon); }
-    .tc2 { color: var(--neon2); }
-    .tc3 { color: var(--accent); }
-    .tc4 { color: #7fff7f; }
-
-    /* — FOOTER — */
-    footer {
-      position: relative; z-index: 5;
-      text-align: center;
-      padding: 2.5rem;
-      border-top: 1px solid rgba(0,255,231,0.08);
-      font-family: 'Share Tech Mono', monospace;
-      font-size: 0.72rem;
-      color: rgba(208,232,255,0.3);
-      letter-spacing: 0.15em;
-    }
-
-    @keyframes fadeSlideUp {
-      from { opacity: 0; transform: translateY(20px); }
-      to   { opacity: 1; transform: translateY(0); }
-    }
-
-    /* animation delays for cards */
-    .topic-card:nth-child(1) { animation: fadeSlideUp 0.5s 0.1s ease both; }
-    .topic-card:nth-child(2) { animation: fadeSlideUp 0.5s 0.15s ease both; }
-    .topic-card:nth-child(3) { animation: fadeSlideUp 0.5s 0.2s ease both; }
-    .topic-card:nth-child(4) { animation: fadeSlideUp 0.5s 0.25s ease both; }
-    .topic-card:nth-child(5) { animation: fadeSlideUp 0.5s 0.3s ease both; }
-    .topic-card:nth-child(6) { animation: fadeSlideUp 0.5s 0.35s ease both; }
-
-    .stat-item:nth-child(1) { animation-delay: 0.05s; }
-    .stat-item:nth-child(2) { animation-delay: 0.1s; }
-    .stat-item:nth-child(3) { animation-delay: 0.15s; }
-    .stat-item:nth-child(4) { animation-delay: 0.2s; }
-  </style>
+/* FLOAT BITS */
+.float-bit{position:fixed;font-family:'Share Tech Mono',monospace;font-size:.65rem;color:rgba(0,255,231,.1);pointer-events:none;z-index:0;animation:floatUp linear infinite;user-select:none;}
+@keyframes floatUp{from{transform:translateY(100vh);opacity:0;}10%{opacity:1;}90%{opacity:.4;}to{transform:translateY(-10vh);opacity:0;}}
+</style>
 </head>
 <body>
 
-<div class="orb orb1"></div>
-<div class="orb orb2"></div>
-<div class="orb orb3"></div>
+<div id="cursor"></div>
+<div id="cursor-ring"></div>
+<canvas id="canvas"></canvas>
 
-<!-- NAV -->
+<!-- TICKER -->
+<div class="ticker">
+  <div class="ticker-inner">
+    <span>⚡ IT ลาดกระบัง · MLOps COURSE 2569</span>
+    <span>🚀 DOCKER · MLFLOW · NGINX · KUBERNETES · CI/CD</span>
+    <span>🌐 ทดสอบ web demo ผ่าน nginx</span>
+    <span>🤖 KING MONGKUT'S INSTITUTE OF TECHNOLOGY LADKRABANG</span>
+    <span>🔥 GPU ACCELERATED · PYTORCH · vLLM · CUDA 12</span>
+    <span>📊 EXPERIMENT TRACKING · MODEL REGISTRY · DEPLOYMENT</span>
+    <span>⚡ IT ลาดกระบัง · MLOps COURSE 2569</span>
+    <span>🚀 DOCKER · MLFLOW · NGINX · KUBERNETES · CI/CD</span>
+    <span>🌐 ทดสอบ web demo ผ่าน nginx</span>
+    <span>🤖 KING MONGKUT'S INSTITUTE OF TECHNOLOGY LADKRABANG</span>
+    <span>🔥 GPU ACCELERATED · PYTORCH · vLLM · CUDA 12</span>
+    <span>📊 EXPERIMENT TRACKING · MODEL REGISTRY · DEPLOYMENT</span>
+  </div>
+</div>
+
+<!-- HEADER -->
 <header>
-  <div class="logo">ML<span>Ops</span> · KMITL</div>
+  <div class="logo-wrap">
+    <div class="logo-badge">KMITL</div>
+    <div class="logo-text">
+      <span class="it">IT ลาดกระบัง</span>
+      <span class="sep">|</span>
+      <span class="ml">MLOps</span>
+    </div>
+  </div>
   <nav>
     <a href="#">หลักสูตร</a>
     <a href="#">LAB</a>
     <a href="#">Deploy</a>
-    <a href="#">Docs</a>
+    <a href="#">GPU Cluster</a>
   </nav>
 </header>
 
 <!-- HERO -->
 <section class="hero">
-  <div class="badge">⚡ KING MONGKUT'S INSTITUTE OF TECHNOLOGY LADKRABANG</div>
+  <div class="it-tag">⚡ IT ลาดกระบัง — INFORMATION TECHNOLOGY · KMITL ⚡</div>
 
-  <h1 class="hero-title">
-    <span class="line1">Machine Learning</span>
-    <span class="line2">Operations</span>
+  <div class="glitch-wrap">
+    <div class="glitch" data-text="KMITL · IT · 2569">KMITL · IT · 2569</div>
+  </div>
+
+  <h1 class="hero-main">
+    <span class="word1">Machine</span>
+    <span class="word2">Learning Ops</span>
   </h1>
 
   <p class="hero-sub">
-    เรียนรู้การ deploy, monitor และ scale ระบบ ML ในระดับ production<br/>
-    ด้วยเครื่องมือระดับอุตสาหกรรม: Docker · MLflow · Kubernetes · CI/CD
+    เรียนรู้การ Deploy · Monitor · Scale ระบบ AI ในระดับ Production<br/>
+    ด้วยเครื่องมือมืออาชีพ: Docker · MLflow · <strong style="color:var(--neon)">nginx</strong> · Kubernetes
   </p>
 
-  <!-- NGINX BANNER -->
-  <div class="nginx-banner">
-    <div class="pulse-dot"></div>
-    <div class="nginx-icon">🚀</div>
-    <div class="nginx-text">
-      <div class="label">LIVE DEMO ENVIRONMENT</div>
-      <div class="main">ทดสอบ web demo ผ่าน <span>nginx</span></div>
+  <div class="nginx-mega">
+    <div class="nginx-status">
+      <div class="pulse-ring"><div class="dot-live"></div></div>
+      <div class="live-label">LIVE</div>
+    </div>
+    <div>
+      <div class="nginx-eyebrow">// WEB DEMO ENVIRONMENT · ACTIVE NOW</div>
+      <div class="nginx-headline">ทดสอบ web demo ผ่าน <span class="hl">nginx</span></div>
+      <div class="nginx-url">▶ http://localhost:8080 &nbsp;·&nbsp; REVERSE PROXY READY</div>
     </div>
   </div>
 
   <div class="cta-group">
     <a href="#" class="btn btn-primary">▶ เริ่ม LAB ได้เลย</a>
-    <a href="#" class="btn btn-outline">📖 ดู Docs</a>
+    <a href="#" class="btn btn-secondary">⬡ ดู Documentation</a>
   </div>
 </section>
 
+<!-- CODE STRIP -->
+<div class="code-strip">
+  <div class="code-scroll">
+    <span class="cmd">$ docker compose up -d</span><span class="out">✓ nginx running :8080</span><span class="cmd">$ mlflow run .</span><span class="arg">Experiment #42 logged</span><span class="out">✓ Model registered</span><span class="cmd">$ kubectl apply -f deploy.yaml</span><span class="arg">deployment.apps/mlops created</span><span class="cmd">$ curl localhost:8080/predict</span><span class="out">{"confidence": 0.987}</span><span class="cmd">$ nvidia-smi</span><span class="arg">NVIDIA A100 80GB · CUDA 12.1</span><span class="out">✓ GPU ready</span><span class="cmd">$ git push origin main</span><span class="out">✓ CI/CD triggered</span><span class="cmd">$ docker compose up -d</span><span class="out">✓ nginx running :8080</span><span class="cmd">$ mlflow run .</span><span class="arg">Experiment #42 logged</span><span class="out">✓ Model registered</span><span class="cmd">$ kubectl apply -f deploy.yaml</span><span class="arg">deployment.apps/mlops created</span><span class="cmd">$ curl localhost:8080/predict</span><span class="out">{"confidence": 0.987}</span><span class="cmd">$ nvidia-smi</span><span class="arg">NVIDIA A100 80GB · CUDA 12.1</span><span class="out">✓ GPU ready</span><span class="cmd">$ git push origin main</span><span class="out">✓ CI/CD triggered</span>
+  </div>
+</div>
+
 <!-- STATS -->
-<div class="stats" style="padding: 0 2rem; max-width: 900px; margin: 0 auto 6rem;">
-  <div class="stat-item">
-    <span class="stat-num">12+</span>
-    <span class="stat-label">LAB Exercises</span>
-  </div>
-  <div class="stat-item">
-    <span class="stat-num">8</span>
-    <span class="stat-label">Frameworks</span>
-  </div>
-  <div class="stat-item">
-    <span class="stat-num">GPU</span>
-    <span class="stat-label">Accelerated</span>
-  </div>
-  <div class="stat-item">
-    <span class="stat-num">100%</span>
-    <span class="stat-label">Hands-on</span>
-  </div>
+<div class="stats-row" style="padding:0 2rem;">
+  <div class="stat"><span class="stat-num" data-target="12">0</span><span class="stat-lbl">LAB Exercises</span></div>
+  <div class="stat"><span class="stat-num" data-target="8">0</span><span class="stat-lbl">Frameworks</span></div>
+  <div class="stat"><span class="stat-num" style="font-size:1.5rem;">GPU</span><span class="stat-lbl">Accelerated</span></div>
+  <div class="stat"><span class="stat-num" data-target="100">0</span><span class="stat-lbl">Hands-on %</span></div>
 </div>
 
 <!-- TOPICS -->
 <section class="section">
-  <div class="section-label">// หัวข้อที่เรียน</div>
-  <h2 class="section-title">ครอบคลุมทุก Pipeline</h2>
-
-  <div class="topics-grid">
-    <div class="topic-card">
-      <div class="topic-icon">🐳</div>
-      <div class="topic-name">Docker & Container</div>
-      <p class="topic-desc">สร้าง reproducible environment ด้วย Docker สำหรับ ML workloads รวมถึง GPU acceleration และ multi-stage builds</p>
-      <span class="topic-tag">LAB 01–03</span>
-    </div>
-    <div class="topic-card">
-      <div class="topic-icon">📊</div>
-      <div class="topic-name">MLflow Tracking</div>
-      <p class="topic-desc">ติดตาม experiments, จัดการ model registry และ versioning dataset ด้วย MLflow อย่างมืออาชีพ</p>
-      <span class="topic-tag">LAB 04–06</span>
-    </div>
-    <div class="topic-card">
-      <div class="topic-icon">🌐</div>
-      <div class="topic-name">Web Serving · nginx</div>
-      <p class="topic-desc">ทดสอบ web demo ผ่าน nginx — deploy ML model เป็น REST API และ serve ด้วย reverse proxy อย่างถูกวิธี</p>
-      <span class="topic-tag">LAB 07</span>
-    </div>
-    <div class="topic-card">
-      <div class="topic-icon">⚙️</div>
-      <div class="topic-name">CI/CD Pipeline</div>
-      <p class="topic-desc">ออกแบบ automated pipeline สำหรับ train → test → deploy ด้วย GitHub Actions และ GitOps workflow</p>
-      <span class="topic-tag">LAB 08–09</span>
-    </div>
-    <div class="topic-card">
-      <div class="topic-icon">👁️</div>
-      <div class="topic-name">Model Monitoring</div>
-      <p class="topic-desc">ตรวจจับ data drift, model degradation และ set up alerting ด้วย Prometheus + Grafana stack</p>
-      <span class="topic-tag">LAB 10–11</span>
-    </div>
-    <div class="topic-card">
-      <div class="topic-icon">⚡</div>
-      <div class="topic-name">GPU & Inference</div>
-      <p class="topic-desc">Optimize inference ด้วย ONNX, TensorRT และ vLLM สำหรับ LLM serving ประสิทธิภาพสูง</p>
-      <span class="topic-tag">LAB 12</span>
-    </div>
+  <div class="sec-eye">// หัวข้อที่ครอบคลุม — IT ลาดกระบัง MLOps</div>
+  <h2 class="sec-title">Full Pipeline Coverage</h2>
+  <div class="cards">
+    <div class="card"><div class="card-glow"></div><div class="card-num">LAB 01–03</div><div class="card-icon">🐳</div><div class="card-name">Docker & Container</div><p class="card-desc">สร้าง reproducible ML environment ด้วย Docker รวมถึง GPU acceleration, multi-stage builds และ container orchestration</p><span class="card-tag">CONTAINER</span></div>
+    <div class="card"><div class="card-glow"></div><div class="card-num">LAB 04–06</div><div class="card-icon">📊</div><div class="card-name">MLflow Tracking</div><p class="card-desc">ติดตาม experiments, จัดการ model registry, versioning datasets และ compare model performance อย่างเป็นระบบ</p><span class="card-tag">TRACKING</span></div>
+    <div class="card card-featured"><div class="card-glow" style="opacity:.6;background:radial-gradient(circle,rgba(0,255,231,.1),transparent 70%);"></div><div class="card-num" style="color:rgba(0,255,231,.7);">LAB 07 · ⭐ FEATURED</div><div class="card-icon">🌐</div><div class="card-name" style="color:#fff;text-shadow:0 0 16px var(--neon);">Web Demo via nginx</div><p class="card-desc" style="color:rgba(200,224,255,.8);"><strong style="color:var(--neon);">ทดสอบ web demo ผ่าน nginx</strong> — deploy ML model เป็น REST API, reverse proxy, load balancing และ serve static frontend</p><span class="card-tag" style="color:var(--neon);border-color:rgba(0,255,231,.4);background:rgba(0,255,231,.08);">NGINX · DEPLOY</span></div>
+    <div class="card"><div class="card-glow"></div><div class="card-num">LAB 08–09</div><div class="card-icon">⚙️</div><div class="card-name">CI/CD Pipeline</div><p class="card-desc">ออกแบบ automated pipeline สำหรับ train → test → deploy ด้วย GitHub Actions และ GitOps workflow แบบ production-grade</p><span class="card-tag">AUTOMATION</span></div>
+    <div class="card"><div class="card-glow"></div><div class="card-num">LAB 10–11</div><div class="card-icon">👁️</div><div class="card-name">Model Monitoring</div><p class="card-desc">ตรวจจับ data drift, model degradation ด้วย Prometheus + Grafana และ set up automated alerting system</p><span class="card-tag">MONITORING</span></div>
+    <div class="card"><div class="card-glow"></div><div class="card-num">LAB 12</div><div class="card-icon">⚡</div><div class="card-name">GPU Inference</div><p class="card-desc">Optimize inference ด้วย ONNX, TensorRT และ vLLM สำหรับ LLM serving ประสิทธิภาพสูง บน NVIDIA GPU</p><span class="card-tag">GPU · vLLM</span></div>
   </div>
 </section>
 
 <!-- TERMINAL -->
 <section class="section">
-  <div class="section-label">// quick start</div>
-  <h2 class="section-title">เริ่มต้นใน 3 คำสั่ง</h2>
-
+  <div class="sec-eye">// quick start — IT ลาดกระบัง</div>
+  <h2 class="sec-title">Deploy ใน 3 คำสั่ง</h2>
   <div class="terminal">
     <div class="term-bar">
-      <div class="term-dot d1"></div>
-      <div class="term-dot d2"></div>
-      <div class="term-dot d3"></div>
-      <span class="term-title">bash — mlops-lab</span>
+      <div class="td td1"></div><div class="td td2"></div><div class="td td3"></div>
+      <span class="term-title">bash — mlops-lab · IT ลาดกระบัง · KMITL</span>
     </div>
-    <div class="term-body">
-      <pre><span class="tc"># 1. clone repo และ setup environment</span>
-<span class="tc4">$</span> git clone https://github.com/kmitl-mlops/lab.git && cd lab
-
-<span class="tc"># 2. build และ run ด้วย Docker</span>
-<span class="tc4">$</span> docker compose up -d --build
-
-<span class="tc"># 3. ทดสอบ web demo ผ่าน nginx 🚀</span>
-<span class="tc4">$</span> open http://localhost:<span class="tc2">8080</span>
-
-<span class="tc3">✓ MLflow UI  →  http://localhost:5000</span>
-<span class="tc3">✓ JupyterLab →  http://localhost:8888</span>
-<span class="tc">✓ Web Demo   →  http://localhost:8080  (nginx)</span></pre>
-    </div>
+    <div class="term-body"><pre id="termText"></pre></div>
   </div>
 </section>
 
 <!-- FOOTER -->
 <footer>
-  KMITL · DEPARTMENT OF COMPUTER ENGINEERING · MLOps Course &nbsp;·&nbsp; SEMESTER 2/2567
+  <div class="footer-it">IT ลาดกระบัง</div>
+  <div class="footer-sub">
+    สถาบันเทคโนโลยีพระจอมเกล้าเจ้าคุณทหารลาดกระบัง<br/>
+    KING MONGKUT'S INSTITUTE OF TECHNOLOGY LADKRABANG<br/>
+    Machine Learning Operations · ภาคการศึกษา 2/2569
+  </div>
 </footer>
 
+<script>
+// ── CURSOR ──
+const cur=document.getElementById('cursor'),ring=document.getElementById('cursor-ring');
+let mx=0,my=0,rx=0,ry=0;
+document.addEventListener('mousemove',e=>{mx=e.clientX;my=e.clientY;cur.style.left=mx+'px';cur.style.top=my+'px';});
+(function animRing(){rx+=(mx-rx)*.12;ry+=(my-ry)*.12;ring.style.left=rx+'px';ring.style.top=ry+'px';requestAnimationFrame(animRing);})();
+
+// ── PARTICLES ──
+const canvas=document.getElementById('canvas'),ctx=canvas.getContext('2d');
+let W,H;
+function resize(){W=canvas.width=window.innerWidth;H=canvas.height=window.innerHeight;}
+resize();window.addEventListener('resize',resize);
+class P{
+  constructor(){this.reset();}
+  reset(){this.x=Math.random()*W;this.y=Math.random()*H;this.vx=(Math.random()-.5)*.5;this.vy=(Math.random()-.5)*.5;this.r=Math.random()*1.5+.3;this.life=Math.random();this.col=Math.random()>.5?'0,255,231':'255,0,200';}
+  update(){this.x+=this.vx;this.y+=this.vy;this.life-=.0012;if(this.life<=0||this.x<0||this.x>W||this.y<0||this.y>H)this.reset();}
+  draw(){ctx.beginPath();ctx.arc(this.x,this.y,this.r,0,Math.PI*2);ctx.fillStyle=`rgba(${this.col},${this.life})`;ctx.fill();}
+}
+const pts=[];for(let i=0;i<150;i++)pts.push(new P());
+function drawLines(){for(let i=0;i<pts.length;i++)for(let j=i+1;j<pts.length;j++){const dx=pts[i].x-pts[j].x,dy=pts[i].y-pts[j].y,d=Math.sqrt(dx*dx+dy*dy);if(d<130){ctx.beginPath();ctx.moveTo(pts[i].x,pts[i].y);ctx.lineTo(pts[j].x,pts[j].y);ctx.strokeStyle=`rgba(0,255,231,${(1-d/130)*.07})`;ctx.lineWidth=.5;ctx.stroke();}}}
+(function anim(){ctx.clearRect(0,0,W,H);drawLines();pts.forEach(p=>{p.update();p.draw();});requestAnimationFrame(anim);})();
+
+// ── FLOAT BITS ──
+const bits=['0','1','10','01','11','101','GPU','AI','nginx','ML','IT'];
+for(let i=0;i<20;i++){const el=document.createElement('div');el.className='float-bit';el.textContent=bits[~~(Math.random()*bits.length)];el.style.cssText=`left:${Math.random()*100}vw;animation-duration:${10+Math.random()*20}s;animation-delay:${-Math.random()*20}s;font-size:${.55+Math.random()*.5}rem;`;document.body.appendChild(el);}
+
+// ── COUNTER ──
+document.querySelectorAll('.stat-num[data-target]').forEach(el=>{
+  const t=+el.dataset.target;let c=0;
+  setTimeout(()=>{(function step(){c=Math.min(c+Math.ceil(t/60),t);el.textContent=c+(t===100?'%':'+');if(c<t)requestAnimationFrame(step);})();},600);
+});
+
+// ── TYPEWRITER ──
+const lines=[
+  {cls:'tc5',s:'# IT ลาดกระบัง · KMITL · MLOps Lab'},
+  {cls:'tc5',s:'# ─────────────────────────────────'},
+  {cls:'',s:''},
+  {cls:'tc',s:'# Step 1 — Clone repository'},
+  {cls:'tc4',s:'$ git clone https://github.com/kmitl-it/mlops.git && cd mlops'},
+  {cls:'',s:''},
+  {cls:'tc',s:'# Step 2 — Build & run containers'},
+  {cls:'tc4',s:'$ docker compose up -d --build'},
+  {cls:'tc3',s:'  ✓ mlflow      → :5000'},
+  {cls:'tc3',s:'  ✓ jupyterlab  → :8888'},
+  {cls:'tc', s:'  ✓ nginx       → :8080   ← ทดสอบ web demo ผ่าน nginx 🚀'},
+  {cls:'',s:''},
+  {cls:'tc',s:'# Step 3 — Open demo'},
+  {cls:'tc4',s:'$ open http://localhost:8080'},
+  {cls:'',s:''},
+  {cls:'tc3',s:'  ✦ MLflow UI    http://localhost:5000'},
+  {cls:'tc3',s:'  ✦ JupyterLab  http://localhost:8888'},
+  {cls:'tc', s:'  ✦ Web Demo    http://localhost:8080   (nginx)'},
+  {cls:'tc2',s:'  ✦ API         http://localhost:8080/api/predict'},
+];
+const pre=document.getElementById('termText');
+let li=0,ci=0;
+function type(){
+  if(li>=lines.length)return;
+  const l=lines[li];
+  if(ci===0){const sp=document.createElement('span');sp.className=l.cls;sp.id='cs';pre.appendChild(sp);if(!l.s){pre.appendChild(document.createTextNode('\n'));li++;ci=0;setTimeout(type,60);return;}}
+  const sp=document.getElementById('cs');
+  if(ci<l.s.length){sp.textContent+=l.s[ci];ci++;setTimeout(type,Math.random()*16+6);}
+  else{sp.removeAttribute('id');pre.appendChild(document.createTextNode('\n'));li++;ci=0;setTimeout(type,100);}
+}
+setTimeout(type,900);
+</script>
 </body>
 </html>
