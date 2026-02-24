@@ -1,1 +1,0 @@
-git checkout origin/main -- config/settings.txt data/sample.txtcat src/main.pygit checkout origin/main -- src/main.py
