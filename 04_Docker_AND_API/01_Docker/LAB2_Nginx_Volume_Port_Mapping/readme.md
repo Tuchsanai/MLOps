@@ -1,4 +1,4 @@
-# 🐳 LAB 4: Nginx with Volume & Port Mapping
+# 🐳 LAB 2: Nginx with Volume & Port Mapping
 
 > เรียนรู้การใช้ Docker เพื่อ deploy เว็บไซต์ด้วย Nginx พร้อม **Port Mapping** และ **Volume Mounting**
 > โดยใช้ Google Cloud VM Instance เป็น host
