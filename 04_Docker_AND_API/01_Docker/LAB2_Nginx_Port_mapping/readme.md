@@ -1,4 +1,4 @@
-# LAB 3: Nginx Port Mapping with Docker
+# LAB 2: Nginx Port Mapping with Docker
 
 ## Overview
 
@@ -40,7 +40,7 @@ git clone https://github.com/Tuchsanai/MLOps.git
 Then navigate to the LAB3 folder:
 
 ```bash
-cd MLOps/04_Docker_AND_API/Week09/LAB3_Nginx_Port_mapping
+cd MLOps/04_Docker_AND_API/01_Docker/LAB2_Nginx_Port_mapping
 ```
 
 ---
