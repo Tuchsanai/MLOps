@@ -367,41 +367,8 @@ http://localhost:8089
 
 ---
 
-## ส่วนที่ 3: ทดสอบ Backend ด้วย Jupyter Notebook
 
-ไฟล์ `frontend/client_main.ipynb` เป็น Python Notebook Client สำหรับทดสอบ Backend API โดยตรง (ไม่ต้องผ่าน Streamlit Frontend)
-
-### ขั้นตอนหลักใน Notebook:
-
-```python
-import requests, base64, cv2, json, numpy as np
-
-# Encode รูปภาพ
-image = cv2.imread('cat.jpg')
-image = cv2.cvtColor(image, cv2.COLOR_BGR2RGB)
-image_string = encode_image(image)
-
-# ส่ง POST Request
-payload = {
-    "image": image_string,
-    "name": "John",
-    "surname": "Doe",
-    "numbers": [1, 2, 3, 4, 5]
-}
-
-url = "http://127.0.0.1:8088"
-response = requests.post(f"{url}/process-image", json=payload)
-data = json.loads(response.content)
-
-# Decode และแสดงรูปภาพที่ประมวลผลแล้ว
-processed_image = decode_image(data["processed_image"])
-```
-
-> ต้องแน่ใจว่า Backend Container กำลังทำงานอยู่บน Port `8088` ก่อนที่จะรัน Notebook
-
----
-
-## ส่วนที่ 4: สรุปขั้นตอนการทำงานทั้งหมด
+## ส่วนที่ 3: สรุปขั้นตอนการทำงานทั้งหมด
 
 ### คำสั่งทีละขั้นตอน
 
