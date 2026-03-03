@@ -173,11 +173,136 @@ docker ps
 3. เมื่อกดปุ่ม จะ Encode รูปภาพเป็น Base64 แล้วส่ง POST Request ไปยัง Backend
 4. แสดงรูปภาพต้นฉบับ และรูปภาพที่ตรวจจับขอบแล้ว เคียงข้างกัน
 
+#### 2.1.1 ส่วนที่ 1 — Import Library และ ฟังก์ชัน Encode/Decode รูปภาพ
+
 ```python
+import streamlit as st          # สร้างหน้าเว็บ UI
+from PIL import Image            # อ่านไฟล์รูปภาพ
+import os                        # อ่าน Environment Variable
+import cv2                       # ประมวลผลรูปภาพ (OpenCV)
+import requests                  # ส่ง HTTP Request ไปยัง Backend
+import base64                    # แปลงรูปภาพเป็น Base64
+import numpy as np               # จัดการข้อมูลแบบ Array
+import json                      # แปลง JSON Response
+```
+
+```python
+# ฟังก์ชัน Encode: แปลงรูปภาพ (NumPy Array) → Base64 String
+# ใช้ตอนส่งรูปภาพไปยัง Backend ผ่าน JSON
+def encode_image(image):
+    _, encoded_image = cv2.imencode(".jpg", image)          # แปลงเป็น JPG bytes
+    return "data:image/jpeg;base64," + base64.b64encode(encoded_image).decode()
+                                                            # แปลงเป็น Base64 String
+
+# ฟังก์ชัน Decode: แปลง Base64 String → รูปภาพ (NumPy Array)
+# ใช้ตอนรับรูปภาพที่ประมวลผลแล้วกลับจาก Backend
+def decode_image(image_string):
+    encoded_data = image_string.split(',')[1]               # ตัด prefix ออก
+    nparr = np.frombuffer(base64.b64decode(encoded_data), np.uint8)  # แปลงเป็น bytes
+    return cv2.imdecode(nparr, cv2.IMREAD_COLOR)            # แปลงเป็นรูปภาพ
+```
+
+#### 2.1.2 ส่วนที่ 2 — อ่าน Backend URL จาก Environment Variable
+
+```python
+# อ่านค่า BACKEND_URL จาก Environment Variable
+# ถ้าไม่ได้กำหนด จะใช้ค่าเริ่มต้นเป็น '127.0.0.1'
 env_BACKEND_URL = os.environ.get('BACKEND_URL', '127.0.0.1')
 ```
 
 > **สำคัญ:** Environment Variable `BACKEND_URL` ใช้กำหนดว่า Frontend จะส่ง Request ไปที่ไหน สิ่งนี้จำเป็นมากเมื่อรันใน Docker เพราะ `localhost` ภายใน Container จะหมายถึงตัว Container เอง ไม่ใช่เครื่อง Host
+
+```
+ตัวอย่างการกำหนดค่า:
+┌─────────────────────────────────────────────────────────────┐
+│  รันบนเครื่องตัวเอง (ไม่ใช่ Docker):  127.0.0.1            │
+│  รันบน Docker (Linux):                 IP ของเครื่อง Host   │
+│  รันบน Docker (macOS/Windows):         host.docker.internal │
+│  รันบน Cloud VM:                       IP ของ VM เช่น       │
+│                                        34.142.254.39        │
+└─────────────────────────────────────────────────────────────┘
+```
+
+#### 2.1.3 ส่วนที่ 3 — สร้างหน้าเว็บ UI ด้วย Streamlit
+
+```python
+# แสดงหัวข้อหน้าเว็บ พร้อมแสดง Backend URL ที่ใช้งาน
+st.title(f'Upload and Display Image with Username and ID with Backend Url = {env_BACKEND_URL}')
+
+# สร้างช่องกรอกข้อมูล
+username = st.text_input("Enter your name")       # ช่องกรอกชื่อ
+surname  = st.text_input("Enter your surname")    # ช่องกรอกนามสกุล
+
+# สร้างช่องอัปโหลดรูปภาพ (รองรับ jpg, jpeg, png)
+uploaded_file = st.file_uploader("Choose an image...", type=["jpg", "jpeg", "png"])
+```
+
+#### 2.1.4 ส่วนที่ 4 — ส่งรูปภาพไป Backend และแสดงผลลัพธ์
+
+```python
+if st.button('Finish'):                           # เมื่อกดปุ่ม "Finish"
+    if uploaded_file is not None:                  # ถ้ามีการอัปโหลดรูปภาพ
+        col1, col2 = st.columns(2)                # แบ่งหน้าจอเป็น 2 คอลัมน์
+
+        # ===== คอลัมน์ซ้าย: แสดงรูปภาพต้นฉบับ =====
+        with col1:
+            image = Image.open(uploaded_file)
+            st.image(image, caption='Uploaded Image.', use_column_width=True)
+            st.write('username: ', username, 'surname: ', surname)
+
+        # ===== คอลัมน์ขวา: ส่งไป Backend แล้วแสดงผลลัพธ์ =====
+        with col2:
+            image = Image.open(uploaded_file)
+            encoded_image = encode_image(np.array(image))    # แปลงรูปเป็น Base64
+
+            # สร้าง JSON Payload สำหรับส่งไป Backend
+            payload = {
+                "image":   encoded_image,          # รูปภาพ Base64
+                "name":    username,               # ชื่อ
+                "surname": surname,                # นามสกุล
+                "numbers": [1, 2, 3]               # ตัวเลขตัวอย่าง
+            }
+
+            # ส่ง POST Request ไปยัง Backend API
+            response = requests.post(
+                f"http://{env_BACKEND_URL}:8088/process-image",
+                json=payload
+            )
+
+            # ตรวจสอบผลลัพธ์
+            if response.status_code == 200:                  # สำเร็จ
+                data = json.loads(response.content)
+                processed_image_string = data["processed_image"]
+                st.image(processed_image_string, caption="Processed Image")
+            else:                                            # เกิดข้อผิดพลาด
+                st.error(f"Error in processing the image: {response.status_code}")
+    else:
+        st.write("Please upload an image.")        # ยังไม่ได้อัปโหลดรูปภาพ
+```
+
+**สรุปการทำงานของโค้ด Frontend เป็นแผนภาพ:**
+
+```
+ผู้ใช้กดปุ่ม "Finish"
+        │
+        ▼
+┌─── มีรูปภาพหรือไม่? ───┐
+│                         │
+▼ ใช่                     ▼ ไม่
+┌──────────────┐    แสดงข้อความ
+│  คอลัมน์ซ้าย │    "Please upload
+│  แสดงรูปต้นฉบับ│    an image."
+└──────┬───────┘
+       │
+       ▼
+┌──────────────┐
+│  คอลัมน์ขวา  │
+│  1. Encode   │──► Base64 String
+│  2. ส่ง POST │──► http://BACKEND:8088/process-image
+│  3. รับผลลัพธ์│◄── JSON Response
+│  4. แสดงรูป  │
+└──────────────┘
+```
 
 ### 2.2 Dockerfile ของ Frontend
 
@@ -215,19 +340,6 @@ docker build -t streamlit-frontend-lab3 ./frontend
 
 **ขั้นตอนที่ 2: Run Container**
 
-จำเป็นต้องส่ง **URL ของ Backend** ผ่าน Environment Variable โดยแทนที่ `<YOUR_BACKEND_IP>` ด้วยค่าที่เหมาะสม:
-
-- หากรันบนเครื่องเดียวกัน ให้ใช้ IP ของเครื่อง (ไม่ใช่ `127.0.0.1` เพราะ Frontend Container ไม่สามารถเข้าถึง localhost ของ Host ได้)
-
-**บน Linux** หา IP ของ Host:
-```bash
-hostname -I | awk '{print $1}'
-```
-
-**บน macOS/Windows (Docker Desktop)** ใช้:
-```
-host.docker.internal
-```
 
 **Run Frontend Container:**
 ```bash
