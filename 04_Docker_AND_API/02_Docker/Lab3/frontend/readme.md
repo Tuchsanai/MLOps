@@ -16,7 +16,7 @@
    ```
    
    ```   
-    cd MLOps/03_Docker_AND_API/Week10/Lab4/frontend
+    cd MLOps/04_Docker_AND_API/02_Docker/Lab3/frontend
    ```
 
 
