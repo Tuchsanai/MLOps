@@ -1,0 +1,549 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>KMITL Space Chatbot</title>
+  <style>
+    /* ── Reset & Base ── */
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: "Segoe UI", sans-serif;
+      background: #0b0d17;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+      overflow: hidden;
+      position: relative;
+    }
+
+    /* ── Stars Background ── */
+    body::before {
+      content: "";
+      position: fixed;
+      top: 0; left: 0;
+      width: 100%; height: 100%;
+      background:
+        radial-gradient(1px 1px at 10% 20%, #fff, transparent),
+        radial-gradient(1px 1px at 25% 50%, #fff, transparent),
+        radial-gradient(1.5px 1.5px at 40% 15%, #aaccff, transparent),
+        radial-gradient(1px 1px at 55% 70%, #fff, transparent),
+        radial-gradient(1.5px 1.5px at 70% 35%, #ffccaa, transparent),
+        radial-gradient(1px 1px at 85% 80%, #fff, transparent),
+        radial-gradient(1px 1px at 15% 85%, #fff, transparent),
+        radial-gradient(1.5px 1.5px at 50% 45%, #aaddff, transparent),
+        radial-gradient(1px 1px at 90% 10%, #fff, transparent),
+        radial-gradient(1px 1px at 5% 55%, #fff, transparent),
+        radial-gradient(1.5px 1.5px at 35% 90%, #ffaacc, transparent),
+        radial-gradient(1px 1px at 60% 5%, #fff, transparent),
+        radial-gradient(1px 1px at 75% 60%, #fff, transparent),
+        radial-gradient(1.5px 1.5px at 20% 35%, #aaffcc, transparent),
+        radial-gradient(1px 1px at 80% 50%, #fff, transparent),
+        radial-gradient(1px 1px at 45% 75%, #fff, transparent);
+      z-index: 0;
+      animation: twinkle 4s ease-in-out infinite alternate;
+    }
+
+    @keyframes twinkle {
+      0% { opacity: 0.7; }
+      100% { opacity: 1; }
+    }
+
+    /* ── Floating Planet ── */
+    .planet {
+      position: fixed;
+      width: 120px; height: 120px;
+      border-radius: 50%;
+      background: radial-gradient(circle at 35% 35%, #ff6b35, #c2185b, #4a0072);
+      box-shadow: 0 0 40px rgba(194, 24, 91, 0.4), inset -15px -10px 20px rgba(0,0,0,0.5);
+      top: 8%; right: 10%;
+      z-index: 0;
+      animation: floatPlanet 6s ease-in-out infinite;
+    }
+    .planet::after {
+      content: "";
+      position: absolute;
+      width: 180px; height: 20px;
+      border: 3px solid rgba(255,255,255,0.15);
+      border-radius: 50%;
+      top: 50%; left: 50%;
+      transform: translate(-50%, -50%) rotateX(75deg);
+    }
+
+    @keyframes floatPlanet {
+      0%, 100% { transform: translateY(0); }
+      50% { transform: translateY(-15px); }
+    }
+
+    /* ── Chat Container ── */
+    .chat-container {
+      width: 440px;
+      height: 650px;
+      background: rgba(15, 20, 40, 0.85);
+      backdrop-filter: blur(20px);
+      border: 1px solid rgba(100, 140, 255, 0.25);
+      border-radius: 20px;
+      box-shadow:
+        0 0 30px rgba(80, 120, 255, 0.15),
+        0 8px 32px rgba(0, 0, 0, 0.4);
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+      z-index: 1;
+      position: relative;
+    }
+
+    /* ── Header ── */
+    .chat-header {
+      background: linear-gradient(135deg, #1a0533, #0d1b4a, #162447);
+      color: #fff;
+      padding: 18px 20px;
+      font-size: 1.05rem;
+      font-weight: 600;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      border-bottom: 1px solid rgba(100, 140, 255, 0.2);
+    }
+    .chat-header .logo {
+      width: 36px; height: 36px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, #6c63ff, #e040fb);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.1rem;
+      box-shadow: 0 0 12px rgba(108, 99, 255, 0.5);
+      flex-shrink: 0;
+    }
+    .chat-header .header-text {
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+    }
+    .chat-header .header-title {
+      font-size: 1.05rem;
+      letter-spacing: 0.5px;
+    }
+    .chat-header .header-sub {
+      font-size: 0.7rem;
+      color: rgba(180, 200, 255, 0.7);
+      font-weight: 400;
+      letter-spacing: 1px;
+      text-transform: uppercase;
+    }
+    .status-dot {
+      width: 8px; height: 8px;
+      background: #69f0ae;
+      border-radius: 50%;
+      margin-left: auto;
+      box-shadow: 0 0 8px rgba(105, 240, 174, 0.6);
+      animation: pulse 2s ease-in-out infinite;
+    }
+    @keyframes pulse {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0.4; }
+    }
+
+    /* ── Messages Area ── */
+    .chat-messages {
+      flex: 1;
+      overflow-y: auto;
+      padding: 16px;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+    .chat-messages::-webkit-scrollbar { width: 5px; }
+    .chat-messages::-webkit-scrollbar-track { background: transparent; }
+    .chat-messages::-webkit-scrollbar-thumb { background: rgba(100, 140, 255, 0.3); border-radius: 10px; }
+
+    /* ── Bubble ── */
+    .message {
+      max-width: 80%;
+      padding: 10px 14px;
+      border-radius: 18px;
+      line-height: 1.5;
+      font-size: .93rem;
+      word-break: break-word;
+      white-space: pre-wrap;
+      animation: fadeIn 0.3s ease;
+    }
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(8px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    .message.user {
+      align-self: flex-end;
+      background: linear-gradient(135deg, #6c63ff, #4a3fbf);
+      color: #fff;
+      border-bottom-right-radius: 4px;
+      box-shadow: 0 2px 10px rgba(108, 99, 255, 0.3);
+    }
+    .message.bot {
+      align-self: flex-start;
+      background: rgba(40, 50, 80, 0.7);
+      color: #d0d8f0;
+      border: 1px solid rgba(100, 140, 255, 0.15);
+      border-bottom-left-radius: 4px;
+    }
+    .message.loading { opacity: .5; font-style: italic; }
+
+    /* ── Input Area ── */
+    .chat-input {
+      display: flex;
+      padding: 14px 16px;
+      border-top: 1px solid rgba(100, 140, 255, 0.15);
+      gap: 8px;
+      background: rgba(10, 15, 35, 0.6);
+    }
+    .chat-input textarea {
+      flex: 1;
+      resize: none;
+      border: 1px solid rgba(100, 140, 255, 0.25);
+      border-radius: 24px;
+      padding: 10px 16px;
+      font-size: .93rem;
+      outline: none;
+      max-height: 120px;
+      font-family: inherit;
+      line-height: 1.4;
+      background: rgba(20, 30, 60, 0.8);
+      color: #d0d8f0;
+      transition: border-color 0.3s;
+    }
+    .chat-input textarea::placeholder { color: rgba(160, 180, 220, 0.5); }
+    .chat-input textarea:focus { border-color: #6c63ff; box-shadow: 0 0 8px rgba(108, 99, 255, 0.2); }
+    .chat-input button {
+      background: linear-gradient(135deg, #6c63ff, #e040fb);
+      color: #fff;
+      border: none;
+      border-radius: 50%;
+      width: 44px;
+      height: 44px;
+      cursor: pointer;
+      font-size: 1.2rem;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+      transition: transform 0.2s, box-shadow 0.2s;
+      box-shadow: 0 2px 12px rgba(108, 99, 255, 0.3);
+    }
+    .chat-input button:hover { transform: scale(1.08); box-shadow: 0 4px 18px rgba(108, 99, 255, 0.5); }
+    .chat-input button:disabled { background: rgba(60, 70, 100, 0.5); cursor: not-allowed; box-shadow: none; transform: none; }
+
+    /* ── Space Cat ── */
+    .space-cat {
+      position: fixed;
+      z-index: 2;
+      pointer-events: none;
+    }
+    /* Cat 1 — Purple, bottom */
+    .space-cat.cat-1 {
+      bottom: 30px;
+      animation: catRun1 10s linear infinite;
+      filter: drop-shadow(0 0 8px rgba(180, 140, 255, 0.5));
+    }
+    @keyframes catRun1 {
+      0%   { left: -80px; transform: scaleX(1); }
+      48%  { left: calc(100% + 80px); transform: scaleX(1); }
+      49%  { left: calc(100% + 80px); transform: scaleX(-1); }
+      98%  { left: -80px; transform: scaleX(-1); }
+      99%  { left: -80px; transform: scaleX(1); }
+      100% { left: -80px; transform: scaleX(1); }
+    }
+    /* Cat 2 — Orange, higher up, faster, opposite direction */
+    .space-cat.cat-2 {
+      bottom: 80px;
+      animation: catRun2 7s linear infinite;
+      filter: drop-shadow(0 0 8px rgba(255, 180, 80, 0.5));
+    }
+    .space-cat.cat-2 .torso {
+      background: linear-gradient(135deg, #ffb860, #e07020) !important;
+      box-shadow: 0 0 10px rgba(255, 160, 60, 0.4) !important;
+    }
+    .space-cat.cat-2 .head {
+      background: linear-gradient(135deg, #ffd0a0, #d08030) !important;
+    }
+    .space-cat.cat-2 .ear-l, .space-cat.cat-2 .ear-r {
+      border-bottom-color: #ffd0a0 !important;
+    }
+    .space-cat.cat-2 .tail {
+      border-color: #f0a050 transparent transparent transparent !important;
+    }
+    .space-cat.cat-2 .leg {
+      background: #d08838 !important;
+    }
+    .space-cat.cat-2 .helmet {
+      border-color: rgba(255, 220, 150, 0.5) !important;
+      box-shadow: 0 0 6px rgba(255, 200, 100, 0.3) !important;
+    }
+    @keyframes catRun2 {
+      0%   { left: calc(100% + 80px); transform: scaleX(-1); }
+      48%  { left: -80px; transform: scaleX(-1); }
+      49%  { left: -80px; transform: scaleX(1); }
+      98%  { left: calc(100% + 80px); transform: scaleX(1); }
+      99%  { left: calc(100% + 80px); transform: scaleX(-1); }
+      100% { left: calc(100% + 80px); transform: scaleX(-1); }
+    }
+
+    .cat-body {
+      position: relative;
+      width: 60px; height: 35px;
+    }
+    /* Body */
+    .cat-body .torso {
+      position: absolute;
+      width: 45px; height: 22px;
+      background: linear-gradient(135deg, #c0a0ff, #8060cc);
+      border-radius: 20px 18px 12px 12px;
+      top: 12px; left: 8px;
+      box-shadow: 0 0 10px rgba(180, 140, 255, 0.4);
+    }
+    /* Head */
+    .cat-body .head {
+      position: absolute;
+      width: 22px; height: 20px;
+      background: linear-gradient(135deg, #d0b8ff, #9070dd);
+      border-radius: 50% 50% 45% 45%;
+      top: 5px; left: 40px;
+    }
+    /* Ears */
+    .cat-body .ear-l, .cat-body .ear-r {
+      position: absolute;
+      width: 0; height: 0;
+      border-left: 5px solid transparent;
+      border-right: 5px solid transparent;
+      border-bottom: 10px solid #d0b8ff;
+    }
+    .cat-body .ear-l { top: -2px; left: 40px; }
+    .cat-body .ear-r { top: -2px; left: 50px; }
+    /* Eyes */
+    .cat-body .eye-l, .cat-body .eye-r {
+      position: absolute;
+      width: 4px; height: 5px;
+      background: #fff;
+      border-radius: 50%;
+      top: 11px;
+      animation: blink 3s ease-in-out infinite;
+    }
+    .cat-body .eye-l { left: 45px; }
+    .cat-body .eye-r { left: 53px; }
+    @keyframes blink {
+      0%, 90%, 100% { transform: scaleY(1); }
+      95% { transform: scaleY(0.1); }
+    }
+    /* Tail */
+    .cat-body .tail {
+      position: absolute;
+      width: 20px; height: 10px;
+      border: 3px solid #b090ee;
+      border-color: #b090ee transparent transparent transparent;
+      border-radius: 50% 50% 0 0;
+      top: 8px; left: -8px;
+      animation: wagTail 0.4s ease-in-out infinite alternate;
+      transform-origin: right center;
+    }
+    @keyframes wagTail {
+      0% { transform: rotate(-15deg); }
+      100% { transform: rotate(15deg); }
+    }
+    /* Legs - running animation */
+    .cat-body .leg {
+      position: absolute;
+      width: 4px; height: 14px;
+      background: #a080dd;
+      border-radius: 0 0 3px 3px;
+      top: 28px;
+    }
+    .cat-body .leg-fl { left: 38px; animation: legFront 0.3s ease-in-out infinite alternate; }
+    .cat-body .leg-fr { left: 44px; animation: legFront 0.3s ease-in-out infinite alternate-reverse; }
+    .cat-body .leg-bl { left: 14px; animation: legBack 0.3s ease-in-out infinite alternate; }
+    .cat-body .leg-br { left: 20px; animation: legBack 0.3s ease-in-out infinite alternate-reverse; }
+
+    @keyframes legFront {
+      0% { transform: rotate(-25deg); height: 14px; }
+      100% { transform: rotate(25deg); height: 12px; }
+    }
+    @keyframes legBack {
+      0% { transform: rotate(25deg); height: 14px; }
+      100% { transform: rotate(-25deg); height: 12px; }
+    }
+    /* Helmet (space cat!) */
+    .cat-body .helmet {
+      position: absolute;
+      width: 28px; height: 26px;
+      border: 2px solid rgba(150, 200, 255, 0.5);
+      border-radius: 50%;
+      top: 2px; left: 37px;
+      background: rgba(150, 200, 255, 0.08);
+      box-shadow: 0 0 6px rgba(150, 200, 255, 0.3);
+    }
+    /* Star trail */
+    .space-cat .star-trail {
+      position: absolute;
+      top: 20px; left: -5px;
+      font-size: 10px;
+      opacity: 0.6;
+      animation: trailFade 0.6s ease-in-out infinite;
+    }
+    @keyframes trailFade {
+      0%, 100% { opacity: 0.3; }
+      50% { opacity: 0.7; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- Floating Planet -->
+<div class="planet"></div>
+
+<!-- Space Cat 1 — Purple -->
+<div class="space-cat cat-1">
+  <div class="cat-body">
+    <div class="tail"></div>
+    <div class="torso"></div>
+    <div class="leg leg-bl"></div>
+    <div class="leg leg-br"></div>
+    <div class="leg leg-fl"></div>
+    <div class="leg leg-fr"></div>
+    <div class="head"></div>
+    <div class="helmet"></div>
+    <div class="ear-l"></div>
+    <div class="ear-r"></div>
+    <div class="eye-l"></div>
+    <div class="eye-r"></div>
+  </div>
+  <span class="star-trail">&#x2728;</span>
+</div>
+
+<!-- Space Cat 2 — Orange -->
+<div class="space-cat cat-2">
+  <div class="cat-body">
+    <div class="tail"></div>
+    <div class="torso"></div>
+    <div class="leg leg-bl"></div>
+    <div class="leg leg-br"></div>
+    <div class="leg leg-fl"></div>
+    <div class="leg leg-fr"></div>
+    <div class="head"></div>
+    <div class="helmet"></div>
+    <div class="ear-l"></div>
+    <div class="ear-r"></div>
+    <div class="eye-l"></div>
+    <div class="eye-r"></div>
+  </div>
+  <span class="star-trail">&#x2B50;</span>
+</div>
+
+<div class="chat-container">
+  <!-- Header -->
+  <div class="chat-header">
+    <div class="logo">&#x1F680;</div>
+    <div class="header-text">
+      <span class="header-title">Ladkrabang Space Chatbot</span>
+      <span class="header-sub">KMITL &#x2022; AI Assistant</span>
+    </div>
+    <span class="status-dot"></span>
+  </div>
+
+  <!-- Messages -->
+  <div class="chat-messages" id="messages">
+    <div class="message bot">&#x1F30C; สวัสดีจากลาดกระบัง! มีอะไรให้ช่วยไหมครับ?</div>
+  </div>
+
+  <!-- Input -->
+  <div class="chat-input">
+    <textarea
+      id="userInput"
+      rows="1"
+      placeholder="พิมพ์ข้อความ... (Enter = ส่ง, Shift+Enter = ขึ้นบรรทัดใหม่)"
+    ></textarea>
+    <button id="sendBtn" title="ส่ง">&#x27A4;</button>
+  </div>
+</div>
+
+<script>
+  // ── Config ──
+  const API_URL = "http://localhost:5555/chat";
+
+  // ── State ──
+  let history = [];
+
+  // ── DOM refs ──
+  const messagesEl = document.getElementById("messages");
+  const inputEl    = document.getElementById("userInput");
+  const sendBtn    = document.getElementById("sendBtn");
+
+  // ── Helpers ──
+  function addMessage(text, role) {
+    const div = document.createElement("div");
+    div.className = `message ${role}`;
+    div.textContent = text;
+    messagesEl.appendChild(div);
+    messagesEl.scrollTop = messagesEl.scrollHeight;
+    return div;
+  }
+
+  function setLoading(isLoading) {
+    sendBtn.disabled = isLoading;
+    inputEl.disabled = isLoading;
+  }
+
+  // ── Send message ──
+  async function sendMessage() {
+    const text = inputEl.value.trim();
+    if (!text) return;
+
+    addMessage(text, "user");
+    inputEl.value = "";
+    inputEl.style.height = "auto";
+
+    const loadingDiv = addMessage("\u{1F52D} \u0E01\u0E33\u0E25\u0E31\u0E07\u0E04\u0E34\u0E14...", "bot loading");
+    setLoading(true);
+
+    try {
+      const res = await fetch(API_URL, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ message: text, history }),
+      });
+
+      const data = await res.json();
+      if (data.error) throw new Error(data.error);
+
+      history.push({ role: "user",  parts: text });
+      history.push({ role: "model", parts: data.reply });
+
+      loadingDiv.classList.remove("loading");
+      loadingDiv.textContent = data.reply;
+
+    } catch (err) {
+      loadingDiv.classList.remove("loading");
+      loadingDiv.textContent = `\u274C \u0E40\u0E01\u0E34\u0E14\u0E02\u0E49\u0E2D\u0E1C\u0E34\u0E14\u0E1E\u0E25\u0E32\u0E14: ${err.message}`;
+    } finally {
+      setLoading(false);
+      inputEl.focus();
+    }
+  }
+
+  // ── Event Listeners ──
+  sendBtn.addEventListener("click", sendMessage);
+  inputEl.addEventListener("keydown", (e) => {
+    if (e.key === "Enter" && !e.shiftKey) {
+      e.preventDefault();
+      sendMessage();
+    }
+  });
+
+  inputEl.addEventListener("input", () => {
+    inputEl.style.height = "auto";
+    inputEl.style.height = inputEl.scrollHeight + "px";
+  });
+</script>
+
+</body>
+</html>

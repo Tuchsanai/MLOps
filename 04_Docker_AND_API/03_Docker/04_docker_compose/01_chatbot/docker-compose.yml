@@ -1,0 +1,38 @@
+# ──────────────────────────────────────────
+# Docker Compose — Chatbot Application
+# ──────────────────────────────────────────
+# Frontend : Python HTTP Server (port 80 → host 3000)
+# Backend  : Flask + Gemini API (port 8000 → host 8087)
+# ──────────────────────────────────────────
+
+services:
+  # ──────────────────────────────────────
+  # Frontend Service — Static File Server
+  # ──────────────────────────────────────
+  frontend:
+    build: ./frontend
+    ports:
+      - "3000:80"          # เข้าถึงผ่าน http://localhost:3000
+    depends_on:
+      - backend            # รอให้ backend เริ่มก่อน
+    networks:
+      - chatbot-network
+
+  # ──────────────────────────────────────
+  # Backend Service — Flask + Gemini API
+  # ──────────────────────────────────────
+  backend:
+    build: ./backend
+    ports:
+      - "5555:8000"        # เข้าถึง API โดยตรงผ่าน http://localhost:5555
+    env_file:
+      - .env.example       # โหลด GEMINI_API_KEY จากไฟล์ .env.example
+    networks:
+      - chatbot-network
+
+# ──────────────────────────────────────
+# Network
+# ──────────────────────────────────────
+networks:
+  chatbot-network:
+    driver: bridge
