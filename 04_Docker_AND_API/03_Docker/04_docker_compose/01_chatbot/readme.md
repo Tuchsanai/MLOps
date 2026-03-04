@@ -274,9 +274,7 @@ frontend-1  | Serving HTTP on 0.0.0.0 port 80 ...
 http://localhost:3000
 ```
 
-จะเห็นหน้า Chatbot ธีมอวกาศพร้อมใช้งาน
-
-![Chatbot Frontend](img/frontend_pic1.png)
+จะเห็นหน้า Chatbot ธีมอวกาศพร้อมใช้งาน (ดูตัวอย่างหน้าจอได้ที่ [ส่วนตัวอย่างหน้าจอ](#ตัวอย่างหน้าจอ))
 
 #### 5.2 ทดสอบ Backend API โดยตรง
 
